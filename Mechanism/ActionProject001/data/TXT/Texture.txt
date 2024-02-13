@@ -1,0 +1,45 @@
+#===========================================================
+#
+# テクスチャの情報 [Texture.txt]
+# Author : 小原立暉
+#
+#===========================================================
+
+# テクスチャの情報
+TEXTURE = data\TEXTURE\ButTutorial001.png	# ホバージェットのチュートリアル(ボタン)
+TEXTURE = data\TEXTURE\ButTutorial002.png	# ジェットダッシュのチュートリアル(ボタン)
+TEXTURE = data\TEXTURE\ButTutorial003.png	# グラウンドクエイクのチュートリアル(ボタン)
+TEXTURE = data\TEXTURE\Dirt.png				# 土
+TEXTURE = data\TEXTURE\Dstr001.png			# 撃破(トゲトゲ)
+TEXTURE = data\TEXTURE\Dstr002.png			# 撃破(フワフワ)
+TEXTURE = data\TEXTURE\Dstr003.png			# 撃破(爆発)
+TEXTURE = data\TEXTURE\explosion000.png		# 爆発
+TEXTURE = data\TEXTURE\KeyTutorial001.png	# ホバージェットのチュートリアル(キーボード)
+TEXTURE = data\TEXTURE\KeyTutorial002.png	# ジェットダッシュのチュートリアル(キーボード)
+TEXTURE = data\TEXTURE\KeyTutorial003.png	# グラウンドクエイクのチュートリアル(キーボード)
+TEXTURE = data\TEXTURE\LifeUIBack.png		# 体力UIの背景
+TEXTURE = data\TEXTURE\LifeUIMark.png		# 体力UIのマーク
+TEXTURE = data\TEXTURE\NewRecord.png		# 新記録
+TEXTURE = data\TEXTURE\Number.png			# 番号
+TEXTURE = data\TEXTURE\ObaraArcadia2.png	# アルカディアマーク
+TEXTURE = data\TEXTURE\PauseContinue.png	# コンティニュー
+TEXTURE = data\TEXTURE\PauseMenu.png		# ポーズメニュー
+TEXTURE = data\TEXTURE\PauseReset.png		# リセット
+TEXTURE = data\TEXTURE\PauseTitle.png		# タイトル
+TEXTURE = data\TEXTURE\PushGamePad.png		# ボタンを押す表示(ゲームパッド)
+TEXTURE = data\TEXTURE\PushKey.png			# ボタンを押す表示(キーボード)
+TEXTURE = data\TEXTURE\Rank.png				# 順位
+TEXTURE = data\TEXTURE\RankingWord.png		# ランキングの文字
+TEXTURE = data\TEXTURE\SkyBox.jpg			# スカイボックス
+TEXTURE = data\TEXTURE\SmokeStaging.png		# 煙演出
+TEXTURE = data\TEXTURE\TimeNumber.png		# タイムの数字
+TEXTURE = data\TEXTURE\YourScore.png		# あなたのスコアの表示
+
+# エフェクト系
+TEXTURE = data\TEXTURE\Dust.tga				# 埃
+TEXTURE = data\TEXTURE\effect000.jpg		# エフェクト
+TEXTURE = data\TEXTURE\PopSmoke.tga			# ポップな煙
+TEXTURE = data\TEXTURE\shadow.jpg			# 影
+TEXTURE = data\TEXTURE\SpeedEffect.tga		# スピードエフェクト
+TEXTURE = data\TEXTURE\smoke.tga			# 煙
+TEXTURE = data\TEXTURE\Rupture.tga			# 破裂

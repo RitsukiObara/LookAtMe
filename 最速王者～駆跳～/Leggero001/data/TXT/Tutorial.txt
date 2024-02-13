@@ -1,0 +1,389 @@
+#===========================================================
+#
+# チュートリアルの情報 [Tutorial.txt]
+# Author : 小原立暉
+#
+#===========================================================
+
+#================================
+# 吹き出しの情報
+#================================
+BALLOON_DATA
+
+TYPE0 = 240.0 150.0 0.0
+	  = data/TEXTURE/Balloon000.png
+TYPE1 = 240.0 150.0 0.0
+	  = data/TEXTURE/Balloon001.png
+TYPE2 = 240.0 150.0 0.0
+	  = data/TEXTURE/Balloon002.png
+TYPE3 = 240.0 150.0 0.0
+	  = data/TEXTURE/Balloon003.png
+TYPE4 = 240.0 150.0 0.0
+	  = data/TEXTURE/Balloon004.png
+TYPE5 = 240.0 150.0 0.0
+	  = data/TEXTURE/Balloon005.png
+TYPE6 = 240.0 150.0 0.0
+	  = data/TEXTURE/Balloon006.png
+TYPE7 = 240.0 150.0 0.0
+	  = data/TEXTURE/Balloon007.png
+TYPE8 = 240.0 150.0 0.0
+	  = data/TEXTURE/Balloon008.png
+TYPE9 = 240.0 150.0 0.0
+	  = data/TEXTURE/Balloon009.png
+TYPE10 = 240.0 150.0 0.0
+	  = data/TEXTURE/Balloon010.png
+#================================
+# 0 = 通常操作
+# 1 = 超ジャンプ
+# 2 = 壁キック
+# 3 = 崖上がり
+# 4 = 崖着地
+# 5 = アクション
+# 6 = ポールキャッチ
+# 7 = ポールジャンプ
+# 8 = ブースト
+# 9 = スタミナ
+# 10 = 速度
+#================================
+
+#================================
+# 吹き出しの設定
+#================================
+SET_BALLOON
+	POS = 0.0 0.0 0.0
+	TYPE = 0
+END_SET_BALLOON
+
+SET_BALLOON
+	POS = 850.0 0.0 0.0
+	TYPE = 1
+END_SET_BALLOON
+
+SET_BALLOON
+	POS = 2500.0 0.0 0.0
+	TYPE = 2
+END_SET_BALLOON
+
+SET_BALLOON
+	POS = 4000.0 0.0 0.0
+	TYPE = 3
+END_SET_BALLOON
+
+SET_BALLOON
+	POS = 4200.0 420.0 0.0
+	TYPE = 4
+END_SET_BALLOON
+
+SET_BALLOON
+	POS = 4500.0 470.0 0.0
+	TYPE = 10
+END_SET_BALLOON
+
+SET_BALLOON
+	POS = 5200.0 0.0 0.0
+	TYPE = 5
+END_SET_BALLOON
+
+SET_BALLOON
+	POS = 7500.0 345.0 0.0
+	TYPE = 6
+END_SET_BALLOON
+
+SET_BALLOON
+	POS = 8500.0 0.0 0.0
+	TYPE = 7
+END_SET_BALLOON
+
+SET_BALLOON
+	POS = 11200.0 0.0 0.0
+	TYPE = 8
+END_SET_BALLOON
+
+SET_BALLOON
+	POS = 14500.0 0.0 0.0
+	TYPE = 9
+END_SET_BALLOON
+
+#================================
+# ステージの設定
+#================================
+SET_BLOCK
+	POS = 20000.0 -80.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 600.0 1.0 1.0
+	TYPE = 0
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	MAT2 = 0.8 0.8 0.8 1.0
+	MAT3 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = FALSE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 1312.0 0.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 5.0 1.8 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = FALSE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 1712.0 0.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 5.0 5.2 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = FALSE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 2704.0 132.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 1.0 7.0 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = FALSE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 3070.0 0.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 1.0 6.0 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = FALSE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 3310.0 400.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 5.0 1.0 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = FALSE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 4250.0 0.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 1.0 6.0 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = TRUE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 4530.0 400.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 6.0 1.0 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = FALSE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 5994.0 100.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 1.0 1.0 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = FALSE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 7132.0 0.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 1.0 1.0 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = FALSE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 7534.0 0.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 2.6 4.3 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = TRUE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 12216.0 272.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 13.0 1.0 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = FALSE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 13034.0 0.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 13.0 1.0 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = FALSE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 11536.0 0.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 4.0 6.2 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = TRUE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 8864.0 0.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 3.0 4.0 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = TRUE
+	LCLIFF = TRUE
+END_SET_BLOCK
+
+SET_BLOCK
+	POS = 15000.0 0.0 0.0
+	ROT = 0.0 0.0 0.0
+	SCALE = 4.0 6.2 1.0
+	TYPE = 1
+	MAT
+	MAT1 = 0.8 0.8 0.8 1.0
+	RCLIFF = FALSE
+	LCLIFF = TRUE
+END_SET_BLOCK
+
+#================================
+# 障害物の設定
+#================================
+SET_OBSTACLE
+	POS = 5488.0 48.0 0.0
+	TYPE = 0
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 5824.0 0.0 0.0
+	TYPE = 1
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 6416.0 0.0 0.0
+	TYPE = 2
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 6752.0 0.0 0.0
+	TYPE = 3
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 6752.0 80.0 0.0
+	TYPE = 3
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 6836.0 0.0 0.0
+	TYPE = 3
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 6836.0 80.0 0.0
+	TYPE = 3
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 6920.0 0.0 0.0
+	TYPE = 3
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 6920.0 80.0 0.0
+	TYPE = 3
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 7688.0 0.0 70.0
+	TYPE = 5
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 9340.0 0.0 70.0
+	TYPE = 5
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 9680.0 0.0 70.0
+	TYPE = 5
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 9980.0 0.0 70.0
+	TYPE = 5
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 10280.0 0.0 70.0
+	TYPE = 5
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 10280.0 400.0 70.0
+	TYPE = 4
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 9980.0 400.0 70.0
+	TYPE = 4
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 9680.0 400.0 70.0
+	TYPE = 4
+END_SET_OBSTACLE
+
+SET_OBSTACLE
+	POS = 9340.0 400.0 70.0
+	TYPE = 4
+END_SET_OBSTACLE
+
+#================================
+# プレイヤーの位置設定
+#================================
+PLAYER_POS = 0.0 0.0 0.0
+
+#================================
+# ゴールの位置設定
+#================================
+GOAL_POS = 17000.0 0.0 0.0

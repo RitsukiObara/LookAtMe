@@ -1,0 +1,81 @@
+#===========================================================
+#
+# テクスチャの情報 [Texture.txt]
+# Author : 小原立暉
+#
+#===========================================================
+
+# テクスチャの情報
+TEXTURE = data/TEXTURE/ActUI_Back.png		# アクションUIの背景
+TEXTURE = data/TEXTURE/ActUI_LT.png			# 着地ターボ
+TEXTURE = data/TEXTURE/ActUI_NA.png			# ナイスアタック
+TEXTURE = data/TEXTURE/ActUI_NJ.png			# ナイスジャンプ
+TEXTURE = data/TEXTURE/ActUI_SJ.png			# 超ジャンプ
+TEXTURE = data/TEXTURE/ActUI_WK.png			# 壁キック
+TEXTURE = data/TEXTURE/Amazing.png			# 褒め(アメイジング)
+TEXTURE = data/TEXTURE/Balloon000.png		# ふきだし000
+TEXTURE = data/TEXTURE/Balloon001.png		# ふきだし001
+TEXTURE = data/TEXTURE/Balloon002.png		# ふきだし002
+TEXTURE = data/TEXTURE/Balloon003.png		# ふきだし003
+TEXTURE = data/TEXTURE/Balloon004.png		# ふきだし004
+TEXTURE = data/TEXTURE/Balloon005.png		# ふきだし005
+TEXTURE = data/TEXTURE/Balloon006.png		# ふきだし006
+TEXTURE = data/TEXTURE/Balloon007.png		# ふきだし007
+TEXTURE = data/TEXTURE/Balloon008.png		# ふきだし008
+TEXTURE = data/TEXTURE/Balloon009.png		# ふきだし009
+TEXTURE = data/TEXTURE/Balloon010.png		# ふきだし010
+TEXTURE = data/TEXTURE/BalloonBlank.png		# 空白のふきだし
+TEXTURE = data/TEXTURE/bg100.png			# 背景(100)
+TEXTURE = data/TEXTURE/bg101.png			# 背景(101)
+TEXTURE = data/TEXTURE/bg102.png			# 背景(102)
+TEXTURE = data/TEXTURE/CliffChecker.png		# 崖捕まりマーク
+TEXTURE = data/TEXTURE/EnterSkip.png		# ENTERキーでスキップの表示
+TEXTURE = data/TEXTURE/Exciting.png			# 褒め(エキサイティング)
+TEXTURE = data/TEXTURE/explosion000.png		# 爆発
+TEXTURE = data/TEXTURE/Goal.png				# ゴール
+TEXTURE = data/TEXTURE/GoalMark.png			# ゴールマーク
+TEXTURE = data/TEXTURE/Great.png			# 褒め(グレート)
+TEXTURE = data/TEXTURE/KariTitle.png		# タイトル
+TEXTURE = data/TEXTURE/BOO.png				# 着地失敗(BOO)
+TEXTURE = data/TEXTURE/COOL.png				# 着地成功(COOL)
+TEXTURE = data/TEXTURE/NewRecord.png		# 新記録
+TEXTURE = data/TEXTURE/Number.png			# 番号
+TEXTURE = data/TEXTURE/ObaraArcadia2.png	# アルカディアマーク
+TEXTURE = data/TEXTURE/Orbit.png			# 軌跡
+TEXTURE = data/TEXTURE/PauseContinue.png	# コンティニュー
+TEXTURE = data/TEXTURE/PauseMenu.png		# ポーズメニュー
+TEXTURE = data/TEXTURE/PauseReset.png		# リセット
+TEXTURE = data/TEXTURE/PauseTitle.png		# タイトル
+TEXTURE = data/TEXTURE/PlayerMark.png		# プレイヤーマーク
+TEXTURE = data/TEXTURE/PoleOrbit.png		# ポールジャンプの軌跡
+TEXTURE = data/TEXTURE/PushTiming.png		# 押しタイミング
+TEXTURE = data/TEXTURE/PushGamePad.png		# 押しボタン
+TEXTURE = data/TEXTURE/Rank.png				# 順位
+TEXTURE = data/TEXTURE/RankingWord.png		# ランキングの文字
+TEXTURE = data/TEXTURE/RankingWord.png		# ランキングの文字
+TEXTURE = data/TEXTURE/Road.png				# 道のり
+TEXTURE = data/TEXTURE/Silhouette000.png	# シルエット000
+TEXTURE = data/TEXTURE/Silhouette001.png	# シルエット001
+TEXTURE = data/TEXTURE/Silhouette002.png	# シルエット002
+TEXTURE = data/TEXTURE/Silhouette003.png	# シルエット003
+TEXTURE = data/TEXTURE/SkyBox.jpg			# スカイボックス
+TEXTURE = data/TEXTURE/SpeedUIGage.png		# スピードUIのゲージ
+TEXTURE = data/TEXTURE/SpeedUIMark.png		# スピードUIのマーク
+TEXTURE = data/TEXTURE/SpeedUIMeter.png		# スピードUIのメーター
+TEXTURE = data/TEXTURE/SpeedUIOver.png		# スピードUIのオーバー状態
+TEXTURE = data/TEXTURE/StaminaMark.png		# スタミナUIのマーク
+TEXTURE = data/TEXTURE/StaminaGage.png		# スタミナUIのゲージ
+TEXTURE = data/TEXTURE/StaminaMeter.png		# スタミナUIのメーター
+TEXTURE = data/TEXTURE/Start.png			# スタート
+TEXTURE = data/TEXTURE/TimeNumber.png		# タイムの数字
+TEXTURE = data/TEXTURE/TimeDot.png			# タイムの点
+TEXTURE = data/TEXTURE/TitleSelect.png		# タイトルの指示
+TEXTURE = data/TEXTURE/YourScore.png		# あなたのスコアの表示
+
+# エフェクト系
+TEXTURE = data/TEXTURE/Dust.tga				# 埃
+TEXTURE = data/TEXTURE/effect000.jpg		# エフェクト
+TEXTURE = data/TEXTURE/PopSmoke.tga			# ポップな煙
+TEXTURE = data/TEXTURE/shadow.jpg			# 影
+TEXTURE = data/TEXTURE/SpeedEffect.tga		# スピードエフェクト
+TEXTURE = data/TEXTURE/smoke.tga			# 煙

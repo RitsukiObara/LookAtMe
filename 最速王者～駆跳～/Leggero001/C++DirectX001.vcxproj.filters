@@ -1,0 +1,1192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\Various">
+      <UniqueIdentifier>{16707480-b984-4ca3-b1df-977167b100b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original">
+      <UniqueIdentifier>{ed01666f-81da-48b5-8516-aec3dd0ca081}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Camera">
+      <UniqueIdentifier>{854d3d4c-86be-4296-bb7f-36bcecc948e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Collision">
+      <UniqueIdentifier>{7266fbe0-acc4-4a1f-90e3-8cb6e61b7411}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Collpolygon">
+      <UniqueIdentifier>{f120aad1-45e5-4715-a564-8b3b92a6dfaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Debugproc">
+      <UniqueIdentifier>{2829504d-e786-4d90-a90e-1e953acb3a6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\File">
+      <UniqueIdentifier>{2131b45c-fd62-41e0-9f2c-9e059372e142}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Input">
+      <UniqueIdentifier>{78a045a0-2d0a-4f4b-a31c-9ddcdb3508c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Light">
+      <UniqueIdentifier>{fff5a246-b3b5-4071-8356-7a3b2269aea8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Motion">
+      <UniqueIdentifier>{b0f857fe-899a-4301-aa12-959f255c4cce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Precompile">
+      <UniqueIdentifier>{68c29e1b-590b-4666-bb64-b3ef40702f5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Shadow">
+      <UniqueIdentifier>{bf6254fc-7c2c-4a92-86f4-33e9c507d187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Shadow\ShadowCircle">
+      <UniqueIdentifier>{6c137ac8-9812-4536-a896-a716131509bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Shadow\ShadowModel">
+      <UniqueIdentifier>{f04f93ad-8e09-4f44-8983-a516be3abbdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Sound">
+      <UniqueIdentifier>{15c32069-6100-4ef3-b0ad-91af10eb4fd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Texture">
+      <UniqueIdentifier>{beb9e36f-969e-485a-8871-b0209ae762b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Useful">
+      <UniqueIdentifier>{c832f125-8e7e-4a53-8381-c5bfc423fb82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\2D">
+      <UniqueIdentifier>{026ae2e7-915f-488a-a669-afe86e40ee99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\2D\2DObject">
+      <UniqueIdentifier>{8ffb289b-80cb-46fc-88ea-b6c948db5bdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\2D\2DAnim">
+      <UniqueIdentifier>{da4a030b-385b-4ace-93ab-1528b704e368}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\2D\2DScroll">
+      <UniqueIdentifier>{4262f80d-598a-42c4-82fd-a3d2d42368d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D">
+      <UniqueIdentifier>{245b1142-f019-432c-a5d3-76e586e13a9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Character">
+      <UniqueIdentifier>{e7f78c31-39e3-45d2-aeda-a0ad925cf258}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model">
+      <UniqueIdentifier>{b31a61b6-919e-4473-b0a3-d0a6c2fa4c44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Object3D">
+      <UniqueIdentifier>{92918bf5-174a-4fe1-80ed-4f53fc31f4fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Billboard">
+      <UniqueIdentifier>{5717a29b-03cf-4b0f-a6cf-03c4e8de2f6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Mesh">
+      <UniqueIdentifier>{233e84ed-599a-4e0f-aee2-f5167a6afb66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\ObjectX">
+      <UniqueIdentifier>{ad8e3944-2c3a-42e3-b5d2-8876f7d3e652}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Obstacle">
+      <UniqueIdentifier>{8910f650-8a2e-48eb-ae40-dd09915c92fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI">
+      <UniqueIdentifier>{9d119560-4abf-4359-a7b5-2eeaa95f4ead}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\LandUI">
+      <UniqueIdentifier>{87b686b7-8bf7-4278-a035-65a7080b50c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\StaminaUI">
+      <UniqueIdentifier>{ecd2f2a1-1579-4653-9aca-05ac35aed33f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\Number">
+      <UniqueIdentifier>{3b1b038b-1b4c-4746-a60b-0ded3c4300ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\Score">
+      <UniqueIdentifier>{c6d81cbe-5a6d-4608-b2a9-194eee0a199e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\Time">
+      <UniqueIdentifier>{fd9c8d72-b378-4308-9b5f-426e32b62b6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Main">
+      <UniqueIdentifier>{6fe9069a-349b-47bf-9e52-37542d472472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Billboard\Bullet">
+      <UniqueIdentifier>{4380e323-3027-4135-911d-1669dea394ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Billboard\Effect">
+      <UniqueIdentifier>{ba4324e6-9455-42dc-8593-aaa0f9ffc13b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Billboard\Explosion">
+      <UniqueIdentifier>{24eb9aa8-2c85-40fd-87e7-90af4387e04e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Character\Player">
+      <UniqueIdentifier>{51418bd6-f1cb-42a5-aa42-6d0b5702827a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\Edit">
+      <UniqueIdentifier>{445045ce-d61a-4d3f-a3fe-665bd38423dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\Edit\EditBlock">
+      <UniqueIdentifier>{7123da26-00c3-45d9-866e-c09721ca89ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\Edit\BgEdit">
+      <UniqueIdentifier>{f15a716f-5275-47eb-8fa8-ac3193e70387}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Manager">
+      <UniqueIdentifier>{fcb2be6d-366e-42f0-a04f-085bbbd911ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\2D\2DObject\Effect">
+      <UniqueIdentifier>{94767c70-c5e4-43b8-85b4-e6ee167ce6e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\2D\2DBg">
+      <UniqueIdentifier>{2b323a5e-9887-4d24-b50f-085b90062b57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\2D\2DBg\BgMulti">
+      <UniqueIdentifier>{6b5c2e48-03e0-4c4e-9069-cf14f4c33181}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\BgModel">
+      <UniqueIdentifier>{f709c698-c547-42b4-83c6-b8a55b9847e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Obstacle\Drum">
+      <UniqueIdentifier>{c43434d0-44ab-4af9-ab71-31cc25604d1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Obstacle\Hydrant">
+      <UniqueIdentifier>{b01fd2b9-ce94-4c1d-9261-fb05df1c5e02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Obstacle\SignPole">
+      <UniqueIdentifier>{a4c0db35-1835-4c85-8052-b9d467fc9639}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Obstacle\WoodBox">
+      <UniqueIdentifier>{f58c49e7-87f8-4f3b-98aa-0d4d4b1e9c9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\Block">
+      <UniqueIdentifier>{a7c12ca5-24e7-4bff-86a9-0653907f2211}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\Enemy">
+      <UniqueIdentifier>{a969cbe0-86d0-4f3b-a1b7-7151914eed04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Object3D\Field">
+      <UniqueIdentifier>{d86af095-5d1f-47a3-849c-f493c1df79e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Billboard\Particle">
+      <UniqueIdentifier>{68aa5fa7-826e-4856-a439-e76b4d0c757b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\Fraction">
+      <UniqueIdentifier>{447358d6-e2b8-4a0c-8c6c-0729aaf215ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\Item">
+      <UniqueIdentifier>{9d9c9a28-f908-4c4a-ba3d-d16735d08772}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Object">
+      <UniqueIdentifier>{c697ed7a-40f2-4937-9df8-7ac074b0f912}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Object3D\Goal">
+      <UniqueIdentifier>{84b7ac8d-86f6-47b3-91bc-8f3be14fa100}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\GoalUI">
+      <UniqueIdentifier>{05b9419c-e665-4d29-acf6-5a3189d79eca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\Renderer">
+      <UniqueIdentifier>{5753bf0c-47fa-4eda-ab1d-67ce01b766be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Object3DFan">
+      <UniqueIdentifier>{483b25f6-d882-4437-8832-d440312534e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Object3D\Bg">
+      <UniqueIdentifier>{254cb51c-4102-4ddb-8e45-ee6aac713874}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\Edit\ObstacleEdit">
+      <UniqueIdentifier>{3de17e3d-43a8-4dac-89d0-52e713d43fe0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\Block\DirtBlock">
+      <UniqueIdentifier>{35f65214-7047-4b22-9c1c-4f71c3ff3353}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\Block\IceBlock">
+      <UniqueIdentifier>{8204b8d1-5070-44e6-844b-e14d788ebcaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\Block\RockBlock">
+      <UniqueIdentifier>{0a3e30df-3efa-40e2-891c-28d367522135}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\Block\MagmaBlock">
+      <UniqueIdentifier>{b13dede5-1af6-46c3-acd0-26eb90603445}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Object3D\CliffChecker">
+      <UniqueIdentifier>{7449cd1d-be19-4b34-88ec-608cb4278f6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Object3D\Ripple">
+      <UniqueIdentifier>{9669bbe2-6583-49b1-9016-b13241979d52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Mesh\meshOrbit">
+      <UniqueIdentifier>{64eca6af-d7f1-42a9-b81d-efd7afe69b09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\Enemy\ShotEnemy">
+      <UniqueIdentifier>{3a43fcaf-8e9a-4fef-b4f7-ce7711905f2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\ActionUI">
+      <UniqueIdentifier>{7578db1e-f5bd-482a-bb3d-38e4b8f2b065}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Obstacle\StreetLamp">
+      <UniqueIdentifier>{f4ee77db-20de-4427-9803-325821feca75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Obstacle\StreetPole">
+      <UniqueIdentifier>{6264bc50-d775-4554-988f-7199280c698b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Game">
+      <UniqueIdentifier>{b067eb7d-e865-43c9-8baf-4168968986d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Scene">
+      <UniqueIdentifier>{b6ab7417-c7f9-4e1f-8e5e-5964a9fbf9c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Title">
+      <UniqueIdentifier>{ea445ff8-18b1-49d2-88da-270c55144734}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Logo">
+      <UniqueIdentifier>{4283d4d1-f9e5-4556-86ff-41d78df672bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Logo\LogoMark">
+      <UniqueIdentifier>{dfea8de3-d392-4009-b903-d195ec1681c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Title\TitleName">
+      <UniqueIdentifier>{b563d1fe-b271-43e3-ab5d-88a025dc6bf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\2D\2DLocus">
+      <UniqueIdentifier>{e1a56718-72ea-440c-b54d-c245126fff7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Title\TitleSelect">
+      <UniqueIdentifier>{800ba46f-2cc8-4ab0-a33e-959325297697}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Fade">
+      <UniqueIdentifier>{4b14b255-d6be-494d-8664-569bf8bb3337}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Result">
+      <UniqueIdentifier>{1101ba02-4b9a-4ed5-862c-6ced2a9f5641}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Result\ResultTime">
+      <UniqueIdentifier>{a6adcea3-6b10-4564-9b57-291f0d6d7cd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Result\ResultScore">
+      <UniqueIdentifier>{69d796c0-6d41-4e84-bdf5-9a9cd88b5609}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Result\ResultRank">
+      <UniqueIdentifier>{257ee7fa-47aa-47dd-9e15-8bd66fa54079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Pause">
+      <UniqueIdentifier>{d7c9ea0b-ec29-4374-8d5d-b557d1fe0f85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\2D\2DObject\Particle">
+      <UniqueIdentifier>{6bf2b835-b187-476a-aca0-0956cf2caeaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\ItemGenerator">
+      <UniqueIdentifier>{e370dc73-1b9b-4bf4-ad28-d08a192c4640}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Ranking">
+      <UniqueIdentifier>{e8c69146-d219-421c-862c-d02c8adf1b8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\Time\Game_Time">
+      <UniqueIdentifier>{26987a2e-33ee-4f5f-9cfb-bf42ef1e0a91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Ranking\Ranking_Time">
+      <UniqueIdentifier>{cae767f4-386b-40f2-8316-84c30c491a64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Ranking\Ranking_Score">
+      <UniqueIdentifier>{5d839725-d730-4ed4-867b-476db895df7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Ranking\Ranking_Precedence">
+      <UniqueIdentifier>{6c38ff08-3d7f-4b63-b26e-7aa80843f948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Ranking\Ranking_Word">
+      <UniqueIdentifier>{53574e30-28e1-421f-a3cf-039f9c0572e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Ranking\Ranking_ScoreDisp">
+      <UniqueIdentifier>{c4b374c6-5638-45d2-ab97-008346f03825}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Ranking\NewRecord">
+      <UniqueIdentifier>{94809dc5-be03-4394-ac8d-a33d7630dbf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\Enemy\KickEnemy">
+      <UniqueIdentifier>{53374166-3ed9-4bc2-8fb2-fc671f50598a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\2D\2DObject\SonicEffect">
+      <UniqueIdentifier>{e3891263-9241-47ea-b7bb-4db49a4cd0ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\Edit\StageCamera">
+      <UniqueIdentifier>{fbbded62-bfc9-46e2-b281-08f7790df745}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\CameraRange">
+      <UniqueIdentifier>{c052af1d-69fd-4ed8-abd6-9b11c0ed232e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\Edit\RangeMove">
+      <UniqueIdentifier>{ffbe2ccf-2e03-4311-ac59-f0b54491d300}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Billboard\Aura">
+      <UniqueIdentifier>{5e392ac3-2cec-464f-84d6-456b60551472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\Announce">
+      <UniqueIdentifier>{6b3f16ea-1e80-497c-b0d8-5d886e2bded4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\PraiseUI">
+      <UniqueIdentifier>{3094860e-cc49-498e-9977-874132ec0b36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\SpeedUI">
+      <UniqueIdentifier>{027e73dc-4ace-4650-a21e-1bac3972b4e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\CountDown">
+      <UniqueIdentifier>{54c64500-bc19-445c-8e9d-0238b0a41c64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\Combo">
+      <UniqueIdentifier>{cff4da24-0494-4a0b-9978-b921665a29fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Tutorial">
+      <UniqueIdentifier>{6eb7e075-6498-4625-ac27-dafa0036164c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Tutorial\Balloon">
+      <UniqueIdentifier>{f2de8e7f-00af-4bf0-8776-a02450e16206}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Character\Player\GamePlayer">
+      <UniqueIdentifier>{f59662c9-e673-453f-9524-7385a8a21589}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Character\Player\TutorialPlayer">
+      <UniqueIdentifier>{d91c416d-d843-49da-b2d0-547760b58ab4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\2D\2DObject\2DDonut">
+      <UniqueIdentifier>{17ec3625-32ce-4989-b00f-56724a2166f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Tutorial\SkipCircle">
+      <UniqueIdentifier>{b61a73ff-14ba-43fd-9e24-574310791c60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Various\Shadow\ShadowSquare">
+      <UniqueIdentifier>{3342f4d9-cba5-4855-a865-72cf230f171e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Tutorial\2DBalloonUI">
+      <UniqueIdentifier>{11db7e48-817f-4671-b5c5-42d3839dbbea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\SpeedUI\Tutorial_SpeedUI">
+      <UniqueIdentifier>{c7f81f7a-a2e8-432f-acc3-512a72c31b4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\SpeedUI\Game_SpeedUI">
+      <UniqueIdentifier>{1a2e47e3-8284-4c96-a0c7-cf099e6c0a40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Tutorial\PushTiming">
+      <UniqueIdentifier>{01472193-0b5b-473d-a02a-db6fa83ba4f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\StaminaUI\Game_StaminaUI">
+      <UniqueIdentifier>{f084d2a9-e228-4afa-b683-d316dcc73d07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI\StaminaUI\Tutorial_StaminaUI">
+      <UniqueIdentifier>{119ed69e-54c1-4dd5-a6b1-85426fd2fa74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Object3D\SkyBox">
+      <UniqueIdentifier>{52d03648-86ae-4673-bed8-6d587f28d8c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Mesh\MeshField">
+      <UniqueIdentifier>{f971312a-6065-4b35-8431-68103d866c1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Mesh\MeshWall">
+      <UniqueIdentifier>{933eab10-3bae-4b8e-93a6-f15aaf06a9c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Mesh\MeshCylinder">
+      <UniqueIdentifier>{9658e7a9-691a-4007-b404-8bcc113f4650}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Mesh\MeshDome">
+      <UniqueIdentifier>{d499ecbe-4515-492d-a44e-3a123ac5a1ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Title\Silhouette">
+      <UniqueIdentifier>{fdd8d4d7-d4b3-4938-a848-b933bd4eb77c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Model\ArrowSign">
+      <UniqueIdentifier>{675251e3-5132-46b0-a0c7-daa5e95a1177}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Tutorial\EnterSkip">
+      <UniqueIdentifier>{58c8f417-e278-4c90-8bcb-e5363dbe5133}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Object3D\Goal\GameGoal">
+      <UniqueIdentifier>{540b1567-ffbf-4439-929c-bda71ba14fd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Object3D\Goal\TutorialGoal">
+      <UniqueIdentifier>{0ed82d05-846c-4f88-b1dd-5ac0b4c26e09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Original\3D\Billboard\RubSmoke">
+      <UniqueIdentifier>{7e13cb36-9cbc-4b9d-b9e4-ce4f701bc9cd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="camera.cpp">
+      <Filter>ソース ファイル\Various\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="collision.cpp">
+      <Filter>ソース ファイル\Various\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="collpolygon.cpp">
+      <Filter>ソース ファイル\Various\Collpolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="debugproc.cpp">
+      <Filter>ソース ファイル\Various\Debugproc</Filter>
+    </ClCompile>
+    <ClCompile Include="file.cpp">
+      <Filter>ソース ファイル\Various\File</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>ソース ファイル\Various\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="light.cpp">
+      <Filter>ソース ファイル\Various\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="motion.cpp">
+      <Filter>ソース ファイル\Various\Motion</Filter>
+    </ClCompile>
+    <ClCompile Include="precompile.cpp">
+      <Filter>ソース ファイル\Various\Precompile</Filter>
+    </ClCompile>
+    <ClCompile Include="shadowCircle.cpp">
+      <Filter>ソース ファイル\Various\Shadow\ShadowCircle</Filter>
+    </ClCompile>
+    <ClCompile Include="shadowModel.cpp">
+      <Filter>ソース ファイル\Various\Shadow\ShadowModel</Filter>
+    </ClCompile>
+    <ClCompile Include="sound.cpp">
+      <Filter>ソース ファイル\Various\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>ソース ファイル\Various\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="useful.cpp">
+      <Filter>ソース ファイル\Various\Useful</Filter>
+    </ClCompile>
+    <ClCompile Include="object2D.cpp">
+      <Filter>ソース ファイル\Original\2D\2DObject</Filter>
+    </ClCompile>
+    <ClCompile Include="animobject.cpp">
+      <Filter>ソース ファイル\Original\2D\2DAnim</Filter>
+    </ClCompile>
+    <ClCompile Include="scrollobject.cpp">
+      <Filter>ソース ファイル\Original\2D\2DScroll</Filter>
+    </ClCompile>
+    <ClCompile Include="character.cpp">
+      <Filter>ソース ファイル\Original\3D\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>ソース ファイル\Original\3D\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="object3D.cpp">
+      <Filter>ソース ファイル\Original\3D\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="objectbillboard.cpp">
+      <Filter>ソース ファイル\Original\3D\Billboard</Filter>
+    </ClCompile>
+    <ClCompile Include="Objectmesh.cpp">
+      <Filter>ソース ファイル\Original\3D\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="objectX.cpp">
+      <Filter>ソース ファイル\Original\3D\ObjectX</Filter>
+    </ClCompile>
+    <ClCompile Include="obstacle.cpp">
+      <Filter>ソース ファイル\Original\3D\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="landUI.cpp">
+      <Filter>ソース ファイル\UI\LandUI</Filter>
+    </ClCompile>
+    <ClCompile Include="staminaUI.cpp">
+      <Filter>ソース ファイル\UI\StaminaUI</Filter>
+    </ClCompile>
+    <ClCompile Include="number.cpp">
+      <Filter>ソース ファイル\UI\Number</Filter>
+    </ClCompile>
+    <ClCompile Include="score.cpp">
+      <Filter>ソース ファイル\UI\Score</Filter>
+    </ClCompile>
+    <ClCompile Include="time.cpp">
+      <Filter>ソース ファイル\UI\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="bullet.cpp">
+      <Filter>ソース ファイル\Original\3D\Billboard\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>ソース ファイル\Original\3D\Billboard\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="explosion.cpp">
+      <Filter>ソース ファイル\Original\3D\Billboard\Explosion</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>ソース ファイル\Original\3D\Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="editAll.cpp">
+      <Filter>ソース ファイル\Original\Edit</Filter>
+    </ClCompile>
+    <ClCompile Include="edit.cpp">
+      <Filter>ソース ファイル\Original\Edit\EditBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="bgEdit.cpp">
+      <Filter>ソース ファイル\Original\Edit\BgEdit</Filter>
+    </ClCompile>
+    <ClCompile Include="manager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="effect2D.cpp">
+      <Filter>ソース ファイル\Original\2D\2DObject\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="bg.cpp">
+      <Filter>ソース ファイル\Original\3D\Object3D\Bg</Filter>
+    </ClCompile>
+    <ClCompile Include="bgmulti.cpp">
+      <Filter>ソース ファイル\Original\2D\2DBg\BgMulti</Filter>
+    </ClCompile>
+    <ClCompile Include="bgmodel.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\BgModel</Filter>
+    </ClCompile>
+    <ClCompile Include="drum.cpp">
+      <Filter>ソース ファイル\Original\3D\Obstacle\Drum</Filter>
+    </ClCompile>
+    <ClCompile Include="hydrant.cpp">
+      <Filter>ソース ファイル\Original\3D\Obstacle\Hydrant</Filter>
+    </ClCompile>
+    <ClCompile Include="signpole.cpp">
+      <Filter>ソース ファイル\Original\3D\Obstacle\SignPole</Filter>
+    </ClCompile>
+    <ClCompile Include="woodbox.cpp">
+      <Filter>ソース ファイル\Original\3D\Obstacle\WoodBox</Filter>
+    </ClCompile>
+    <ClCompile Include="block.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\Block</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="field.cpp">
+      <Filter>ソース ファイル\Original\3D\Object3D\Field</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>ソース ファイル\Original\3D\Billboard\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="fraction.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\Fraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>ソース ファイル\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="goal.cpp">
+      <Filter>ソース ファイル\Original\3D\Object3D\Goal</Filter>
+    </ClCompile>
+    <ClCompile Include="goalUI.cpp">
+      <Filter>ソース ファイル\UI\GoalUI</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer.cpp">
+      <Filter>ソース ファイル\Original\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="object3Dfan.cpp">
+      <Filter>ソース ファイル\Original\3D\Object3DFan</Filter>
+    </ClCompile>
+    <ClCompile Include="obstacleEdit.cpp">
+      <Filter>ソース ファイル\Original\Edit\ObstacleEdit</Filter>
+    </ClCompile>
+    <ClCompile Include="dirtblock.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\Block\DirtBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="iceblock.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\Block\IceBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="rockblock.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\Block\RockBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="magmablock.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\Block\MagmaBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="playerAct.cpp">
+      <Filter>ソース ファイル\Original\3D\Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="cliffchecker.cpp">
+      <Filter>ソース ファイル\Original\3D\Object3D\CliffChecker</Filter>
+    </ClCompile>
+    <ClCompile Include="ripple.cpp">
+      <Filter>ソース ファイル\Original\3D\Object3D\Ripple</Filter>
+    </ClCompile>
+    <ClCompile Include="orbit.cpp">
+      <Filter>ソース ファイル\Original\3D\Mesh\meshOrbit</Filter>
+    </ClCompile>
+    <ClCompile Include="actionUI.cpp">
+      <Filter>ソース ファイル\UI\ActionUI</Filter>
+    </ClCompile>
+    <ClCompile Include="streetlamp.cpp">
+      <Filter>ソース ファイル\Original\3D\Obstacle\StreetLamp</Filter>
+    </ClCompile>
+    <ClCompile Include="streetpole.cpp">
+      <Filter>ソース ファイル\Original\3D\Obstacle\StreetPole</Filter>
+    </ClCompile>
+    <ClCompile Include="title.cpp">
+      <Filter>ソース ファイル\Title</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>ソース ファイル\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="logo.cpp">
+      <Filter>ソース ファイル\Logo</Filter>
+    </ClCompile>
+    <ClCompile Include="logo_mark.cpp">
+      <Filter>ソース ファイル\Logo\LogoMark</Filter>
+    </ClCompile>
+    <ClCompile Include="title_name.cpp">
+      <Filter>ソース ファイル\Title\TitleName</Filter>
+    </ClCompile>
+    <ClCompile Include="locus2D.cpp">
+      <Filter>ソース ファイル\Original\2D\2DLocus</Filter>
+    </ClCompile>
+    <ClCompile Include="title_select.cpp">
+      <Filter>ソース ファイル\Title\TitleSelect</Filter>
+    </ClCompile>
+    <ClCompile Include="fade.cpp">
+      <Filter>ソース ファイル\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="speedUI.cpp">
+      <Filter>ソース ファイル\UI\SpeedUI</Filter>
+    </ClCompile>
+    <ClCompile Include="result.cpp">
+      <Filter>ソース ファイル\Result</Filter>
+    </ClCompile>
+    <ClCompile Include="result_time.cpp">
+      <Filter>ソース ファイル\Result\ResultTime</Filter>
+    </ClCompile>
+    <ClCompile Include="result_score.cpp">
+      <Filter>ソース ファイル\Result\ResultScore</Filter>
+    </ClCompile>
+    <ClCompile Include="result_rank.cpp">
+      <Filter>ソース ファイル\Result\ResultRank</Filter>
+    </ClCompile>
+    <ClCompile Include="pause.cpp">
+      <Filter>ソース ファイル\Pause</Filter>
+    </ClCompile>
+    <ClCompile Include="particle2D.cpp">
+      <Filter>ソース ファイル\Original\2D\2DObject\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="item_generator.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\ItemGenerator</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking.cpp">
+      <Filter>ソース ファイル\Ranking</Filter>
+    </ClCompile>
+    <ClCompile Include="game_time.cpp">
+      <Filter>ソース ファイル\UI\Time\Game_Time</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking_time.cpp">
+      <Filter>ソース ファイル\Ranking\Ranking_Time</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking_score.cpp">
+      <Filter>ソース ファイル\Ranking\Ranking_Score</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking_precedence.cpp">
+      <Filter>ソース ファイル\Ranking\Ranking_Precedence</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking_scoredisp.cpp">
+      <Filter>ソース ファイル\Ranking\Ranking_ScoreDisp</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking_word.cpp">
+      <Filter>ソース ファイル\Ranking\Ranking_Word</Filter>
+    </ClCompile>
+    <ClCompile Include="new_record.cpp">
+      <Filter>ソース ファイル\Ranking\NewRecord</Filter>
+    </ClCompile>
+    <ClCompile Include="kick_enemy.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\Enemy\KickEnemy</Filter>
+    </ClCompile>
+    <ClCompile Include="shot_enemy.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\Enemy\ShotEnemy</Filter>
+    </ClCompile>
+    <ClCompile Include="sonic.cpp">
+      <Filter>ソース ファイル\Original\2D\2DObject\SonicEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="camera_range.cpp">
+      <Filter>ソース ファイル\CameraRange</Filter>
+    </ClCompile>
+    <ClCompile Include="cameraEdit.cpp">
+      <Filter>ソース ファイル\Original\Edit\StageCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="range_move.cpp">
+      <Filter>ソース ファイル\Original\Edit\RangeMove</Filter>
+    </ClCompile>
+    <ClCompile Include="aura.cpp">
+      <Filter>ソース ファイル\Original\3D\Billboard\Aura</Filter>
+    </ClCompile>
+    <ClCompile Include="announce.cpp">
+      <Filter>ソース ファイル\UI\Announce</Filter>
+    </ClCompile>
+    <ClCompile Include="praiseUI.cpp">
+      <Filter>ソース ファイル\UI\PraiseUI</Filter>
+    </ClCompile>
+    <ClCompile Include="countdown.cpp">
+      <Filter>ソース ファイル\UI\CountDown</Filter>
+    </ClCompile>
+    <ClCompile Include="combo.cpp">
+      <Filter>ソース ファイル\UI\Combo</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial.cpp">
+      <Filter>ソース ファイル\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="balloon.cpp">
+      <Filter>ソース ファイル\Tutorial\Balloon</Filter>
+    </ClCompile>
+    <ClCompile Include="game_player.cpp">
+      <Filter>ソース ファイル\Original\3D\Character\Player\GamePlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial_player.cpp">
+      <Filter>ソース ファイル\Original\3D\Character\Player\TutorialPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="donut2D.cpp">
+      <Filter>ソース ファイル\Original\2D\2DObject\2DDonut</Filter>
+    </ClCompile>
+    <ClCompile Include="skip_circle.cpp">
+      <Filter>ソース ファイル\Tutorial\SkipCircle</Filter>
+    </ClCompile>
+    <ClCompile Include="shadowSquare.cpp">
+      <Filter>ソース ファイル\Various\Shadow\ShadowSquare</Filter>
+    </ClCompile>
+    <ClCompile Include="balloonUI.cpp">
+      <Filter>ソース ファイル\Tutorial\2DBalloonUI</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial_speedUI.cpp">
+      <Filter>ソース ファイル\UI\SpeedUI\Tutorial_SpeedUI</Filter>
+    </ClCompile>
+    <ClCompile Include="game_speedUI.cpp">
+      <Filter>ソース ファイル\UI\SpeedUI\Game_SpeedUI</Filter>
+    </ClCompile>
+    <ClCompile Include="push_timing.cpp">
+      <Filter>ソース ファイル\Tutorial\PushTiming</Filter>
+    </ClCompile>
+    <ClCompile Include="game_staminaUI.cpp">
+      <Filter>ソース ファイル\UI\StaminaUI\Game_StaminaUI</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial_staminaUI.cpp">
+      <Filter>ソース ファイル\UI\StaminaUI\Tutorial_StaminaUI</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh_field.cpp">
+      <Filter>ソース ファイル\Original\3D\Mesh\MeshField</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh_wall.cpp">
+      <Filter>ソース ファイル\Original\3D\Mesh\MeshWall</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh_cylinder.cpp">
+      <Filter>ソース ファイル\Original\3D\Mesh\MeshCylinder</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh_dome.cpp">
+      <Filter>ソース ファイル\Original\3D\Mesh\MeshDome</Filter>
+    </ClCompile>
+    <ClCompile Include="skybox.cpp">
+      <Filter>ソース ファイル\Original\3D\Object3D\SkyBox</Filter>
+    </ClCompile>
+    <ClCompile Include="silhouette.cpp">
+      <Filter>ソース ファイル\Title\Silhouette</Filter>
+    </ClCompile>
+    <ClCompile Include="arrowsign.cpp">
+      <Filter>ソース ファイル\Original\3D\Model\ArrowSign</Filter>
+    </ClCompile>
+    <ClCompile Include="enter_skip.cpp">
+      <Filter>ソース ファイル\Tutorial\EnterSkip</Filter>
+    </ClCompile>
+    <ClCompile Include="game_goal.cpp">
+      <Filter>ソース ファイル\Original\3D\Object3D\Goal\GameGoal</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial_goal.cpp">
+      <Filter>ソース ファイル\Original\3D\Object3D\Goal\TutorialGoal</Filter>
+    </ClCompile>
+    <ClCompile Include="rubsmoke.cpp">
+      <Filter>ソース ファイル\Original\3D\Billboard\RubSmoke</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="camera.h">
+      <Filter>ソース ファイル\Various\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="collision.h">
+      <Filter>ソース ファイル\Various\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="collpolygon.h">
+      <Filter>ソース ファイル\Various\Collpolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="debugproc.h">
+      <Filter>ソース ファイル\Various\Debugproc</Filter>
+    </ClInclude>
+    <ClInclude Include="file.h">
+      <Filter>ソース ファイル\Various\File</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>ソース ファイル\Various\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>ソース ファイル\Various\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="motion.h">
+      <Filter>ソース ファイル\Various\Motion</Filter>
+    </ClInclude>
+    <ClInclude Include="precompile.h">
+      <Filter>ソース ファイル\Various\Precompile</Filter>
+    </ClInclude>
+    <ClInclude Include="shadowCircle.h">
+      <Filter>ソース ファイル\Various\Shadow\ShadowCircle</Filter>
+    </ClInclude>
+    <ClInclude Include="shadowModel.h">
+      <Filter>ソース ファイル\Various\Shadow\ShadowModel</Filter>
+    </ClInclude>
+    <ClInclude Include="sound.h">
+      <Filter>ソース ファイル\Various\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>ソース ファイル\Various\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="useful.h">
+      <Filter>ソース ファイル\Various\Useful</Filter>
+    </ClInclude>
+    <ClInclude Include="object2D.h">
+      <Filter>ソース ファイル\Original\2D\2DObject</Filter>
+    </ClInclude>
+    <ClInclude Include="animobject.h">
+      <Filter>ソース ファイル\Original\2D\2DAnim</Filter>
+    </ClInclude>
+    <ClInclude Include="scrollobject.h">
+      <Filter>ソース ファイル\Original\2D\2DScroll</Filter>
+    </ClInclude>
+    <ClInclude Include="character.h">
+      <Filter>ソース ファイル\Original\3D\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>ソース ファイル\Original\3D\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="object3D.h">
+      <Filter>ソース ファイル\Original\3D\Object3D</Filter>
+    </ClInclude>
+    <ClInclude Include="objectbillboard.h">
+      <Filter>ソース ファイル\Original\3D\Billboard</Filter>
+    </ClInclude>
+    <ClInclude Include="Objectmesh.h">
+      <Filter>ソース ファイル\Original\3D\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="objectX.h">
+      <Filter>ソース ファイル\Original\3D\ObjectX</Filter>
+    </ClInclude>
+    <ClInclude Include="obstacle.h">
+      <Filter>ソース ファイル\Original\3D\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="landUI.h">
+      <Filter>ソース ファイル\UI\LandUI</Filter>
+    </ClInclude>
+    <ClInclude Include="staminaUI.h">
+      <Filter>ソース ファイル\UI\StaminaUI</Filter>
+    </ClInclude>
+    <ClInclude Include="number.h">
+      <Filter>ソース ファイル\UI\Number</Filter>
+    </ClInclude>
+    <ClInclude Include="score.h">
+      <Filter>ソース ファイル\UI\Score</Filter>
+    </ClInclude>
+    <ClInclude Include="time.h">
+      <Filter>ソース ファイル\UI\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>ソース ファイル\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet.h">
+      <Filter>ソース ファイル\Original\3D\Billboard\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>ソース ファイル\Original\3D\Billboard\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="explosion.h">
+      <Filter>ソース ファイル\Original\3D\Billboard\Explosion</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>ソース ファイル\Original\3D\Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="editAll.h">
+      <Filter>ソース ファイル\Original\Edit</Filter>
+    </ClInclude>
+    <ClInclude Include="edit.h">
+      <Filter>ソース ファイル\Original\Edit\EditBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="bgEdit.h">
+      <Filter>ソース ファイル\Original\Edit\BgEdit</Filter>
+    </ClInclude>
+    <ClInclude Include="manager.h">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="effect2D.h">
+      <Filter>ソース ファイル\Original\2D\2DObject\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="bg.h">
+      <Filter>ソース ファイル\Original\3D\Object3D\Bg</Filter>
+    </ClInclude>
+    <ClInclude Include="bgmulti.h">
+      <Filter>ソース ファイル\Original\2D\2DBg\BgMulti</Filter>
+    </ClInclude>
+    <ClInclude Include="bgmodel.h">
+      <Filter>ソース ファイル\Original\3D\Model\BgModel</Filter>
+    </ClInclude>
+    <ClInclude Include="drum.h">
+      <Filter>ソース ファイル\Original\3D\Obstacle\Drum</Filter>
+    </ClInclude>
+    <ClInclude Include="hydrant.h">
+      <Filter>ソース ファイル\Original\3D\Obstacle\Hydrant</Filter>
+    </ClInclude>
+    <ClInclude Include="signpole.h">
+      <Filter>ソース ファイル\Original\3D\Obstacle\SignPole</Filter>
+    </ClInclude>
+    <ClInclude Include="woodbox.h">
+      <Filter>ソース ファイル\Original\3D\Obstacle\WoodBox</Filter>
+    </ClInclude>
+    <ClInclude Include="block.h">
+      <Filter>ソース ファイル\Original\3D\Model\Block</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>ソース ファイル\Original\3D\Model\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="field.h">
+      <Filter>ソース ファイル\Original\3D\Object3D\Field</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>ソース ファイル\Original\3D\Billboard\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="fraction.h">
+      <Filter>ソース ファイル\Original\3D\Model\Fraction</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>ソース ファイル\Original\3D\Model\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>ソース ファイル\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="goal.h">
+      <Filter>ソース ファイル\Original\3D\Object3D\Goal</Filter>
+    </ClInclude>
+    <ClInclude Include="goalUI.h">
+      <Filter>ソース ファイル\UI\GoalUI</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer.h">
+      <Filter>ソース ファイル\Original\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="object3Dfan.h">
+      <Filter>ソース ファイル\Original\3D\Object3DFan</Filter>
+    </ClInclude>
+    <ClInclude Include="obstacleEdit.h">
+      <Filter>ソース ファイル\Original\Edit\ObstacleEdit</Filter>
+    </ClInclude>
+    <ClInclude Include="dirtblock.h">
+      <Filter>ソース ファイル\Original\3D\Model\Block\DirtBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="iceblock.h">
+      <Filter>ソース ファイル\Original\3D\Model\Block\IceBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="rockblock.h">
+      <Filter>ソース ファイル\Original\3D\Model\Block\RockBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="magmablock.h">
+      <Filter>ソース ファイル\Original\3D\Model\Block\MagmaBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="playerAct.h">
+      <Filter>ソース ファイル\Original\3D\Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="cliffchecker.h">
+      <Filter>ソース ファイル\Original\3D\Object3D\CliffChecker</Filter>
+    </ClInclude>
+    <ClInclude Include="ripple.h">
+      <Filter>ソース ファイル\Original\3D\Object3D\Ripple</Filter>
+    </ClInclude>
+    <ClInclude Include="orbit.h">
+      <Filter>ソース ファイル\Original\3D\Mesh\meshOrbit</Filter>
+    </ClInclude>
+    <ClInclude Include="actionUI.h">
+      <Filter>ソース ファイル\UI\ActionUI</Filter>
+    </ClInclude>
+    <ClInclude Include="streetpole.h">
+      <Filter>ソース ファイル\Original\3D\Obstacle\StreetPole</Filter>
+    </ClInclude>
+    <ClInclude Include="title.h">
+      <Filter>ソース ファイル\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>ソース ファイル\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="logo.h">
+      <Filter>ソース ファイル\Logo</Filter>
+    </ClInclude>
+    <ClInclude Include="logo_mark.h">
+      <Filter>ソース ファイル\Logo\LogoMark</Filter>
+    </ClInclude>
+    <ClInclude Include="title_name.h">
+      <Filter>ソース ファイル\Title\TitleName</Filter>
+    </ClInclude>
+    <ClInclude Include="locus2D.h">
+      <Filter>ソース ファイル\Original\2D\2DLocus</Filter>
+    </ClInclude>
+    <ClInclude Include="title_select.h">
+      <Filter>ソース ファイル\Title\TitleSelect</Filter>
+    </ClInclude>
+    <ClInclude Include="fade.h">
+      <Filter>ソース ファイル\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="speedUI.h">
+      <Filter>ソース ファイル\UI\SpeedUI</Filter>
+    </ClInclude>
+    <ClInclude Include="result.h">
+      <Filter>ソース ファイル\Result</Filter>
+    </ClInclude>
+    <ClInclude Include="result_time.h">
+      <Filter>ソース ファイル\Result\ResultTime</Filter>
+    </ClInclude>
+    <ClInclude Include="result_score.h">
+      <Filter>ソース ファイル\Result\ResultScore</Filter>
+    </ClInclude>
+    <ClInclude Include="result_rank.h">
+      <Filter>ソース ファイル\Result\ResultRank</Filter>
+    </ClInclude>
+    <ClInclude Include="pause.h">
+      <Filter>ソース ファイル\Pause</Filter>
+    </ClInclude>
+    <ClInclude Include="particle2D.h">
+      <Filter>ソース ファイル\Original\2D\2DObject\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="item_generator.h">
+      <Filter>ソース ファイル\Original\3D\Model\ItemGenerator</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking.h">
+      <Filter>ソース ファイル\Ranking</Filter>
+    </ClInclude>
+    <ClInclude Include="game_time.h">
+      <Filter>ソース ファイル\UI\Time\Game_Time</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking_time.h">
+      <Filter>ソース ファイル\Ranking\Ranking_Time</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking_score.h">
+      <Filter>ソース ファイル\Ranking\Ranking_Score</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking_precedence.h">
+      <Filter>ソース ファイル\Ranking\Ranking_Precedence</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking_scoredisp.h">
+      <Filter>ソース ファイル\Ranking\Ranking_ScoreDisp</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking_word.h">
+      <Filter>ソース ファイル\Ranking\Ranking_Word</Filter>
+    </ClInclude>
+    <ClInclude Include="new_record.h">
+      <Filter>ソース ファイル\Ranking\NewRecord</Filter>
+    </ClInclude>
+    <ClInclude Include="shot_enemy.h">
+      <Filter>ソース ファイル\Original\3D\Model\Enemy\ShotEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="kick_enemy.h">
+      <Filter>ソース ファイル\Original\3D\Model\Enemy\KickEnemy</Filter>
+    </ClInclude>
+    <ClInclude Include="sonic.h">
+      <Filter>ソース ファイル\Original\2D\2DObject\SonicEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_range.h">
+      <Filter>ソース ファイル\CameraRange</Filter>
+    </ClInclude>
+    <ClInclude Include="cameraEdit.h">
+      <Filter>ソース ファイル\Original\Edit\StageCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="range_move.h">
+      <Filter>ソース ファイル\Original\Edit\RangeMove</Filter>
+    </ClInclude>
+    <ClInclude Include="aura.h">
+      <Filter>ソース ファイル\Original\3D\Billboard\Aura</Filter>
+    </ClInclude>
+    <ClInclude Include="streetlamp.h">
+      <Filter>ソース ファイル\Original\3D\Obstacle\StreetLamp</Filter>
+    </ClInclude>
+    <ClInclude Include="announce.h">
+      <Filter>ソース ファイル\UI\Announce</Filter>
+    </ClInclude>
+    <ClInclude Include="praiseUI.h">
+      <Filter>ソース ファイル\UI\PraiseUI</Filter>
+    </ClInclude>
+    <ClInclude Include="countdown.h">
+      <Filter>ソース ファイル\UI\CountDown</Filter>
+    </ClInclude>
+    <ClInclude Include="combo.h">
+      <Filter>ソース ファイル\UI\Combo</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial.h">
+      <Filter>ソース ファイル\Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="balloon.h">
+      <Filter>ソース ファイル\Tutorial\Balloon</Filter>
+    </ClInclude>
+    <ClInclude Include="game_player.h">
+      <Filter>ソース ファイル\Original\3D\Character\Player\GamePlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial_player.h">
+      <Filter>ソース ファイル\Original\3D\Character\Player\TutorialPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="donut2D.h">
+      <Filter>ソース ファイル\Original\2D\2DObject\2DDonut</Filter>
+    </ClInclude>
+    <ClInclude Include="skip_circle.h">
+      <Filter>ソース ファイル\Tutorial\SkipCircle</Filter>
+    </ClInclude>
+    <ClInclude Include="shadowSquare.h">
+      <Filter>ソース ファイル\Various\Shadow\ShadowSquare</Filter>
+    </ClInclude>
+    <ClInclude Include="balloonUI.h">
+      <Filter>ソース ファイル\Tutorial\2DBalloonUI</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial_speedUI.h">
+      <Filter>ソース ファイル\UI\SpeedUI\Tutorial_SpeedUI</Filter>
+    </ClInclude>
+    <ClInclude Include="game_speedUI.h">
+      <Filter>ソース ファイル\UI\SpeedUI\Game_SpeedUI</Filter>
+    </ClInclude>
+    <ClInclude Include="push_timing.h">
+      <Filter>ソース ファイル\Tutorial\PushTiming</Filter>
+    </ClInclude>
+    <ClInclude Include="game_staminaUI.h">
+      <Filter>ソース ファイル\UI\StaminaUI\Game_StaminaUI</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial_staminaUI.h">
+      <Filter>ソース ファイル\UI\StaminaUI\Tutorial_StaminaUI</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh_field.h">
+      <Filter>ソース ファイル\Original\3D\Mesh\MeshField</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh_wall.h">
+      <Filter>ソース ファイル\Original\3D\Mesh\MeshWall</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh_cylinder.h">
+      <Filter>ソース ファイル\Original\3D\Mesh\MeshCylinder</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh_dome.h">
+      <Filter>ソース ファイル\Original\3D\Mesh\MeshDome</Filter>
+    </ClInclude>
+    <ClInclude Include="skybox.h">
+      <Filter>ソース ファイル\Original\3D\Object3D\SkyBox</Filter>
+    </ClInclude>
+    <ClInclude Include="silhouette.h">
+      <Filter>ソース ファイル\Title\Silhouette</Filter>
+    </ClInclude>
+    <ClInclude Include="arrowsign.h">
+      <Filter>ソース ファイル\Original\3D\Model\ArrowSign</Filter>
+    </ClInclude>
+    <ClInclude Include="enter_skip.h">
+      <Filter>ソース ファイル\Tutorial\EnterSkip</Filter>
+    </ClInclude>
+    <ClInclude Include="game_goal.h">
+      <Filter>ソース ファイル\Original\3D\Object3D\Goal\GameGoal</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial_goal.h">
+      <Filter>ソース ファイル\Original\3D\Object3D\Goal\TutorialGoal</Filter>
+    </ClInclude>
+    <ClInclude Include="rubsmoke.h">
+      <Filter>ソース ファイル\Original\3D\Billboard\RubSmoke</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
