@@ -263,6 +263,107 @@ void CHierarchy::Draw(D3DXCOLOR col)
 }
 
 //========================
+// 描画処理(複数色処理)
+//========================
+void CHierarchy::Draw(D3DXMATERIAL* pMat)
+{
+	// 変数を宣言
+	D3DXMATRIX   mtxScale, mtxRot, mtxTrans;	// 計算用マトリックス
+	D3DMATERIAL9 matDef;						// 現在のマテリアル保存用
+
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = CManager::Get()->GetRenderer()->GetDevice();	// デバイスへのポインタ
+	D3DXMATERIAL* pMatGet;						// マテリアルデータへのポインタ
+	D3DXMATERIAL     colMat;					// 描画用マテリアル
+
+	D3DXMATRIX mtxRotModel, mtxTransModel;		// 計算用マトリックス
+	D3DXMATRIX mtxParent;						// 親のマトリックス
+
+	// パーツのワールドマトリックスの初期化
+	D3DXMatrixIdentity(&m_mtxWorld);
+
+	// 拡大率を反映
+	D3DXMatrixScaling(&mtxScale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
+
+	// 向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
+	// 位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+
+	// パーツの「親のマトリックス」を設定
+	if (m_apParent != nullptr)
+	{ // 親モデルがある場合
+
+		// 親モデルのインデックスを指定する
+		mtxParent = m_apParent->m_mtxWorld;
+	}
+	else
+	{ // 親モデルがない場合
+
+		// 親のマトリックスを取得する
+		pDevice->GetTransform(D3DTS_WORLD, &mtxParent);
+	}
+
+	// 算出した「パーツのワールドマトリックス」と「親のマトリックス」を掛け合わせる
+	D3DXMatrixMultiply
+	(
+		&m_mtxWorld,
+		&m_mtxWorld,
+		&mtxParent
+	);
+
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+
+	// 現在のマテリアルを取得
+	pDevice->GetMaterial(&matDef);
+
+	// マテリアルデータへのポインタを取得
+	pMatGet = (D3DXMATERIAL*)m_XFileData.pBuffMat->GetBufferPointer();
+
+	for (int nCntMat = 0; nCntMat < (int)m_XFileData.dwNumMat; nCntMat++)
+	{ // マテリアルの数分繰り返す
+
+		// 構造体の要素をクリア
+		ZeroMemory(&colMat, sizeof(D3DXMATERIAL));
+
+		// マテリアルデータのコピーに代入する
+		colMat = pMatGet[nCntMat];
+
+		// 透明度を代入する
+		colMat.MatD3D.Diffuse = pMat[nCntMat].MatD3D.Diffuse;
+		colMat.MatD3D.Ambient = pMat[nCntMat].MatD3D.Ambient;
+		colMat.MatD3D.Emissive = pMat[nCntMat].MatD3D.Emissive;
+
+		// マテリアルの設定
+		pDevice->SetMaterial(&colMat.MatD3D);
+
+		// テクスチャの設定
+		pDevice->SetTexture(0, CManager::Get()->GetTexture()->GetAddress(m_XFileData.m_nTexIdx[nCntMat]));
+
+		if (m_scale != NONE_SCALE)
+		{ // 拡大率が変更されている場合
+
+			// 頂点法線の自動正規化を有効にする
+			pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+		}
+
+		// モデルの描画
+		m_XFileData.pMesh->DrawSubset(nCntMat);
+
+		// 頂点法線の自動正規化を無効にする
+		pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
+	}
+
+	// 保存していたマテリアルを戻す
+	pDevice->SetMaterial(&matDef);
+}
+
+//========================
 // モデル影の描画処理
 //========================
 void CHierarchy::DrawShadow(void)
@@ -652,6 +753,49 @@ int CHierarchy::GetParentIdx(void) const
 }
 
 //========================
+// マテリアル情報の取得処理
+//========================
+D3DXMATERIAL CHierarchy::GetMaterial(const int nCnt)
+{
+	// ポインタを宣言
+	D3DXMATERIAL* pMat;						// マテリアルデータへのポインタ
+
+	// マテリアルデータへのポインタを取得
+	pMat = (D3DXMATERIAL*)m_XFileData.pBuffMat->GetBufferPointer();
+
+	if (nCnt < (int)(m_XFileData.dwNumMat))
+	{ // 番号が最大数未満の場合
+
+		// マテリアルを返す
+		return pMat[nCnt];
+	}
+	else
+	{ // 上記以外
+
+		// 停止
+		assert(false);
+
+		// 予備のマテリアルを返す
+		return pMat[0];
+	}
+}
+
+//========================
+// マテリアル情報の取得処理
+//========================
+D3DXMATERIAL* CHierarchy::GetMaterialPointer(void)
+{
+	// ポインタを宣言
+	D3DXMATERIAL* pMat;						// マテリアルデータへのポインタ
+
+	// マテリアルデータへのポインタを取得
+	pMat = (D3DXMATERIAL*)m_XFileData.pBuffMat->GetBufferPointer();
+
+	// 予備のマテリアルを返す
+	return pMat;
+}
+
+//========================
 // 生成処理
 //========================
 CHierarchy* CHierarchy::Create(void)
@@ -900,7 +1044,7 @@ void CCharacter::DrawShadow(void)
 //========================
 // 描画処理(複数色)
 //========================
-void CCharacter::Draw(D3DXCOLOR* col)
+void CCharacter::Draw(D3DXMATERIAL** pMat)
 {
 	// 変数を宣言
 	D3DXMATRIX   mtxScale, mtxRot, mtxTrans;	// 計算用マトリックス
@@ -930,7 +1074,7 @@ void CCharacter::Draw(D3DXCOLOR* col)
 	for (int nCnt = 0; nCnt < m_nNumModel; nCnt++)
 	{
 		// 描画処理
-		m_apModel[nCnt]->Draw(*col);
+		m_apModel[nCnt]->Draw(pMat[nCnt]);
 	}
 }
 

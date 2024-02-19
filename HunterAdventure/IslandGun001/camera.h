@@ -24,6 +24,8 @@ public:			// 誰でもアクセス出来る
 	{
 		TYPE_NONE = 0,		// 通常状態
 		TYPE_VIBRATE,		// 振動状態
+		TYPE_START,			// スタート状態
+		TYPE_PLAYERAPPEAR,	// プレイヤー登場状態
 		TYPE_BOSSCLOSER,	// ボス寄り状態
 		TYPE_BOSSHOWLING,	// ボス雄たけび状態
 		TYPE_MAX			// この列挙型の総数
@@ -97,6 +99,8 @@ private:		// 自分だけアクセス出来る
 
 	void Chase(void);				// 追跡処理
 	void Vibrate(void);				// 振動処理
+	void Start(void);				// スタート処理
+	void PlayerAppear(void);		// プレイヤー登場処理
 	void BossCloser(void);			// ボス寄り処理
 	void BossHowling(void);			// ボス雄たけび処理
 	void PosSet(void);				// 位置の設定処理

@@ -44,7 +44,7 @@ HRESULT CMeshCylinder::Init(void)
 	}
 
 	// 頂点情報の設定処理
-	SetVertex();
+	SetVertexAll();
 
 	// インデックスの設定処理
 	SetIndex(GetVtx().nHeight, GetVtx().nWidth);
@@ -107,11 +107,11 @@ void CMeshCylinder::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, cons
 }
 
 //================================
-// 頂点の設定処理
+// 頂点の全設定処理
 //================================
-void CMeshCylinder::SetVertex(void)
+void CMeshCylinder::SetVertexAll(void)
 {
-	VERTEX_3D *pVtx;		// 頂点情報へのポインタ
+	VERTEX_3D* pVtx;		// 頂点情報へのポインタ
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();	// 頂点バッファ
 	SGrid Divi = GetDivi();	// 分割数
 	SGrid vtx = GetVtx();	// 頂点数
@@ -157,6 +157,119 @@ void CMeshCylinder::SetVertex(void)
 		// 頂点バッファをアンロックする
 		pVtxBuff->Unlock();
 	}
+}
+
+//================================
+// 頂点の設定処理
+//================================
+void CMeshCylinder::SetVertex(void)
+{
+	VERTEX_3D *pVtx;		// 頂点情報へのポインタ
+	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();	// 頂点バッファ
+	SGrid Divi = GetDivi();	// 分割数
+	SGrid vtx = GetVtx();	// 頂点数
+	float fAngle;			// 角度算出用変数
+
+	if (pVtxBuff != nullptr)
+	{ // 頂点バッファが NULL じゃない場合
+
+		// 頂点バッファをロックし、頂点情報へのポインタを取得
+		pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+		for (int nCntHeight = 0; nCntHeight < vtx.nHeight; nCntHeight++)
+		{
+			for (int nCntCircum = 0; nCntCircum < vtx.nWidth; nCntCircum++)
+			{
+				// 角度を算出する
+				fAngle = D3DX_PI * (nCntCircum * (float)(1.0f / (Divi.nWidth / 2)));
+
+				// 角度の正規化
+				useful::RotNormalize(&fAngle);
+
+				//頂点座標の設定
+				pVtx[0].pos = D3DXVECTOR3
+				(
+					(-sinf(fAngle) * m_fCircumSize),
+					m_fHeightSize - (m_fHeightSizeDivi * nCntHeight),
+					(-cosf(fAngle) * m_fCircumSize)
+				);
+
+				pVtx++;			// 頂点データを進める
+			}
+		}
+
+		// 頂点バッファをアンロックする
+		pVtxBuff->Unlock();
+	}
+}
+
+//================================
+// テクスチャ座標の設定処理
+//================================
+void CMeshCylinder::SetVtxTexture(const float fHeight)
+{
+	VERTEX_3D* pVtx;		// 頂点情報へのポインタ
+	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();	// 頂点バッファ
+	SGrid Divi = GetDivi();	// 分割数
+	SGrid vtx = GetVtx();	// 頂点数
+
+	if (pVtxBuff != nullptr)
+	{ // 頂点バッファが NULL じゃない場合
+
+		// 頂点バッファをロックし、頂点情報へのポインタを取得
+		pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+		for (int nCntHeight = 0; nCntHeight < vtx.nHeight; nCntHeight++)
+		{
+			for (int nCntCircum = 0; nCntCircum < vtx.nWidth; nCntCircum++)
+			{
+				//テクスチャ座標の設定
+				pVtx[0].tex = D3DXVECTOR2(((float)(1.0f / Divi.nWidth) * nCntCircum), ((float)(fHeight / Divi.nHeight) * nCntHeight));
+
+				pVtx++;			// 頂点データを進める
+			}
+		}
+
+		// 頂点バッファをアンロックする
+		pVtxBuff->Unlock();
+	}
+}
+
+//================================
+// 円周の設定処理
+//================================
+void CMeshCylinder::SetCircum(const float fCircum)
+{
+	// 円周のサイズを設定する
+	m_fCircumSize = fCircum;
+}
+
+//================================
+// 円周の取得処理
+//================================
+float CMeshCylinder::GetCircum(void) const
+{
+	// 円周のサイズを返す
+	return m_fCircumSize;
+}
+
+//================================
+// 高さの設定処理
+//================================
+void CMeshCylinder::SetHeight(const float fHeight)
+{
+	// 高さを設定する
+	m_fHeightSize = fHeight;
+	m_fHeightSizeDivi = fHeight / (float)GetDivi().nHeight;
+}
+
+//================================
+// 高さの取得処理
+//================================
+float CMeshCylinder::GetHeight(void) const
+{
+	// 高さを返す
+	return m_fHeightSize;
 }
 
 //================================

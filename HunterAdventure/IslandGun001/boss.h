@@ -16,8 +16,10 @@
 //-----------------------------------
 // 前方宣言
 //-----------------------------------
-class CMotion;		// モーション
-class CBossState;	// ボスの状態
+class CMotion;			// モーション
+class CBossState;		// ボスの状態
+class CBossLifeUI;		// ボスの体力UI
+class CBossCollision;	// ボスの当たり判定
 
 //-----------------------------------
 // クラス定義(CBoss)
@@ -36,7 +38,19 @@ public:					// 誰でもアクセスできる
 		MOTIONTYPE_HOWLING,			// 雄たけびモーション
 		MOTIONTYPE_FLYING,			// 飛行モーション
 		MOTIONTYPE_CHARGE,			// チャージモーション
+		MOTIONTYPE_DOWN,			// ダウンモーション
 		MOTIONTYPE_MAX				// この列挙型の総数
+	};
+
+	// 弱点のパーツ
+	enum WEAKPART
+	{
+		WEAK_BODY = 0,				// 体
+		WEAK_RFSHIN,				// 右前脛
+		WEAK_LFSHIN,				// 左前脛
+		WEAK_RBSHIN,				// 右後ろ脛
+		WEAK_LBSHIN,				// 左後ろ脛
+		WEAK_MAX					// この列挙型の総数
 	};
 
 	CBoss();		// コンストラクタ
@@ -48,13 +62,19 @@ public:					// 誰でもアクセスできる
 	void Update(void) override;		// 更新処理
 	void Draw(void) override;		// 描画処理
 
-	void Hit(void);					// ヒット処理
+	void Hit(const int nDamage);	// ヒット処理
+	void BarrierBreak(const D3DXVECTOR3& pos, const int nPart);			// バリア破壊処理
+	void BarrierHit(const D3DXVECTOR3& pos, const int nPart, const int nCntPart);		// バリアのヒット処理
+	void StunRecovery(void);		// 気絶回復処理
+
 	void SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);		// 情報の設定処理
-	bool ElevationCollision(void);			// 起伏地面との当たり判定
-	void ChangeState(CBossState* pNext);	// 状態の遷移処理
+
+	bool ElevationCollision(void);					// 起伏地面との当たり判定
+	void ChangeState(CBossState* pNext);			// 状態の遷移処理
 
 	// セット・ゲット関係
 	CMotion* GetMotion(void);		// モーションの取得処理
+	CBossCollision* GetColl(const int nIdx);		// 当たり判定の取得処理
 
 	// 静的メンバ関数
 	static CBoss* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);		// 生成処理
@@ -66,6 +86,13 @@ private:				// 自分だけアクセスできる
 	// メンバ変数
 	CMotion* m_pMotion;		// モーションの情報
 	CBossState* m_pState;	// 状態の情報
+	CBossLifeUI* m_pLifeUI;	// 体力UIの情報
+	CBossCollision* m_apColl[MAX_PARTS];	// 当たり判定の球
+	D3DXMATERIAL* m_apMatCopy[MAX_PARTS];	// マテリアルのコピー
+
+	int m_aWeakPointLife[WEAK_MAX];			// 弱点のライフ
+	int m_nLife;			// 体力
+	bool m_bDown;			// ダウン状況
 
 	// 静的メンバ変数
 	static CListManager<CBoss*> m_list;		// リスト

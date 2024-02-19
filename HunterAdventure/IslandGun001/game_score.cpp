@@ -14,6 +14,7 @@
 #include "useful.h"
 
 #include "object2D.h"
+#include "game.h"
 
 //--------------------------------------------
 // 定数定義
@@ -81,6 +82,9 @@ void CGameScore::Uninit(void)
 
 	// 終了処理
 	CScore::Uninit();
+
+	// スコアのNULL化処理
+	CGame::DeleteGameScore();
 }
 
 //========================

@@ -20,6 +20,7 @@
 #include "block.h"
 #include "bang_flower.h"
 #include "wall.h"
+#include "boss.h"
 
 //--------------------------------------------
 // マクロ定義
@@ -33,6 +34,7 @@
 #define BLOCK_TXT			"data\\TXT\\Block.txt"			// ブロックのテキスト
 #define BANGFLOWER_TXT		"data\\TXT\\BangFlower.txt"		// 爆弾花のテキスト
 #define WALL_TXT			"data\\TXT\\Wall.txt"			// 壁のテキスト
+#define BOSSCOLL_TXT		"data\\TXT\\BossColl.txt"		// ボスの当たり判定のテキスト
 
 #define GOLDBONE_NUM		(3)		// 金の骨の数
 
@@ -54,6 +56,18 @@ CFile::CFile()
 	for (int nCntRank = 0; nCntRank < MAX_RANKING; nCntRank++)
 	{
 		m_RankingInfo.aRank[nCntRank] = 0;				// ランキングの値
+	}
+
+	for (int nCntBoss = 0; nCntBoss < MAX_PARTS; nCntBoss++)
+	{
+		for (int nCntColl = 0; nCntColl < CBossCollision::MAX_COLLISION; nCntColl++)
+		{
+			m_BossCollFile.aFile[nCntBoss].aBase[nCntColl].offset = NONE_D3DXVECTOR3;
+			m_BossCollFile.aFile[nCntBoss].aBase[nCntColl].fRadius = 0.0f;
+			m_BossCollFile.aFile[nCntBoss].aBase[nCntColl].bWeakness = false;
+		}
+
+		m_BossCollFile.aFile[nCntBoss].nNum = 0;
 	}
 
 	for (int nCntFile = 0; nCntFile < MAX_FILE_DATA; nCntFile++)
@@ -99,6 +113,7 @@ CFile::CFile()
 	m_BlockFile.nNumData = 0;			// ブロックの情報
 	m_BangFlowerFile.nNumData = 0;		// 爆弾花の情報
 	m_WallFile.nNumData = 0;			// 壁の情報
+	m_BossCollFile.nNumData = 0;		// ボスの当たり判定の情報
 
 	// 成功状況をクリアする
 	m_RankingInfo.bSuccess = false;		// ランキング
@@ -110,6 +125,7 @@ CFile::CFile()
 	m_BlockFile.bSuccess = false;		// ブロックの情報
 	m_BangFlowerFile.bSuccess = false;	// 爆弾花の情報
 	m_WallFile.bSuccess = false;		// 壁の情報
+	m_BossCollFile.bSuccess = false;	// ボスの当たり判定の情報
 }
 
 //===========================================
@@ -258,6 +274,17 @@ HRESULT CFile::Load(const TYPE type)
 
 		// 壁のロード処理
 		if (FAILED(LoadWall()))
+		{ // 失敗した場合
+
+			// 失敗を返す
+			return E_FAIL;
+		}
+
+		break;
+
+	case CFile::TYPE_BOSSCOLL:
+
+		if (FAILED(LoadBossColl()))
 		{ // 失敗した場合
 
 			// 失敗を返す
@@ -512,6 +539,35 @@ void CFile::SetWall(void)
 }
 
 //===========================================
+// ボスの当たり判定の設定処理
+//===========================================
+void CFile::SetBossColl(CBossCollision** pColl)
+{
+	if (m_BossCollFile.bSuccess == true)
+	{ // ボスの当たり判定が読み込めた場合
+
+		for (int nCntPart = 0; nCntPart < m_BossCollFile.nNumData; nCntPart++)
+		{
+			// 当たり判定を生成
+			pColl[nCntPart] = CBossCollision::Create(m_BossCollFile.aFile[nCntPart].nNum);
+
+			for (int nCntColl = 0; nCntColl < m_BossCollFile.aFile[nCntPart].nNum; nCntColl++)
+			{
+				pColl[nCntPart]->SetCollOffset(m_BossCollFile.aFile[nCntPart].aBase[nCntColl].offset, nCntColl);
+				pColl[nCntPart]->SetRadius(m_BossCollFile.aFile[nCntPart].aBase[nCntColl].fRadius, nCntColl);
+				pColl[nCntPart]->SetEnableWeakness(m_BossCollFile.aFile[nCntPart].aBase[nCntColl].bWeakness, nCntColl);
+			}
+		}
+	}
+	else
+	{ // 上記以外
+
+		// 停止
+		assert(false);
+	}
+}
+
+//===========================================
 // ファイルの生成処理
 //===========================================
 CFile* CFile::Create(void)
@@ -574,6 +630,18 @@ HRESULT CFile::Init(void)
 		m_RankingInfo.aRank[nCntRank] = 0;				// ランキングの値
 	}
 
+	for (int nCntBoss = 0; nCntBoss < MAX_PARTS; nCntBoss++)
+	{
+		for (int nCntColl = 0; nCntColl < CBossCollision::MAX_COLLISION; nCntColl++)
+		{
+			m_BossCollFile.aFile[nCntBoss].aBase[nCntColl].offset = NONE_D3DXVECTOR3;
+			m_BossCollFile.aFile[nCntBoss].aBase[nCntColl].fRadius = 0.0f;
+			m_BossCollFile.aFile[nCntBoss].aBase[nCntColl].bWeakness = false;
+		}
+
+		m_BossCollFile.aFile[nCntBoss].nNum = 0;
+	}
+
 	for (int nCntFile = 0; nCntFile < MAX_FILE_DATA; nCntFile++)
 	{
 		m_EnemyFile.aFile[nCntFile].pos = NONE_D3DXVECTOR3;
@@ -596,6 +664,11 @@ HRESULT CFile::Init(void)
 
 		m_BangFlowerFile.aFile[nCntFile].pos = NONE_D3DXVECTOR3;
 		m_BangFlowerFile.aFile[nCntFile].rot = NONE_D3DXVECTOR3;
+
+		m_WallFile.aFile[nCntFile].pos = NONE_D3DXVECTOR3;
+		m_WallFile.aFile[nCntFile].scale = NONE_D3DXVECTOR3;
+		m_WallFile.aFile[nCntFile].nType = 0;
+		m_WallFile.aFile[nCntFile].nRotType = 0;
 	}
 
 	for (int nCntBone = 0; nCntBone < GOLDBONE_NUM; nCntBone++)
@@ -611,6 +684,8 @@ HRESULT CFile::Init(void)
 	m_RockFile.nNumData = 0;			// 岩の情報
 	m_BlockFile.nNumData = 0;			// ブロックの情報
 	m_BangFlowerFile.nNumData = 0;		// 爆弾花の情報
+	m_WallFile.nNumData = 0;			// 壁の情報
+	m_BossCollFile.nNumData = 0;		// ボスの当たり判定の情報
 
 	// 成功状況をクリアする
 	m_RankingInfo.bSuccess = false;		// ランキング
@@ -621,6 +696,8 @@ HRESULT CFile::Init(void)
 	m_RockFile.bSuccess = false;		// 岩の情報
 	m_BlockFile.bSuccess = false;		// ブロックの情報
 	m_BangFlowerFile.bSuccess = false;	// 爆弾花の情報
+	m_WallFile.bSuccess = false;		// 壁の情報
+	m_BossCollFile.bSuccess = false;	// ボスの当たり判定の情報
 
 	// 成功を返す
 	return S_OK;
@@ -1383,6 +1460,113 @@ HRESULT CFile::LoadWall(void)
 
 		// 成功状況を true にする
 		m_WallFile.bSuccess = true;
+	}
+	else
+	{ // ファイルが開けなかった場合
+
+		// 停止
+		assert(false);
+
+		// 失敗を返す
+		return E_FAIL;
+	}
+
+	// 成功を返す
+	return S_OK;
+}
+
+//===========================================
+// ボスの当たり判定のロード処理
+//===========================================
+HRESULT CFile::LoadBossColl(void)
+{
+	// 変数を宣言
+	int nEnd;							// テキスト読み込み終了の確認用
+	char aString[MAX_STRING];			// テキストの文字列の代入用
+	m_BossCollFile.nNumData = 0;		// 総数
+	m_BossCollFile.bSuccess = false;	// 成功状況
+
+	// ポインタを宣言
+	FILE* pFile;						// ファイルポインタ
+
+	// ファイルを読み込み形式で開く
+	pFile = fopen(BOSSCOLL_TXT, "r");
+
+	if (pFile != nullptr)
+	{ // ファイルが開けた場合
+
+		do
+		{ // 読み込んだ文字列が EOF ではない場合ループ
+
+			// ファイルから文字列を読み込む
+			nEnd = fscanf(pFile, "%s", &aString[0]);	// テキストを読み込みきったら EOF を返す
+
+			if (strcmp(&aString[0], "NUM_MODEL") == 0)
+			{ // 読み込んだ文字列が NUM_MODEL の場合
+
+				fscanf(pFile, "%s", &aString[0]);				// = を読み込む (不要)
+				fscanf(pFile, "%d", &m_BossCollFile.nNumData);	// 位置を読み込む
+
+				for (int nCnt = 0; nCnt < m_BossCollFile.nNumData; nCnt++)
+				{
+					// ファイルから文字列を読み込む
+					nEnd = fscanf(pFile, "%s", &aString[0]);	// テキストを読み込みきったら EOF を返す
+
+					if (strcmp(&aString[0], "SET_COLL") == 0)
+					{ // 読み込んだ文字列が SET_COLL の場合
+
+						do
+						{ // 読み込んだ文字列が END_SET_WALL ではない場合ループ
+
+							// ファイルから文字列を読み込む
+							fscanf(pFile, "%s", &aString[0]);
+
+							if (strcmp(&aString[0], "NUM_COLL") == 0)
+							{ // 読み込んだ文字列が NUM_COLL の場合
+
+								fscanf(pFile, "%s", &aString[0]);							// = を読み込む (不要)
+								fscanf(pFile, "%d", &m_BossCollFile.aFile[nCnt].nNum);		// 球の総数を読み込む
+
+								for (int nCntColl = 0; nCntColl < m_BossCollFile.aFile[nCnt].nNum; nCntColl++)
+								{
+									fscanf(pFile, "%s", &aString[0]);				// POS を読み込む (不要)
+									fscanf(pFile, "%s", &aString[0]);				// = を読み込む (不要)
+									fscanf(pFile, "%f%f%f",
+										&m_BossCollFile.aFile[nCnt].aBase[nCntColl].offset.x,
+										&m_BossCollFile.aFile[nCnt].aBase[nCntColl].offset.y,
+										&m_BossCollFile.aFile[nCnt].aBase[nCntColl].offset.z);		// 位置を読み込む
+
+									fscanf(pFile, "%s", &aString[0]);				// RADIUS を読み込む (不要)
+									fscanf(pFile, "%s", &aString[0]);				// = を読み込む (不要)
+									fscanf(pFile, "%f", &m_BossCollFile.aFile[nCnt].aBase[nCntColl].fRadius);		// 半径を読み込む
+
+									fscanf(pFile, "%s", &aString[0]);				// WEAK を読み込む (不要)
+									fscanf(pFile, "%s", &aString[0]);				// = を読み込む (不要)
+									fscanf(pFile, "%s", &aString[0]);				// 弱点状況を読み込む
+
+									if (strcmp(&aString[0], "TRUE") == 0)
+									{ // 弱点状況が true の場合
+
+										m_BossCollFile.aFile[nCnt].aBase[nCntColl].bWeakness = true;
+									}
+									else
+									{ // 上記以外
+
+										m_BossCollFile.aFile[nCnt].aBase[nCntColl].bWeakness = false;
+									}
+								}
+							}
+						} while (strcmp(&aString[0], "END_SET_COLL") != 0);		// 読み込んだ文字列が END_SET_WALL ではない場合ループ
+					}
+				}
+			}
+		} while (nEnd != EOF);				// 読み込んだ文字列が EOF ではない場合ループ
+
+		// ファイルを閉じる
+		fclose(pFile);
+
+		// 成功状況を true にする
+		m_BossCollFile.bSuccess = true;
 	}
 	else
 	{ // ファイルが開けなかった場合

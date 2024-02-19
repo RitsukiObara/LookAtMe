@@ -109,24 +109,28 @@ void CTordle::Uninit(void)
 //================================
 void CTordle::Update(void)
 {
-	// 前回の位置を設定する
-	SetPosOld(GetPos());
+	if (CGame::GetState() == CGame::STATE_PLAY)
+	{ // プレイ状態以外
 
-	if (GetState() == STATE_NONE)
-	{ // 通常状態の場合
+		// 前回の位置を設定する
+		SetPosOld(GetPos());
 
-		// 追跡処理
-		Chase();
+		if (GetState() == STATE_NONE)
+		{ // 通常状態の場合
 
-		// 向きの移動処理
-		RotMove();
+			// 追跡処理
+			Chase();
+
+			// 向きの移動処理
+			RotMove();
+		}
+
+		// 移動処理
+		Move();
+
+		// 更新処理
+		CEnemy::Update();
 	}
-
-	// 移動処理
-	Move();
-
-	// 更新処理
-	CEnemy::Update();
 }
 
 //================================

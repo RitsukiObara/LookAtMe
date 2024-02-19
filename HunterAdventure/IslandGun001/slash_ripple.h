@@ -11,6 +11,7 @@
 // インクルードファイル
 //***********************************
 #include "ripple.h"
+#include "list_manager.h"
 
 //-----------------------------------
 // クラス定義(斬撃の波紋)
@@ -33,8 +34,15 @@ public:		// 誰でもアクセスできる
 	// 静的メンバ関数
 	static CSlashRipple* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);		// 生成処理
 
+	static CListManager<CSlashRipple*> GetList(void);			// リストの取得処理
+
 private:	// 自分だけアクセスできる
 
+	// メンバ変数
+	int m_nLife;		// 寿命
+
+	// 静的メンバ変数
+	static CListManager<CSlashRipple*> m_list;		// リスト
 };
 
 #endif

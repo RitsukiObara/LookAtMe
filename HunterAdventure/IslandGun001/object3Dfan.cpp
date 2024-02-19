@@ -39,12 +39,6 @@ CObject3DFan::~CObject3DFan()
 //===========================================
 HRESULT CObject3DFan::Init(void)
 {
-	// 全ての値を初期化する
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 位置
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			// 向き
-	m_nNumAngle = 1024;								// 角度の数
-	m_fRadius = 100.0f;								// 半径
-
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::Get()->GetRenderer()->GetDevice();
 
@@ -98,9 +92,9 @@ HRESULT CObject3DFan::Init(void)
 		pVtx[2].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
 		// 頂点カラーの設定
-		pVtx[0].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
-		pVtx[1].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
-		pVtx[2].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+		pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 		// 頂点データを3つ分進める
 		pVtx += 3;
@@ -246,7 +240,7 @@ void CObject3DFan::SetVertex(void)
 //===========================================
 void CObject3DFan::SetVtxColor(const D3DXCOLOR& col)
 {
-		VERTEX_3D * pVtx;											//頂点情報へのポインタ
+	VERTEX_3D * pVtx;											//頂点情報へのポインタ
 
 	//頂点バッファをロックし、頂点情報へのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
@@ -267,45 +261,73 @@ void CObject3DFan::SetVtxColor(const D3DXCOLOR& col)
 }
 
 //===========================================
-// 生成処理
+// 位置の設定処理
 //===========================================
-CObject3DFan* CObject3DFan::Create(const CObject::TYPE type, const PRIORITY priority)
+void CObject3DFan::SetPos(const D3DXVECTOR3& pos)
 {
-	// ローカルオブジェクトを生成
-	CObject3DFan* pObject3DFan = nullptr;	// オブジェクト3Dのインスタンスを生成
+	// 位置を設定する
+	m_pos = pos;
+}
 
-	if (pObject3DFan == nullptr)
-	{ // オブジェクトが NULL の場合
+//===========================================
+// 位置の取得処理
+//===========================================
+D3DXVECTOR3 CObject3DFan::GetPos(void) const
+{
+	// 位置を返す
+	return m_pos;
+}
 
-		// オブジェクトを生成
-		pObject3DFan = new CObject3DFan(type, priority);
-	}
-	else
-	{ // オブジェクトが NULL じゃない場合
+//===========================================
+// 向きの設定処理
+//===========================================
+void CObject3DFan::SetRot(const D3DXVECTOR3& rot)
+{
+	// 向きを設定する
+	m_rot = rot;
+}
 
-		// 停止
-		assert(false);
+//===========================================
+// 向きの取得処理
+//===========================================
+D3DXVECTOR3 CObject3DFan::GetRot(void) const
+{
+	// 向きを返す
+	return m_rot;
+}
 
-		// NULL を返す
-		return nullptr;
-	}
+//===========================================
+// 角度の数の設定処理
+//===========================================
+void CObject3DFan::SetNumAngle(const int nNum)
+{
+	// 角度の総数を設定する
+	m_nNumAngle = nNum;
+}
 
-	if (pObject3DFan != nullptr)
-	{ // オブジェクトが NULL じゃない場合
+//===========================================
+// 角度の数の取得処理
+//===========================================
+int CObject3DFan::GetNumAngle(void) const
+{
+	// 角度の総数を返す
+	return m_nNumAngle;
+}
 
-		// 初期化処理
-		pObject3DFan->Init();
-	}
-	else
-	{ // オブジェクトが NULL の場合
+//===========================================
+// 半径の設定処理
+//===========================================
+void CObject3DFan::SetRadius(const float fRadius)
+{
+	// 半径を設定する
+	m_fRadius = fRadius;
+}
 
-		// 停止
-		assert(false);
-
-		// NULL を返す
-		return nullptr;
-	}
-
-	// オブジェクト3Dのポインタを返す
-	return pObject3DFan;
+//===========================================
+// 半径の取得処理
+//===========================================
+float CObject3DFan::GetRadius(void) const
+{
+	// 半径を返す
+	return m_fRadius;
 }

@@ -30,6 +30,10 @@ public:		// 誰でもアクセスできる
 
 	virtual void SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& scale);			// 情報の設定処理
 
+	// セット・ゲット関係
+	void SetAlpha(const float fAlpha);		// 透明度の設定処理
+	float GetAlpha(void) const;				// 透明度の取得処理
+
 	// 静的メンバ関数
 	static CRipple* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& scale);		// 生成処理
 

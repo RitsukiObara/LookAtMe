@@ -47,6 +47,9 @@ namespace
 	// 特殊カメラ関係
 	const float POSR_SHIFT_Y = 320.0f;			// 注視点のずらす幅(Y軸)
 	const float POSR_SHIFT = 100.0f;			// 注視点のずらす幅
+
+	const D3DXVECTOR3 START_POSV = D3DXVECTOR3(-5000.0f, 2500.0f, 15000.0f);		// スタートカメラの視点
+
 	const float BOSS_CLOSER_RANGE = 3000.0f;	// ボス寄りカメラの距離
 	const float BOSS_CLOSER_HEIGHT = 2200.0f;	// ボス寄りカメラの高さ
 	const float BOSS_CLOSER_CORRECT = 0.08f;	// ボス寄りカメラの補正係数
@@ -877,28 +880,42 @@ void CCamera::TypeProcess(void)
 {
 	switch (m_type)
 	{
-	case CCamera::TYPE_NONE:		// 通常
+	case CCamera::TYPE_NONE:			// 通常
 
 		// 追跡処理
 		Chase();
 
 		break;
 
-	case CCamera::TYPE_VIBRATE:		// 振動
+	case CCamera::TYPE_VIBRATE:			// 振動
 
 		// 振動カメラ処理
 		Vibrate();
 
 		break;
 
-	case CCamera::TYPE_BOSSCLOSER:	// ボス寄り
+	case CCamera::TYPE_START:			// スタート状態
+
+		// スタート処理
+		Start();
+
+		break;
+
+	case CCamera::TYPE_PLAYERAPPEAR:	// プレイヤー登場状態
+
+		// プレイヤー登場処理
+		PlayerAppear();
+
+		break;
+
+	case CCamera::TYPE_BOSSCLOSER:		// ボス寄り
 
 		// ボス近づき処理
 		BossCloser();
 
 		break;
 
-	case CCamera::TYPE_BOSSHOWLING:	// ボス雄たけび状態
+	case CCamera::TYPE_BOSSHOWLING:		// ボス雄たけび状態
 
 		// ボス雄たけび処理
 		BossHowling();
@@ -927,7 +944,6 @@ void CCamera::Chase(void)
 
 		// プレイヤーの情報を取得する
 		D3DXVECTOR3 pos = pPlayer->GetPos();			// 位置
-		D3DXVECTOR3 rot = pPlayer->GetRot();			// 向き
 
 		// 目的の注視点を設定する
 		m_posRDest.x = pos.x + sinf(m_rot.y) * POSR_SHIFT;
@@ -999,6 +1015,55 @@ void CCamera::Vibrate(void)
 
 		// 次の状態に設定する
 		SetType(m_vibrate.nextType);
+	}
+}
+
+//=======================
+// スタート処理
+//=======================
+void CCamera::Start(void)
+{
+	// ローカル変数宣言
+	CPlayer* pPlayer = CGame::GetPlayer();	// プレイヤーのポインタ
+
+	if (pPlayer != nullptr)
+	{ // プレイヤーが NULL じゃない場合
+
+		// 目的の注視点を設定する
+		m_posRDest = pPlayer->GetPos();
+
+		// 目的の視点を設定する
+		m_posVDest = START_POSV;
+
+		// 注視点を設定
+		m_posR = m_posRDest;
+
+		// 視点を設定
+		m_posV = m_posVDest;
+	}
+}
+
+//=======================
+// プレイヤー登場処理
+//=======================
+void CCamera::PlayerAppear(void)
+{
+	// ローカル変数宣言
+	CPlayer* pPlayer = CGame::GetPlayer();	// プレイヤーのポインタ
+
+	if (pPlayer != nullptr)
+	{ // プレイヤーが NULL じゃない場合
+
+		// 位置を取得する
+		D3DXVECTOR3 pos = pPlayer->GetPos();
+
+		// 目的の注視点を設定する
+		m_posRDest.x = pos.x;
+		m_posRDest.y = pos.y + POSR_SHIFT_Y;
+		m_posRDest.z = pos.z;
+
+		// 注視点を設定
+		m_posR = m_posRDest;
 	}
 }
 

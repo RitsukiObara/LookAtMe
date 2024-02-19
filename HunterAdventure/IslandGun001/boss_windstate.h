@@ -6,6 +6,7 @@
 //===================================
 #ifndef _BOSS_WIND_STATE_H_
 #define _BOSS_WIND_STATE_H_
+
 //***********************************
 // インクルードファイル
 //***********************************
@@ -23,14 +24,6 @@ class CBossWindState : public CBossState
 {
 public:
 
-	// 行動状況
-	enum ACTION
-	{
-		ACTION_CHARGE = 0,	// チャージ行動
-		ACTION_WIND,		// 風発生行動
-		ACTION_MAX			// この列挙型の総数
-	};
-
 	CBossWindState();		// コンストラクタ
 	~CBossWindState();		// デストラクタ
 
@@ -44,7 +37,6 @@ private:
 
 	// メンバ変数
 	CWindShot* m_pWindShot;		// 風攻撃の情報
-	ACTION m_action;			// 行動状況
 	int m_nCount;				// 経過カウント
 };
 

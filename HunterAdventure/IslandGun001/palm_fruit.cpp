@@ -137,8 +137,6 @@ void CPalmFruit::Update(void)
 
 	case CPalmFruit::STATE_STOP:
 
-
-
 		break;
 
 	case CPalmFruit::STATE_GET:
@@ -287,6 +285,9 @@ void CPalmFruit::Hit(void)
 {
 	// モデルをヤシの実(アイテム型)にする
 	SetFileData(CManager::Get()->GetXFile()->Regist(ITEM_MODEL));
+
+	// 取得状態にする
+	m_state = STATE_GET;
 }
 
 //=======================================

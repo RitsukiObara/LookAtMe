@@ -31,6 +31,11 @@
 #include "wall.h"
 #include "block.h"
 #include "boss.h"
+#include "boss_collision.h"
+#include "slash_ripple.h"
+#include "wind_shot.h"
+#include "fire_shot.h"
+#include "game.h"
 
 //===============================
 // マクロ定義
@@ -42,16 +47,20 @@ namespace
 	{
 		50.5f,		// 木の半径
 	};
-	const float DAGGER_RADIUS = 180.0f;				// ダガーの半径
+
 	const int DAGGER_DAMAGE = 40;					// ダガーのダメージ
 	const float DAGGER_KNOCKBACK = 100.0f;			// ダガーのノックバック
+
 	const int EXPLOSION_DAMAGE = 30;				// 爆風のダメージ
 	const float EXPLOSION_KNOCKBACK = 150.0f;		// 爆風のノックバック
+
+	const int PALM_FRUIT_HEALING = 30;				// ヤシの実の回復値
 
 	const int COIN_SCORE = 100;						// コインのスコア
 
 	const float BOMB_BULLET_SMASH = 10.0f;			// 銃弾で爆弾の吹き飛ぶ速度
 	const float BOMB_DAGGER_SMASH = 23.0f;			// ダガーで爆弾の吹き飛ぶ速度
+	const float BOMB_SLASH_RIPPLE_SMASH = 10.0f;	// 斬撃波紋で爆弾の吹き飛ぶ速度
 }
 
 //===============================
@@ -169,11 +178,11 @@ void collision::CoinCollision(CPlayer* pPlayer, const D3DXVECTOR3 size)
 					// 取得処理
 					pCoin->Hit();
 
-					if (pPlayer->GetGameScore() != nullptr)
+					if (CGame::GetGameScore() != nullptr)
 					{ // ゲームスコアが NULL じゃない場合
 
 						// コイン分のスコアを加算する
-						pPlayer->GetGameScore()->SetScore(pPlayer->GetGameScore()->GetScore() + COIN_SCORE);
+						CGame::GetGameScore()->SetScore(CGame::GetGameScore()->GetScore() + COIN_SCORE);
 					}
 				}
 			}
@@ -483,24 +492,28 @@ void collision::GoldBoneCollision(const CPlayer& pPlayer, const D3DXVECTOR3& siz
 		while (true)
 		{ // 無限ループ
 
-			// 金の骨の変数を取得する
-			posBone = pBone->GetPos();
-			vtxMaxBone = pBone->GetFileData().vtxMax;
-			vtxMinBone = pBone->GetFileData().vtxMin;
+			if (pBone->GetState() == CGoldBone::STATE_NONE)
+			{ // 通常状態の場合
 
-			if (useful::RectangleCollisionXY(pos, posBone, vtxMax, vtxMaxBone, vtxMin, vtxMinBone) == true &&
-				useful::RectangleCollisionXZ(pos, posBone, vtxMax, vtxMaxBone, vtxMin, vtxMinBone) == true &&
-				useful::RectangleCollisionYZ(pos, posBone, vtxMax, vtxMaxBone, vtxMin, vtxMinBone) == true)
-			{ // 金の骨と重なった場合
+				// 金の骨の変数を取得する
+				posBone = pBone->GetPos();
+				vtxMaxBone = pBone->GetFileData().vtxMax;
+				vtxMinBone = pBone->GetFileData().vtxMin;
 
-				// 取得処理
-				pBone->Hit();
+				if (useful::RectangleCollisionXY(pos, posBone, vtxMax, vtxMaxBone, vtxMin, vtxMinBone) == true &&
+					useful::RectangleCollisionXZ(pos, posBone, vtxMax, vtxMaxBone, vtxMin, vtxMinBone) == true &&
+					useful::RectangleCollisionYZ(pos, posBone, vtxMax, vtxMaxBone, vtxMin, vtxMinBone) == true)
+				{ // 金の骨と重なった場合
 
-				if (pPlayer.GetGoldBoneUI() != nullptr)
-				{ // 金の骨UIが NULL じゃない場合
+					// 取得処理
+					pBone->Hit();
 
-					// 金の骨取得処理
-					pPlayer.GetGoldBoneUI()->GetGoldBone();
+					if (pPlayer.GetGoldBoneUI() != nullptr)
+					{ // 金の骨UIが NULL じゃない場合
+
+						// 金の骨取得処理
+						pPlayer.GetGoldBoneUI()->GetGoldBone();
+					}
 				}
 			}
 
@@ -578,7 +591,7 @@ bool collision::TreeCollision(D3DXVECTOR3* pos, const float fRadius)
 //===============================
 // 木への攻撃判定処理
 //===============================
-void collision::TreeAttack(const CPlayer& pPlayer, const float fHeight)
+void collision::TreeAttack(const CPlayer& pPlayer, const float fRadius, const float fHeight)
 {
 	// ローカル変数宣言
 	D3DXVECTOR3 posTree = NONE_D3DXVECTOR3;			// 木の位置
@@ -603,7 +616,7 @@ void collision::TreeAttack(const CPlayer& pPlayer, const float fHeight)
 			// 木の位置を設定する
 			posTree = pTree->GetPos();
 
-			if (useful::CircleCollisionXZ(posPlayer, posTree, DAGGER_RADIUS, TREE_RADIUS[pTree->GetType()]) &&
+			if (useful::CircleCollisionXZ(posPlayer, posTree, fRadius, TREE_RADIUS[pTree->GetType()]) &&
 				posPlayer.y <= posTree.y + pTree->GetFileData().vtxMax.y &&
 				posPlayer.y + fHeight >= posTree.y)
 			{ // ダガーが木に接触した場合
@@ -631,12 +644,13 @@ void collision::TreeAttack(const CPlayer& pPlayer, const float fHeight)
 //===============================
 // ヤシの木との当たり判定
 //===============================
-void collision::PalmFruitHit(CPlayer* pPlayer, const float fHeight)
+void collision::PalmFruitHit(CPlayer* pPlayer, const float fRadius, const float fHeight)
 {
 	// ローカル変数宣言
 	D3DXVECTOR3 posFruit = NONE_D3DXVECTOR3;		// 木の位置
 	D3DXVECTOR3 posPlayer = pPlayer->GetPos();		// プレイヤーの位置
 	float fRadiusFruit = 0.0f;						// 半径
+
 	CListManager<CPalmFruit*> list = CPalmFruit::GetList();
 	CPalmFruit* pFruit = nullptr;		// 先頭の値
 	CPalmFruit* pFruitEnd = nullptr;	// 末尾の値
@@ -659,8 +673,13 @@ void collision::PalmFruitHit(CPlayer* pPlayer, const float fHeight)
 
 			if (posPlayer.y <= posFruit.y + pFruit->GetFileData().vtxMax.y &&
 				posPlayer.y + fHeight >= posFruit.y &&
-				useful::CircleCollisionXZ(posPlayer, posFruit, DAGGER_RADIUS, fRadiusFruit) == true)
+				useful::CircleCollisionXZ(posPlayer, posFruit, fRadius, fRadiusFruit) == true &&
+				pPlayer->GetState().state != CPlayer::STATE_DEATH &&
+				pFruit->GetState() == CPalmFruit::STATE_STOP)
 			{ // 円柱の当たり判定に入った場合
+
+				// 回復処理
+				pPlayer->Healing(PALM_FRUIT_HEALING);
 
 				// ヒット処理
 				pFruit->Hit();
@@ -900,7 +919,7 @@ bool collision::BombHitToGun(const D3DXVECTOR3& pos, const D3DXVECTOR3& posOld, 
 //===============================
 // 爆弾のヒット判定(ダガー)
 //===============================
-bool collision::BombHitToDagger(const D3DXVECTOR3& pos, const float fHeight)
+bool collision::BombHitToDagger(const D3DXVECTOR3& pos, const float fRadius, const float fHeight)
 {
 	// ローカル変数宣言
 	D3DXVECTOR3 posBomb = NONE_D3DXVECTOR3;		// 爆弾の位置
@@ -936,7 +955,7 @@ bool collision::BombHitToDagger(const D3DXVECTOR3& pos, const float fHeight)
 
 				if (pos.y + fHeight >= posBomb.y &&
 					pos.y <= posBomb.y + fHeightBomb &&
-					useful::CircleCollisionXZ(pos, posBomb, DAGGER_RADIUS, fRadiusBomb) == true)
+					useful::CircleCollisionXZ(pos, posBomb, fRadius, fRadiusBomb) == true)
 				{ // 範囲内にいた場合
 
 					// 向きを算出する
@@ -944,6 +963,78 @@ bool collision::BombHitToDagger(const D3DXVECTOR3& pos, const float fHeight)
 
 					// ヒット処理
 					pBomb->Hit(fRot, BOMB_DAGGER_SMASH);
+
+					// ヒットした
+					bHit = true;
+				}
+			}
+
+			if (pBomb == pBombEnd)
+			{ // 末尾に達した場合
+
+				// while文を抜け出す
+				break;
+			}
+
+			// 次のオブジェクトを代入する
+			pBomb = list.GetData(nIdx + 1);
+
+			// インデックスを加算する
+			nIdx++;
+		}
+	}
+
+	// ヒット判定を返す
+	return bHit;
+}
+
+//===============================
+// 爆弾のヒット判定(斬撃波紋)
+//===============================
+bool collision::BombHitToSlashRipple(const D3DXVECTOR3& pos, const float fRadius, const float fHeight)
+{
+	// ローカル変数宣言
+	D3DXVECTOR3 posBomb = NONE_D3DXVECTOR3;		// 爆弾の位置
+	float fRadiusBomb = 0.0f;	// 爆弾の半径
+	float fHeightBomb = 0.0f;	// 爆弾の高さ
+	float fRot = 0.0f;			// 吹き飛ぶ向き
+
+	CListManager<CBomb*> list = CBomb::GetList();
+	CBomb* pBomb = nullptr;			// 先頭の値
+	CBomb* pBombEnd = nullptr;		// 末尾の値
+	int nIdx = 0;
+	bool bHit = false;		// ヒット判定
+
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		// 先頭の値を取得する
+		pBomb = list.GetTop();
+
+		// 末尾の値を取得する
+		pBombEnd = list.GetEnd();
+
+		while (true)
+		{ // 無限ループ
+
+			if (pBomb->GetState() == CBomb::STATE_DETONATION)
+			{ // 爆弾が起爆状態だった場合
+
+				// 爆弾関係の情報を取得する
+				posBomb = pBomb->GetPos();
+				fRadiusBomb = pBomb->GetFileData().fRadius;
+				fHeightBomb = pBomb->GetFileData().vtxMax.y;
+
+				if (pos.y + fHeight >= posBomb.y &&
+					pos.y <= posBomb.y + fHeightBomb &&
+					useful::CircleCollisionXZ(pos, posBomb, fRadius, fRadiusBomb) == true)
+				{ // 範囲内にいた場合
+
+					// 向きを算出する
+					fRot = atan2f(posBomb.x - pos.x, posBomb.z - pos.z);
+
+					// ヒット処理
+					pBomb->Hit(fRot, BOMB_SLASH_RIPPLE_SMASH);
 
 					// ヒットした
 					bHit = true;
@@ -1316,11 +1407,13 @@ bool collision::BlockHit(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DX
 //===============================
 // ボスの当たり判定
 //===============================
-void collision::BossHit(const D3DXVECTOR3& pos, const D3DXVECTOR3& size)
+bool collision::BossHit(const D3DXVECTOR3& pos, const float fRadius)
 {
 	// ローカル変数宣言
-	D3DXVECTOR3 posBoss = NONE_D3DXVECTOR3;
 	D3DXVECTOR3 posPart = NONE_D3DXVECTOR3;
+	CBossCollision* coll = nullptr;
+	D3DXMATRIX mtxScale, mtxRot, mtxTrans, mtx, mtxColl;	// 計算用マトリックス
+	D3DXMATRIX mtxWorld;		// マトリックスを取得する
 
 	CListManager<CBoss*> list = CBoss::GetList();
 	CBoss* pBoss = nullptr;			// 先頭の値
@@ -1339,10 +1432,6 @@ void collision::BossHit(const D3DXVECTOR3& pos, const D3DXVECTOR3& size)
 		while (true)
 		{ // 無限ループ
 
-			// 変数を宣言
-			D3DXMATRIX   mtxScale, mtxRot, mtxTrans, mtx;	// 計算用マトリックス
-			D3DXMATRIX mtxWorld = pBoss->GetMatrix();		// マトリックスを取得する
-
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&mtxWorld);
 
@@ -1358,36 +1447,61 @@ void collision::BossHit(const D3DXVECTOR3& pos, const D3DXVECTOR3& size)
 			D3DXMatrixTranslation(&mtxTrans, pBoss->GetPos().x, pBoss->GetPos().y, pBoss->GetPos().z);
 			D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
 
-			// ボスの位置を取得する
-			posBoss = pBoss->GetPos();
-
-			for (int nCnt = 0; nCnt < pBoss->GetNumModel(); nCnt++)
+			for (int nCntPart = 0; nCntPart < pBoss->GetNumModel(); nCntPart++)
 			{
 				// マトリックスの計算処理
-				pBoss->GetHierarchy(nCnt)->MatrixCalc(&mtx, mtxWorld);
+				pBoss->GetHierarchy(nCntPart)->MatrixCalc(&mtx, mtxWorld);
 
-				// 位置を設定する
-				posPart.x = mtx._41;
-				posPart.y = mtx._42;
-				posPart.z = mtx._43;
+				// 当たり判定の情報を取得
+				coll = pBoss->GetColl(nCntPart);
 
-				// 半径を算出する
-				D3DXVECTOR3 Radius = (pBoss->GetHierarchy(nCnt)->GetFileData().vtxMax + pBoss->GetHierarchy(nCnt)->GetFileData().vtxMin) * 0.5f;
-				float fRadius = (Radius.x + Radius.y + Radius.z) * 0.3f;
+				if (coll != nullptr)
+				{ // 当たり判定が NULL じゃない場合
 
-				// 位置を中心にする
-				posPart += Radius;
+					for (int nCntColl = 0; nCntColl < coll->GetNumColl(); nCntColl++)
+					{
+						// マトリックスの初期化
+						D3DXMatrixIdentity(&mtxColl);
 
-				if (useful::CircleCollisionXY(pos, posPart, size.y, fRadius) == true &&
-					useful::CircleCollisionYZ(pos, posPart, size.y, fRadius) == true &&
-					useful::CircleCollisionXZ(pos, posPart, size.y, fRadius) == true)
-				{ // 当たり判定に当たった場合
+						// 位置を反映
+						D3DXMatrixTranslation(&mtxTrans, coll->GetCollOffset(nCntColl).x, coll->GetCollOffset(nCntColl).y, coll->GetCollOffset(nCntColl).z);
+						D3DXMatrixMultiply(&mtxColl, &mtxColl, &mtxTrans);
 
-					// ヒット処理
-					pBoss->Hit();
+						// 算出した「パーツのワールドマトリックス」と「親のマトリックス」を掛け合わせる
+						D3DXMatrixMultiply
+						(
+							&mtxColl,
+							&mtxColl,
+							&mtx
+						);
 
-					// この先の処理を行わない
-					return;
+						// 位置を設定する
+						posPart.x = mtxColl._41;
+						posPart.y = mtxColl._42;
+						posPart.z = mtxColl._43;
+
+						if (useful::CircleCollisionXY(pos, posPart, fRadius, coll->GetRadius(nCntColl)) == true &&
+							useful::CircleCollisionYZ(pos, posPart, fRadius, coll->GetRadius(nCntColl)) == true &&
+							useful::CircleCollisionXZ(pos, posPart, fRadius, coll->GetRadius(nCntColl)) == true)
+						{ // 球が当たった場合
+
+							if (coll->IsWeakness(nCntColl) == true)
+							{ // 弱点だった場合
+
+								// バリア破壊処理
+								pBoss->BarrierBreak(pos, nCntPart);
+							}
+							else
+							{ // 上記以外
+
+								// ヒット処理
+								pBoss->Hit(10);
+							}
+
+							// true を返す
+							return true;
+						}
+					}
 				}
 			}
 
@@ -1405,6 +1519,214 @@ void collision::BossHit(const D3DXVECTOR3& pos, const D3DXVECTOR3& size)
 			nIdx++;
 		}
 	}
+
+	// false を返す
+	return false;
+}
+
+//===============================
+// 斬撃の波紋の当たり判定
+//===============================
+bool collision::RippleHit(const D3DXVECTOR3& pos, const float fRadius, const float fHeight, float* fRotSmash)
+{
+	// ローカル変数宣言
+	D3DXVECTOR3 posRipple = NONE_D3DXVECTOR3;		// 壁の位置
+	float fRadiusRipple = 0.0f;						// 波紋の半径
+	float fHeightRipple = 0.0f;						// 波紋の高さ
+
+	CListManager<CSlashRipple*> list = CSlashRipple::GetList();
+	CSlashRipple* pRipple = nullptr;			// 先頭の値
+	CSlashRipple* pRippleEnd = nullptr;		// 末尾の値
+	int nIdx = 0;
+
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		// 先頭の値を取得する
+		pRipple = list.GetTop();
+
+		// 末尾の値を取得する
+		pRippleEnd = list.GetEnd();
+
+		while (true)
+		{ // 無限ループ
+
+			// 波紋関係の変数を設定する
+			posRipple = pRipple->GetPos();
+			fRadiusRipple = pRipple->GetFileData().fRadius * pRipple->GetScale().x;
+			fHeightRipple = pRipple->GetFileData().vtxMax.y;
+
+			if (pos.y <= posRipple.y + fHeightRipple &&
+				pos.y + fHeight >= posRipple.y &&
+				useful::CircleCollisionXZ(pos, posRipple, fRadius, fRadiusRipple) == true)
+			{ // 斬撃に当たった場合
+
+				if (fRotSmash != nullptr)
+				{ // 向きが NULL じゃない場合
+
+					// 向きを設定する
+					*fRotSmash = atan2f(pos.x - posRipple.x, pos.z - posRipple.z);
+				}
+
+				// true を返す
+				return true;
+			}
+
+			if (pRipple == pRippleEnd)
+			{ // 末尾に達した場合
+
+				// while文を抜け出す
+				break;
+			}
+
+			// 次のオブジェクトを代入する
+			pRipple = list.GetData(nIdx + 1);
+
+			// インデックスを加算する
+			nIdx++;
+		}
+	}
+
+	// false を返す
+	return false;
+}
+
+//===============================
+// 風攻撃とプレイヤーの当たり判定
+//===============================
+bool collision::WindShotHit(const D3DXVECTOR3& pos, const float fRadius, const float fHeight, float* fSmashRot)
+{
+	// ローカル変数宣言
+	D3DXVECTOR3 posWind = NONE_D3DXVECTOR3;		// 壁の位置
+	float fRadiusWind = 0.0f;					// 風の半径
+	float fHeightWind = 0.0f;					// 風の高さ
+
+	CListManager<CWindShot*> list = CWindShot::GetList();
+	CWindShot* pWind = nullptr;			// 先頭の値
+	CWindShot* pWindEnd = nullptr;		// 末尾の値
+	int nIdx = 0;
+
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		// 先頭の値を取得する
+		pWind = list.GetTop();
+
+		// 末尾の値を取得する
+		pWindEnd = list.GetEnd();
+
+		while (true)
+		{ // 無限ループ
+
+			if (pWind->GetState() != CWindShot::STATE_DELETE)
+			{ // 消去状態以外
+
+				// 風関係の変数を設定する
+				posWind = pWind->GetPos();
+				fRadiusWind = pWind->GetCircum() + pWind->GetWidth();
+				fHeightWind = pWind->GetHeight() * pWind->GetVortex();
+
+				if (pos.y <= posWind.y + fHeightWind &&
+					pos.y + fHeight >= posWind.y &&
+					useful::CircleCollisionXZ(pos, posWind, fRadius, fRadiusWind) == true)
+				{ // 風攻撃に当たった場合
+
+					if (fSmashRot != nullptr)
+					{ // 向きのポインタが NULL じゃない場合
+
+						// 吹き飛ぶ向きを設定する
+						*fSmashRot = atan2f(pos.x - posWind.x, pos.z - posWind.z);
+					}
+
+					// true を返す
+					return true;
+				}
+			}
+
+			if (pWind == pWindEnd)
+			{ // 末尾に達した場合
+
+				// while文を抜け出す
+				break;
+			}
+
+			// 次のオブジェクトを代入する
+			pWind = list.GetData(nIdx + 1);
+
+			// インデックスを加算する
+			nIdx++;
+		}
+	}
+
+	// false を返す
+	return false;
+}
+
+//===============================
+// 炎攻撃との当たり判定
+//===============================
+bool collision::FireShotHit(const D3DXVECTOR3& pos, const float fRadius, const float fHeight, float* fSmashRot)
+{
+	// ローカル変数宣言
+	D3DXVECTOR3 posFire = NONE_D3DXVECTOR3;		// 壁の位置
+	float fRadiusFire = 0.0f;					// 炎の半径
+	float fHeightFire = 0.0f;					// 炎の高さ
+
+	CListManager<CFireShot*> list = CFireShot::GetList();
+	CFireShot* pFire = nullptr;			// 先頭の値
+	CFireShot* pFireEnd = nullptr;		// 末尾の値
+	int nIdx = 0;
+
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		// 先頭の値を取得する
+		pFire = list.GetTop();
+
+		// 末尾の値を取得する
+		pFireEnd = list.GetEnd();
+
+		while (true)
+		{ // 無限ループ
+
+			// 炎関係の変数を設定する
+			posFire = pFire->GetPos();
+			fRadiusFire = pFire->GetCircum();
+			fHeightFire = pFire->GetHeight();
+
+			if (pos.y <= posFire.y + fHeightFire &&
+				pos.y + fHeight >= posFire.y &&
+				useful::CircleCollisionXZ(pos, posFire, fRadius, fRadiusFire) == true)
+			{ // 炎攻撃に当たった場合
+
+				if (fSmashRot != nullptr)
+				{ // 向きのポインタが NULL じゃない場合
+
+					// 吹き飛ぶ向きを設定する
+					*fSmashRot = atan2f(pos.x - posFire.x, pos.z - posFire.z);
+				}
+
+				// true を返す
+				return true;
+			}
+
+			if (pFire == pFireEnd)
+			{ // 末尾に達した場合
+
+				// while文を抜け出す
+				break;
+			}
+
+			// 次のオブジェクトを代入する
+			pFire = list.GetData(nIdx + 1);
+
+			// インデックスを加算する
+			nIdx++;
+		}
+	}
+
+	// false を返す
+	return false;
 }
 
 /*

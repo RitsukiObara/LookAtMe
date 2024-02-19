@@ -23,6 +23,7 @@
 #include "handgun.h"
 #include "dagger.h"
 #include "objectElevation.h"
+#include "sound.h"
 
 //-------------------------------------------
 // 無名名前空間
@@ -655,7 +656,13 @@ void CPlayerController::HandGun(CPlayer* pPlayer)
 					pPlayer->GetHandGun(nCnt)->SetState(CHandgun::STATE_RELOAD);
 				}
 			}
+
+			// 銃のリロード音を鳴らす
+			CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_GUNRELOAD);
 		}
+
+		// 銃の発射音を鳴らす
+		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_GUNSHOT);
 	}
 }
 
@@ -746,6 +753,9 @@ void CPlayerController::ShotGun(CPlayer* pPlayer)
 				pPlayer->GetHandGun(nCnt)->SetState(CHandgun::STATE_RELOAD);
 			}
 		}
+
+		// 銃のリロード音を鳴らす
+		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_GUNRELOAD);
 	}
 	else
 	{ // 上記以外

@@ -83,6 +83,7 @@ private:		// 誰でもアクセスできる
 	int m_nDodgeInterval;		// 回避のインターバルカウント
 	float m_fDodgeRot;			// 回避する向き
 	bool m_bDodgeUse;			// 回避使用可能状況
+	bool m_bRipple;				// 波紋状況
 	bool m_bRecoil;				// 反動状況
 };
 

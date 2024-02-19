@@ -52,18 +52,19 @@ namespace collision
 
 	// –Ø‚Æ‚Ì“–‚½‚è”»’è
 	bool TreeCollision(D3DXVECTOR3* pos, const float fRadius);			// –Ø‚Ì“–‚½‚è”»’è
-	void TreeAttack(const CPlayer& pPlayer, const float fHeight);		// –Ø‚Ö‚ÌUŒ‚”»’èˆ—
+	void TreeAttack(const CPlayer& pPlayer, const float fRadius, const float fHeight);		// –Ø‚Ö‚ÌUŒ‚”»’èˆ—
 
 	// ƒ„ƒV‚ÌÀ‚Æ‚Ì“–‚½‚è”»’è
-	void PalmFruitHit(CPlayer* pPlayer, const float fHeight);			// ƒ„ƒV‚Ì–Ø‚Æ‚Ì“–‚½‚è”»’è
+	void PalmFruitHit(CPlayer* pPlayer, const float fRadius, const float fHeight);		// ƒ„ƒV‚Ì–Ø‚Æ‚Ì“–‚½‚è”»’è
 
 	// Šâ‚Æ‚Ì“–‚½‚è”»’è
 	bool RockCollision(D3DXVECTOR3* pos, const float fRadius, const float fHeight);		// Šâ‚Æ‚Ì“–‚½‚è”»’è
 
 	// ”š’e‰Ô‚Æ‚Ì“–‚½‚è”»’è
-	bool BangFlowerHit(const D3DXVECTOR3& pos, const float fRadius, const float fHeight);		// ”š’e‰Ô‚Ìƒqƒbƒg”»’è
-	bool BombHitToGun(const D3DXVECTOR3& pos, const D3DXVECTOR3& posOld, const float fRadius);	// ”š’e‚Ìƒqƒbƒg”»’è(e’e)
-	bool BombHitToDagger(const D3DXVECTOR3& pos, const float fHeight);		// ”š’e‚Ìƒqƒbƒg”»’è(ƒ_ƒK[)
+	bool BangFlowerHit(const D3DXVECTOR3& pos, const float fRadius, const float fHeight);			// ”š’e‰Ô‚Ìƒqƒbƒg”»’è
+	bool BombHitToGun(const D3DXVECTOR3& pos, const D3DXVECTOR3& posOld, const float fRadius);		// ”š’e‚Ìƒqƒbƒg”»’è(e’e)
+	bool BombHitToDagger(const D3DXVECTOR3& pos, const float fRadius, const float fHeight);			// ”š’e‚Ìƒqƒbƒg”»’è(ƒ_ƒK[)
+	bool BombHitToSlashRipple(const D3DXVECTOR3& pos, const float fRadius, const float fHeight);	// ”š’e‚Ìƒqƒbƒg”»’è(aŒ‚”g–ä)
 
 	// ”š•—‚Æ‚Ì“–‚½‚è”»’è
 	void ExplosionHitToRock(const D3DXVECTOR3& pos, const float fRadius, const float fHeight);		// ”š•—‚ÆŠâ‚Æ‚Ì“–‚½‚è”»’è
@@ -77,8 +78,17 @@ namespace collision
 	bool BlockHit(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DXVECTOR3& vtxMax, const D3DXVECTOR3& vtxMin);		// ƒuƒƒbƒN‚Æ‚Ìƒqƒbƒg”»’è
 
 	// ƒ{ƒX‚Æ‚Ì“–‚½‚è”»’è
-	void BossHit(const D3DXVECTOR3& pos, const D3DXVECTOR3& size);		// ƒ{ƒX‚Ì“–‚½‚è”»’è
+	bool BossHit(const D3DXVECTOR3& pos, const float fRadius);		// ƒ{ƒX‚Ì“–‚½‚è”»’è
 	
+	// aŒ‚”g–ä‚Æ‚Ì“–‚½‚è”»’è
+	bool RippleHit(const D3DXVECTOR3& pos, const float fRadius, const float fHeight, float* fRotSmash = nullptr);		// aŒ‚‚Ì”g–ä‚Ì“–‚½‚è”»’è
+	
+	// •—UŒ‚‚Æ‚Ì“–‚½‚è”»’è
+	bool WindShotHit(const D3DXVECTOR3& pos, const float fRadius, const float fHeight, float* fSmashRot = nullptr);		// •—UŒ‚‚Æ‚Ì“–‚½‚è”»’è
+
+	// ‰ŠUŒ‚‚Æ‚Ì“–‚½‚è”»’è
+	bool FireShotHit(const D3DXVECTOR3& pos, const float fRadius, const float fHeight, float* fSmashRot = nullptr);		// ‰ŠUŒ‚‚Æ‚Ì“–‚½‚è”»’è
+
 	// ”Ä—p“I‚È“–‚½‚è”»’è
 	bool HexahedronCollision(D3DXVECTOR3* pos, const D3DXVECTOR3& posBlock, const D3DXVECTOR3& posOld, const D3DXVECTOR3& posOldBlock, const D3DXVECTOR3& min, const D3DXVECTOR3& minBlock, const D3DXVECTOR3& max, const D3DXVECTOR3& maxBlock);		// ˜Z–Ê‘Ì‚Ì“–‚½‚è”»’è
 	bool HexahedronHit(const D3DXVECTOR3& pos, const D3DXVECTOR3& posBlock, const D3DXVECTOR3& posOld, const D3DXVECTOR3& posOldBlock, const D3DXVECTOR3& min, const D3DXVECTOR3& minBlock, const D3DXVECTOR3& max, const D3DXVECTOR3& maxBlock);		// ˜Z–Ê‘Ì‚Ìƒqƒbƒg”»’è

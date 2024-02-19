@@ -23,7 +23,7 @@
 #include "gold_bone_UI.h"
 #include "lifeUI.h"
 #include "player_controller.h"
-#include "game_score.h"
+#include "airplane.h"
 
 #include "collision.h"
 #include "camera.h"
@@ -60,8 +60,10 @@ namespace
 	const D3DXCOLOR DAMAGE_COLOR = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);		// ダメージ状態の色
 	const int INVINCIBLE_COUNT = 90;				// 無敵状態のカウント数
 	const int INVINCIBLE_FLUSH_COUNT = 10;			// 無敵状態の点滅のカウント
+
 	const float KNOCKBACK_MOVE = 23.0f;				// 吹き飛ぶ移動量
 	const float KNOCKBACK_JUMP = 15.0f;				// 吹き飛ぶ高さ
+	const int WIND_SHOT_DAMAGE = 10;				// 風攻撃のダメージ
 }
 
 //=========================================
@@ -82,7 +84,7 @@ CPlayer::CPlayer() : CCharacter(CObject::TYPE_PLAYER, CObject::PRIORITY_PLAYER)
 	m_pGoldBoneUI = nullptr;				// 金の骨のUIの情報
 	m_pLifeUI = nullptr;					// 寿命UIの情報
 	m_pController = nullptr;				// プレイヤーのコントローラーの情報
-	m_pGameScore = nullptr;					// ゲームスコアの情報
+	m_pAirplane = nullptr;					// 飛行機の情報
 
 	m_stateInfo.state = STATE_NONE;			// 状態
 	m_stateInfo.nCount = 0;					// 状態カウント
@@ -217,19 +219,6 @@ HRESULT CPlayer::Init(void)
 		assert(false);
 	}
 
-	if (m_pGameScore == nullptr)
-	{ // ゲームスコアの情報が NULL の場合
-
-		// ゲームスコアの生成
-		m_pGameScore = CGameScore::Create();
-	}
-	else
-	{ // 上記以外
-
-		// 停止
-		assert(false);
-	}
-
 	// カメラの向きを設定
 	CManager::Get()->GetCamera()->SetRot(INIT_CAMERA_ROT);
 
@@ -331,6 +320,14 @@ void CPlayer::Uninit(void)
 		m_pController = nullptr;
 	}
 
+	if (m_pAirplane != nullptr)
+	{ // 飛行機の情報が NULL じゃない場合
+
+		// 飛行機の終了処理
+		m_pAirplane->Uninit();
+		m_pAirplane = nullptr;
+	}
+
 	// 終了処理
 	CCharacter::Uninit();
 }
@@ -340,83 +337,149 @@ void CPlayer::Uninit(void)
 //===========================================
 void CPlayer::Update(void)
 {
-	// 前回の位置の設定処理
-	SetPosOld(GetPos());
-
-	// 状態管理処理
-	StateManager();
-
-	if (m_stateInfo.state == STATE_NONE ||
-		m_stateInfo.state == STATE_INVINSIBLE)
-	{ // 通常状態・無敵状態の場合
-
-		// 操作処理
-		m_pController->Control(this);
-	}
-
-	// 移動処理
-	Move();
-
-	if (m_pMotion != nullptr)
-	{ // モーションが NULL じゃない場合
-
-		// モーションの更新処理
-		m_pMotion->Update();
-	}
-
-	if (m_pAction != nullptr)
-	{ // 行動が NULL じゃない場合
-
-		// 行動の更新処理
-		m_pAction->Update(this);
-	}
-
-	for (int nCntGun = 0; nCntGun < NUM_HANDGUN; nCntGun++)
+	switch (CGame::GetState())
 	{
-		if (m_apHandGun[nCntGun] != nullptr)
-		{ // 拳銃が NULL じゃない場合
+	case CGame::STATE_START:	// 開始状態
+
+		// 移動処理
+		Move();
+
+		if (m_pAirplane != nullptr &&
+			m_pAirplane->GetState() == CAirplane::STATE_MOVE)
+		{ // 飛行機が NULL じゃない場合
+
+			// 位置を飛行機に合わせる
+			SetPos(m_pAirplane->GetPos());
 
 			// 更新処理
-			m_apHandGun[nCntGun]->Update();
+			m_pAirplane->Update(this);
 		}
+
+		if (m_pMotion != nullptr)
+		{ // モーションが NULL じゃない場合
+
+			// モーションの更新処理
+			m_pMotion->Update();
+		}
+
+		// 起伏地面との当たり判定処理
+		ElevationCollision();
+
+		if (m_bJump == false)
+		{ // ジャンプ状況が false の場合
+
+			// プレイ状態にする
+			CGame::SetState(CGame::STATE_PLAY);
+
+			// 通常カメラにする
+			CManager::Get()->GetCamera()->SetType(CCamera::TYPE_NONE);
+		}
+
+		break;
+
+	case CGame::STATE_PLAY:			// プレイ状態
+
+		// 前回の位置の設定処理
+		SetPosOld(GetPos());
+
+		// 状態管理処理
+		StateManager();
+
+		if (m_stateInfo.state == STATE_NONE ||
+			m_stateInfo.state == STATE_INVINSIBLE)
+		{ // 通常状態・無敵状態の場合
+
+			// 操作処理
+			m_pController->Control(this);
+		}
+
+		// 移動処理
+		Move();
+
+		if (m_pMotion != nullptr)
+		{ // モーションが NULL じゃない場合
+
+			// モーションの更新処理
+			m_pMotion->Update();
+		}
+
+		if (m_pAction != nullptr)
+		{ // 行動が NULL じゃない場合
+
+			// 行動の更新処理
+			m_pAction->Update(this);
+		}
+
+		for (int nCntGun = 0; nCntGun < NUM_HANDGUN; nCntGun++)
+		{
+			if (m_apHandGun[nCntGun] != nullptr)
+			{ // 拳銃が NULL じゃない場合
+
+				// 更新処理
+				m_apHandGun[nCntGun]->Update();
+			}
+		}
+
+		// 緊急のリロード処理
+		EmergentReload();
+
+		if (m_pAim != nullptr)
+		{ // エイムが NULL じゃない場合
+
+			// エイムの更新処理
+			m_pAim->Update();
+		}
+
+		if (m_pLifeUI != nullptr)
+		{ // 寿命が NULL じゃない場合
+
+			// 寿命を設定する
+			m_pLifeUI->SetLife(m_nLife);
+		}
+
+		// ヤシの実との当たり判定
+		collision::PalmFruitHit(this, COLLISION_SIZE.x, COLLISION_SIZE.y);
+
+		// 小判との当たり判定
+		collision::CoinCollision(this, COLLISION_SIZE);
+
+		// 金の骨との当たり判定
+		collision::GoldBoneCollision(*this, COLLISION_SIZE);
+
+		// 木との当たり判定
+		TreeCollision();
+
+		// 起伏地面との当たり判定処理
+		ElevationCollision();
+
+		// ブロックとの当たり判定処理
+		BlockCollision();
+
+		// 岩との当たり判定
+		RockCollision();
+
+		// 壁との当たり判定
+		WallCollision();
+
+		CManager::Get()->GetDebugProc()->Print("位置：%f %f %f", GetPos().x, GetPos().y, GetPos().z);
+
+		break;
+
+	case CGame::STATE_BOSSMOVIE:	// ボス出現状態
+
+		break;
+
+	case CGame::STATE_FINISH:		// 終了状態
+
+		break;
+
+	default:
+
+		// 停止
+		assert(false);
+
+		break;
 	}
-
-	if (m_pAim != nullptr)
-	{ // エイムが NULL じゃない場合
-
-		// エイムの更新処理
-		m_pAim->Update();
-	}
-
-	if (m_pLifeUI != nullptr)
-	{ // 寿命が NULL じゃない場合
-
-		// 寿命を設定する
-		m_pLifeUI->SetLife(m_nLife);
-	}
-
-	// 小判との当たり判定
-	collision::CoinCollision(this, COLLISION_SIZE);
-
-	// 木との当たり判定
-	TreeCollision();
-
-	// 起伏地面との当たり判定処理
-	ElevationCollision();
-
-	// ブロックとの当たり判定処理
-	BlockCollision();
-
-	// 岩との当たり判定
-	RockCollision();
-
-	// 壁との当たり判定
-	WallCollision();
-
-	// 金の骨との当たり判定
-	collision::GoldBoneCollision(*this, COLLISION_SIZE);
-
-	CManager::Get()->GetDebugProc()->Print("位置：%f %f %f", GetPos().x, GetPos().y, GetPos().z);
 }
 
 //===========================================
@@ -424,6 +487,13 @@ void CPlayer::Update(void)
 //===========================================
 void CPlayer::Draw(void)
 {
+	if (m_pAirplane != nullptr)
+	{ // 飛行機が NULL じゃない場合
+
+		// 飛行機の描画処理
+		m_pAirplane->Draw();
+	}
+
 	switch (m_stateInfo.state)
 	{
 	case STATE_NONE:		// 通常状態
@@ -533,6 +603,22 @@ void CPlayer::Hit(const int nDamage, const float fRotSmash)
 }
 
 //===========================================
+// 回復処理
+//===========================================
+void CPlayer::Healing(const int nHealing)
+{
+	// 体力を回復する
+	m_nLife += nHealing;
+
+	if (m_nLife >= MAX_LIFE)
+	{ // 体力が最大値以上になった場合
+
+		// 体力を最大値にする
+		m_nLife = MAX_LIFE;
+	}
+}
+
+//===========================================
 // モーションの情報の設定処理
 //===========================================
 CMotion* CPlayer::GetMotion(void) const
@@ -605,12 +691,12 @@ CLifeUI* CPlayer::GetLifeUI(void) const
 }
 
 //=======================================
-// ゲームスコアの情報の取得処理
+// 飛行機の管轄外し処理
 //=======================================
-CGameScore* CPlayer::GetGameScore(void) const
+void CPlayer::RemoveAirplane(void)
 {
-	// ゲームスコアの情報を返す
-	return m_pGameScore;
+	// 飛行機を NULL にする
+	m_pAirplane = nullptr;
 }
 
 //=======================================
@@ -638,15 +724,37 @@ void CPlayer::SetData(const D3DXVECTOR3& pos)
 
 	for (int nCnt = 0; nCnt < NUM_HANDGUN; nCnt++)
 	{
-		// 拳銃の情報を生成する
-		m_apHandGun[nCnt] = CHandgun::Create(GUN_POS[nCnt], GUN_ROT[nCnt], GetHierarchy(INIT_GUN_IDX + nCnt)->GetMatrixP());
+		if (m_apHandGun[nCnt] == nullptr)
+		{ // 拳銃が NULL の場合
+
+			// 拳銃の情報を生成する
+			m_apHandGun[nCnt] = CHandgun::Create(GUN_POS[nCnt], GUN_ROT[nCnt], GetHierarchy(INIT_GUN_IDX + nCnt)->GetMatrixP());
+		}
 	}
 
-	// ダガーを生成する
-	m_pDagger = CDagger::Create(GetHierarchy(INIT_DAGGER_IDX)->GetMatrixP());
+	if (m_pDagger == nullptr)
+	{ // ダガーが NULL の場合
 
-	// エイムを生成する
-	m_pAim = CAim::Create(GetPos());
+		// ダガーを生成する
+		m_pDagger = CDagger::Create(GetHierarchy(INIT_DAGGER_IDX)->GetMatrixP());
+	}
+
+	if (m_pAim == nullptr)
+	{ // エイムが NULL の場合
+
+		// エイムを生成する
+		m_pAim = CAim::Create(GetPos());
+	}
+
+	if (m_pAirplane == nullptr)
+	{ // 飛行機が NULL の場合
+
+		// 飛行機を生成
+		m_pAirplane = CAirplane::Create(pos);
+	}
+
+	// 位置を飛行機に合わせる
+	SetPos(m_pAirplane->GetPos());
 	
 	// 全ての値を設定する
 	m_stateInfo.state = STATE_NONE;		// 状態
@@ -849,11 +957,25 @@ void CPlayer::StateManager(void)
 		if (m_pAction->GetAction() != CPlayerAction::ACTION_DODGE)
 		{ // 回避状態以外
 
-			// 敵との当たり判定
-			collision::EnemyHitToPlayer(this, COLLISION_SIZE.x, COLLISION_SIZE.y);
+			// 当たり判定
+			if (collision::EnemyHitToPlayer(this, COLLISION_SIZE.x, COLLISION_SIZE.y) == true ||
+				collision::ExplosionHitToPlayer(this, COLLISION_SIZE.x, COLLISION_SIZE.y) == true)
+			{ // 何かに当たった場合
 
-			// 爆風との当たり判定
-			collision::ExplosionHitToPlayer(this, COLLISION_SIZE.x, COLLISION_SIZE.y);
+				// この先の処理を行わない
+				return;
+			}
+
+			// 吹き飛ぶ向き
+			float fRotSmash = 0.0f;
+
+			if (collision::WindShotHit(GetPos(), COLLISION_SIZE.x, COLLISION_SIZE.y, &fRotSmash) == true ||
+				collision::FireShotHit(GetPos(), COLLISION_SIZE.x, COLLISION_SIZE.y, &fRotSmash) == true)
+			{ // 当たった場合
+
+				// ヒット処理
+				Hit(WIND_SHOT_DAMAGE, fRotSmash);
+			}
 		}
 
 		break;
@@ -964,6 +1086,21 @@ void CPlayer::Move(void)
 	// 位置と向きを適用する
 	SetPos(pos);
 	SetRot(rot);
+}
+
+//=======================================
+// 緊急のリロード処理
+//=======================================
+void CPlayer::EmergentReload(void)
+{
+	if (m_pBulletUI != nullptr &&
+		m_pBulletUI->GetNumBullet() <= 0 &&
+		m_stateInfo.state == STATE_NONE)
+	{ // 通常状態で弾がリロードできてなかった場合
+
+		// 緊急で弾丸をリロードする
+		m_pBulletUI->SetNumBullet(MAX_REMAINING_BULLET);
+	}
 }
 
 //=======================================

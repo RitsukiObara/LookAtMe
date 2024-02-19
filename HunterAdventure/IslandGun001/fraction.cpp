@@ -27,6 +27,7 @@ namespace
 		"data\\MODEL\\Platform\\FracRing.x",
 		"data\\MODEL\\Platform\\FracWood.x",
 		"data\\MODEL\\Platform\\FracRock.x",
+		"data\\MODEL\\MorigistPart.x",
 	};
 	const float GRAVITY = 0.4f;			// 重力
 	const float BOUND_MAGNI = -0.7f;	// バウンドの倍率

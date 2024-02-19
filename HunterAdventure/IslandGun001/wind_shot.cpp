@@ -31,9 +31,11 @@ namespace
 	const CMesh::SGrid TORNADO_DIVI = { 8,1 };	// トルネードの分割数
 
 	const float HOMING_CORRECT = 0.03f;			// ホーミング時の向きの補正係数
-	const float HOMING_SPEED = 25.0f;			// ホーミング時の速度
+	const float HOMING_SPEED = 10.0f;			// ホーミング時の速度
 	const float GRAVITY = -25.0f;				// 重力
-	const float ADD_ROT = 0.05f;				// 向きの加算量
+	const float ADD_ROT = 0.3f;					// 向きの加算量
+	const float DELETE_SUB_ALPHA = 0.05f;		// 消去時の透明度の減算量
+	const float DELETE_ADD_SHIFT = 20.0f;		// 消去時のずらす幅の加算量
 }
 
 // 静的メンバ変数
@@ -66,7 +68,7 @@ CWindShot::~CWindShot()
 }
 
 //==============================
-//ブロックの初期化処理
+// 風攻撃の初期化処理
 //==============================
 HRESULT CWindShot::Init(void)
 {
@@ -82,7 +84,7 @@ HRESULT CWindShot::Init(void)
 }
 
 //========================================
-//ブロックの終了処理
+// 風攻撃の終了処理
 //========================================
 void CWindShot::Uninit(void)
 {
@@ -94,10 +96,12 @@ void CWindShot::Uninit(void)
 }
 
 //========================================
-//ブロックの更新処理
+// 風攻撃の更新処理
 //========================================
 void CWindShot::Update(void)
 {
+	float fShift;
+
 	switch (m_state)
 	{
 	case CWindShot::STATE_ATTACK:
@@ -109,8 +113,17 @@ void CWindShot::Update(void)
 
 	case CWindShot::STATE_DELETE:
 
+		// ずらす幅を取得
+		fShift = GetShift();
+
+		// ずらす幅を加算する
+		fShift += DELETE_ADD_SHIFT;
+
+		// ずらす幅を適用する
+		SetShift(fShift);
+
 		// 透明度を減算する
-		m_fAlpha -= 0.05f;
+		m_fAlpha -= DELETE_SUB_ALPHA;
 
 		// 頂点カラーの設定処理
 		SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fAlpha));
@@ -124,6 +137,9 @@ void CWindShot::Update(void)
 			// この先の処理を行わない
 			return;
 		}
+
+		// 頂点座標の設定処理
+		SetVertex();
 
 		break;
 
@@ -143,7 +159,7 @@ void CWindShot::Update(void)
 }
 
 //=====================================
-//ブロックの描画処理
+// 風攻撃の描画処理
 //=====================================
 void CWindShot::Draw(void)
 {

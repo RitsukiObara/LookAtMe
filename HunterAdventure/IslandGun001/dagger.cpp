@@ -153,13 +153,13 @@ void CDagger::SetData(D3DXMATRIX* mtx)
 CDagger* CDagger::Create(D3DXMATRIX* mtx)
 {
 	// ローカルオブジェクトを生成
-	CDagger* pGun = nullptr;	// インスタンスを生成
+	CDagger* pDagger = nullptr;	// インスタンスを生成
 
-	if (pGun == nullptr)
+	if (pDagger == nullptr)
 	{ // オブジェクトが NULL の場合
 
 		// インスタンスを生成
-		pGun = new CDagger;
+		pDagger = new CDagger;
 	}
 	else
 	{ // オブジェクトが NULL じゃない場合
@@ -171,11 +171,11 @@ CDagger* CDagger::Create(D3DXMATRIX* mtx)
 		return nullptr;
 	}
 
-	if (pGun != nullptr)
+	if (pDagger != nullptr)
 	{ // オブジェクトが NULL じゃない場合
 
 		// 初期化処理
-		if (FAILED(pGun->Init()))
+		if (FAILED(pDagger->Init()))
 		{ // 初期化に失敗した場合
 
 			// 停止
@@ -186,7 +186,7 @@ CDagger* CDagger::Create(D3DXMATRIX* mtx)
 		}
 
 		// 情報の設定処理
-		pGun->SetData(mtx);
+		pDagger->SetData(mtx);
 	}
 	else
 	{ // オブジェクトが NULL の場合
@@ -198,8 +198,8 @@ CDagger* CDagger::Create(D3DXMATRIX* mtx)
 		return nullptr;
 	}
 
-	// 拳銃のポインタを返す
-	return pGun;
+	// ダガーのポインタを返す
+	return pDagger;
 }
 
 //=======================================

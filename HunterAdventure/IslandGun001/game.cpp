@@ -25,22 +25,22 @@
 
 #include "player.h"
 #include "ocean.h"
+#include "game_score.h"
 #include "boss.h"
-#include "enemy.h"
-#include "list_manager.h"
 
 //--------------------------------------------
 // マクロ定義
 //--------------------------------------------
-#define TRANS_COUNT		(80)		// 成功時の遷移カウント
+#define TRANS_COUNT		(80)		// 遷移カウント
 
 //--------------------------------------------
 // 静的メンバ変数宣言
 //--------------------------------------------
 CPause* CGame::m_pPause = nullptr;							// ポーズの情報
 CPlayer* CGame::m_pPlayer = nullptr;						// プレイヤーの情報
+CGameScore* CGame::m_pGameScore = nullptr;					// ゲームスコアの情報
 CGame::STATE CGame::m_GameState = CGame::STATE_START;		// ゲームの進行状態
-int CGame::m_nFinishCount = 0;								// 終了カウント
+int CGame::m_nScore = 0;									// スコア
 bool CGame::m_bPause = false;								// ポーズ状況
 
 //=========================================
@@ -49,10 +49,13 @@ bool CGame::m_bPause = false;								// ポーズ状況
 CGame::CGame()
 {
 	// 全ての値をクリアする
+	m_nFinishCount = 0;			// 終了カウント
+
 	m_pPause = nullptr;			// ポーズ
 	m_pPlayer = nullptr;		// プレイヤー
-	m_nFinishCount = 0;			// 終了カウント
+	m_pGameScore = nullptr;		// スコア
 	m_GameState = STATE_START;	// 状態
+	m_nScore = 0;				// スコア
 	m_bPause = false;			// ポーズ状況
 }
 
@@ -69,34 +72,17 @@ CGame::~CGame()
 //=========================================
 HRESULT CGame::Init(void)
 {
+	// スタートカメラで描画
+	CManager::Get()->GetCamera()->SetType(CCamera::TYPE_START);
+
 	// テキスト読み込み処理
 	CElevation::TxtSet();
-
-	// メッシュのテキスト読み込み
-	//CMesh::TxtSet();
-
-	//if (m_pField == NULL)
-	//{ // フィールドへのポインタが NULL の場合
-
-	//	// フィールドの設定処理
-	//	m_pField = CField::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(1000.0f, 0.0f, 1000.0f));
-	//}
 
 	// モーションの読み込み処理
 	CMotion::Load(CMotion::STYLE_PLAYER);		// プレイヤー
 	CMotion::Load(CMotion::STYLE_TORDLE);		// タードル
 	CMotion::Load(CMotion::STYLE_IWAKARI);		// イワカリ
 	CMotion::Load(CMotion::STYLE_BOSS);			// ボス
-
-	// マップをロード
-	CManager::Get()->GetFile()->Load(CFile::TYPE_ENEMY);
-	CManager::Get()->GetFile()->Load(CFile::TYPE_COIN);
-	CManager::Get()->GetFile()->Load(CFile::TYPE_GOLDBONE);
-	CManager::Get()->GetFile()->Load(CFile::TYPE_TREE);
-	CManager::Get()->GetFile()->Load(CFile::TYPE_ROCK);
-	CManager::Get()->GetFile()->Load(CFile::TYPE_BLOCK);
-	CManager::Get()->GetFile()->Load(CFile::TYPE_BANGFLOWER);
-	CManager::Get()->GetFile()->Load(CFile::TYPE_WALL);
 
 	// マップの生成
 	CManager::Get()->GetFile()->SetEnemy();
@@ -119,6 +105,9 @@ HRESULT CGame::Init(void)
 
 	// プレイヤーの生成処理
 	m_pPlayer = CPlayer::Create(D3DXVECTOR3(-400.0f, 0.0f, 300.0f));
+
+	// ゲームスコアの生成
+	m_pGameScore = CGameScore::Create();
 
 	// 情報の初期化
 	m_nFinishCount = 0;			// 終了カウント
@@ -144,6 +133,7 @@ void CGame::Uninit(void)
 	// ポインタを NULL にする
 	m_pPause = nullptr;			// ポーズ
 	m_pPlayer = nullptr;		// プレイヤー
+	m_pGameScore = nullptr;		// ゲームスコア
 
 	// 情報を初期化する
 	m_GameState = STATE_START;	// ゲームの進行状態
@@ -164,20 +154,15 @@ void CGame::Update(void)
 	switch (m_GameState)
 	{
 	case CGame::STATE_START:
-
-		// ポーズ処理
-		Pause();
-
-		break;
-
 	case CGame::STATE_PLAY:
+	case CGame::STATE_BOSSMOVIE:
 
 		// ポーズ処理
 		Pause();
 
 		break;
 
-	case CGame::STATE_GOAL:
+	case CGame::STATE_FINISH:
 
 		// 遷移処理
 		Transition();
@@ -204,13 +189,6 @@ void CGame::Update(void)
 	//	return;
 	//}
 
-	if (CManager::Get()->GetInputKeyboard()->GetTrigger(DIK_0) == true)
-	{ // 0キーを押した
-
-		// ボスの生成処理
-		CBoss::Create(NONE_D3DXVECTOR3, NONE_D3DXVECTOR3);
-	}
-
 	if (m_bPause == true)
 	{ // ポーズ状況が true の場合
 
@@ -225,14 +203,6 @@ void CGame::Update(void)
 
 			// レンダラーの更新
 			CManager::Get()->GetRenderer()->Update();
-		}
-
-		if (CEnemy::GetList().IsEmpty() == true &&
-			m_GameState != STATE_GOAL)
-		{ // 敵を全て倒した場合
-
-			// ゴール状態にする
-			m_GameState = STATE_GOAL;
 		}
 	}
 
@@ -332,6 +302,13 @@ void CGame::Transition(void)
 	if (m_nFinishCount % TRANS_COUNT == 0)
 	{ // 終了カウントが一定数を超えた場合
 
+		if (m_pGameScore != nullptr)
+		{ // ゲームスコアの情報が NULL じゃない場合
+
+			// スコアを取得する
+			m_nScore = m_pGameScore->GetScore();
+		}
+
 		// リザルトに遷移する
 		CManager::Get()->GetFade()->SetFade(CScene::MODE_RESULT);
 	}
@@ -383,6 +360,24 @@ CPlayer* CGame::GetPlayer(void)
 }
 
 //======================================
+// ゲームスコアの取得処理
+//======================================
+CGameScore* CGame::GetGameScore(void)
+{
+	// ゲームスコアのポインタを返す
+	return m_pGameScore;
+}
+
+//======================================
+// 総合スコアの取得処理
+//======================================
+int CGame::GetScore(void)
+{
+	// 総合スコアを返す
+	return m_nScore;
+}
+
+//======================================
 // ポーズのNULL化処理
 //======================================
 void CGame::DeletePause(void)
@@ -398,4 +393,13 @@ void CGame::DeletePlayer(void)
 {
 	// プレイヤーのポインタを NULL にする
 	m_pPlayer = nullptr;
+}
+
+//======================================
+// スコアのNULL化処理
+//======================================
+void CGame::DeleteGameScore(void)
+{
+	// スコアのポインタを NULL にする
+	m_pGameScore = nullptr;
 }

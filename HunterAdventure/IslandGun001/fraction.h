@@ -35,6 +35,7 @@ public:			// 誰でもアクセスできる
 		TYPE_RING,			// 輪っか
 		TYPE_WOOD,			// 木
 		TYPE_ROCK,			// 岩
+		TYPE_BOSSROCK,		// ボスの赤いとこ
 		TYPE_MAX			// この列挙型の総数
 	};
 

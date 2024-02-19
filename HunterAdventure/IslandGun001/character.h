@@ -26,13 +26,14 @@ public:			// 誰でもアクセスできる
 	~CHierarchy();			// デストラクタ
 
 	// メンバ関数
-	HRESULT Init(void);			// 初期化処理
-	void Uninit(void);			// 終了処理
-	void Update(void);			// 更新処理
-	void Draw(void);			// 描画処理
-	void Draw(D3DXCOLOR col);	// 描画処理(色処理)
-	void DrawShadow(void);		// モデル影の描画処理
-	void Draw(float fAlpha);	// 描画処理(透明度処理)
+	HRESULT Init(void);				// 初期化処理
+	void Uninit(void);				// 終了処理
+	void Update(void);				// 更新処理
+	void Draw(void);				// 描画処理
+	void Draw(D3DXCOLOR col);		// 描画処理(色処理)
+	void Draw(D3DXMATERIAL* pMat);	// 描画処理(複数色処理)
+	void DrawShadow(void);			// モデル影の描画処理
+	void Draw(float fAlpha);		// 描画処理(透明度処理)
 
 	void MatrixCalc(D3DXMATRIX* pMtx, const D3DXMATRIX& mtxWorld);		// マトリックスの計算処理
 
@@ -61,6 +62,9 @@ public:			// 誰でもアクセスできる
 
 	void SetParentIdx(const int nIdx);			// 親モデルのインデックスの設定処理
 	int GetParentIdx(void) const;				// 親モデルのインデックスの取得処理
+
+	D3DXMATERIAL GetMaterial(const int nCnt);	// マテリアル情報の取得処理
+	D3DXMATERIAL* GetMaterialPointer(void);		// マテリアル情報の取得処理
 
 	// 静的メンバ関数
 	static CHierarchy* Create(void);			// 生成処理
@@ -94,10 +98,10 @@ public:			// 誰でもアクセスできる
 	virtual void Update(void) override;		// 更新処理
 	virtual void Draw(void) override;		// 描画処理
 
-	void Draw(D3DXCOLOR col);	// 描画処理(色処理)
-	void Draw(D3DXCOLOR* col);	// 描画処理(透明度調整)
-	void DrawShadow(void);		// モデル影の描画処理
-	void Draw(float fAlpha);	// 描画処理(透明度処理)
+	void Draw(D3DXCOLOR col);		// 描画処理(色処理)
+	void Draw(D3DXMATERIAL** pMat);	// 描画処理(透明度調整)
+	void DrawShadow(void);			// モデル影の描画処理
+	void Draw(float fAlpha);		// 描画処理(透明度処理)
 
 	// セット・ゲット関数
 	void SetPos(const D3DXVECTOR3& pos);	// 位置設定処理

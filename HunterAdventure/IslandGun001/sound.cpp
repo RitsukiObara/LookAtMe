@@ -15,25 +15,12 @@ CSound::SOUNDINFO CSound::m_aSoundInfo[CSound::SOUND_LABEL_MAX] =
 	{ "data\\BGM\\GameBGM.wav",-1 },		// ゲームBGM
 	{ "data\\BGM\\ResultBGM.wav",-1 },		// リザルトBGM
 	{ "data\\BGM\\RankingBGM.wav",-1 },		// ランキングBGM
-	{ "data\\SE\\Run.wav",0 },				// 走行音
-	{ "data\\SE\\RunStart.wav",0 },			// 走り始め音
-	{ "data\\SE\\Jump.wav",0 },				// ジャンプ音
 	{ "data\\SE\\Select.wav",0 },			// 選択音
 	{ "data\\SE\\Decide.wav",0 },			// 決定音
-	{ "data\\SE\\NewRecord.wav",0 },		// 新記録の音
-	{ "data\\SE\\Hover.wav",0 },			// ホバー音
-	{ "data\\SE\\Landing.wav",0 },			// 着地音
-	{ "data\\SE\\JetDash.wav",0 },			// ジェットダッシュ音
-	{ "data\\SE\\Stepping.wav",0 },			// 踏みつけ音
-	{ "data\\SE\\EnemyBreak.wav",0 },		// 敵の破壊音
-	{ "data\\SE\\Smash.wav",0 },			// 吹き飛ばし音
-	{ "data\\SE\\SmashFly.wav",0 },			// 吹き飛び中の音
-	{ "data\\SE\\GetItem.wav",0 },			// アイテム取得音
-	{ "data\\SE\\Cannon.wav",0 },			// 大砲の音
-	{ "data\\SE\\GroundQuake.wav",0 },		// グラウンドクエイク音
-	{ "data\\SE\\Stun.wav",0 },				// 気絶音
-	{ "data\\SE\\Damage.wav",0 },			// ダメージ音
-};
+	{ "data\\SE\\GunShot.wav",0 },			// 銃の発射音
+	{ "data\\SE\\GunReload.wav",0 },		// 銃のリロード音
+	{ "data\\SE\\BossHowling.wav",0 },		// ボスの雄たけび音
+}; 
 
 //=============================================================================
 // コンストラクタ

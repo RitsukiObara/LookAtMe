@@ -8,16 +8,16 @@
 // インクルードファイル
 //********************************************
 #include "manager.h"
-#include "input.h"
-#include "renderer.h"
-#include "object.h"
 #include "title.h"
 #include "fade.h"
-#include "Objectmesh.h"
-#include "objectTri2D.h"
+#include "file.h"
+#include "input.h"
+#include "renderer.h"
 
 #include "skybox.h"
 #include "title_logo.h"
+#include "objectElevation.h"
+#include "Objectmesh.h"
 
 // マクロ定義
 #define SET_RANKING_TIMER		(600)		// ランキング画面に遷移するカウント数
@@ -46,6 +46,25 @@ HRESULT CTitle::Init(void)
 {
 	//　シーンの初期化
 	CScene::Init();
+
+	// テキスト読み込み処理
+	CElevation::TxtSet();
+
+	// モーションの読み込み処理
+	CMotion::Load(CMotion::STYLE_PLAYER);		// プレイヤー
+	CMotion::Load(CMotion::STYLE_TORDLE);		// タードル
+	CMotion::Load(CMotion::STYLE_IWAKARI);		// イワカリ
+	CMotion::Load(CMotion::STYLE_BOSS);			// ボス
+
+	// マップの生成
+	CManager::Get()->GetFile()->SetEnemy();
+	CManager::Get()->GetFile()->SetCoin();
+	CManager::Get()->GetFile()->SetGoldBone();
+	CManager::Get()->GetFile()->SetTree();
+	CManager::Get()->GetFile()->SetRock();
+	CManager::Get()->GetFile()->SetBlock();
+	CManager::Get()->GetFile()->SetBangFlower();
+	CManager::Get()->GetFile()->SetWall();
 
 	// テキスト読み込み処理
 	CMesh::TxtSet();

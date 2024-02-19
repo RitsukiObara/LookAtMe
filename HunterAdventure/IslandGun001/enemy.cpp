@@ -41,6 +41,10 @@ namespace
 	const D3DXCOLOR DAMAGE_COL = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);				// ダメージ状態の色
 	const int DAMAGE_COUNT = 12;						// ダメージ状態のカウント
 	const float LAND_GRAVITY = -50.0f;					// 起伏地面に着地している時の重力
+	const int SLASHRIPPLE_DAMAGE = 2;					// 斬撃波紋に当たった時のダメージ
+	const float SLASHRIPPLE_KNOCKBACK = 20.0f;			// 斬撃波紋に当たった時の吹き飛び
+	const int WIND_SHOT_DAMAGE = 10;					// 風攻撃に当たった時のダメージ
+	const float WIND_SHOT_KNOCKBACK = 50.0f;			// 風攻撃に当たった時の吹き飛び
 }
 
 // 静的メンバ変数
@@ -106,6 +110,9 @@ void CEnemy::Update(void)
 	// モーションの更新処理
 	m_pMotion->Update();
 
+	// 斬撃波紋との当たり判定
+	SlashRippleHit();
+
 	// 起伏地面との当たり判定
 	ElevationCollision();
 
@@ -123,6 +130,15 @@ void CEnemy::Update(void)
 
 	// 敵同士の当たり判定
 	collision::EnemyHitToEnemy(this);
+
+	if (m_state == STATE_NONE &&
+		(collision::WindShotHit(GetPos(), m_collSize.x, m_collSize.y) == true ||
+		collision::FireShotHit(GetPos(), m_collSize.x, m_collSize.y) == true))
+	{ // 当たった場合
+
+		// ヒット処理
+		Hit(WIND_SHOT_DAMAGE, WIND_SHOT_KNOCKBACK);
+	}
 
 	if (m_state == STATE_DAMAGE)
 	{ // ダメージ状態の場合
@@ -563,4 +579,23 @@ void CEnemy::WallCollision(void)
 
 	// 位置を適用する
 	SetPos(pos);
+}
+
+//===========================================
+// 斬撃の波紋との当たり判定
+//===========================================
+void CEnemy::SlashRippleHit(void)
+{
+	// 変数を設定
+	D3DXVECTOR3 pos = GetPos();
+	float fRadius = m_collSize.x;
+	float fHeight = m_collSize.y;
+
+	if (m_state == STATE_NONE &&
+		collision::RippleHit(pos, fRadius, fHeight) == true)
+	{ // 斬撃波紋に当たった場合
+
+		// ヒット処理
+		Hit(SLASHRIPPLE_DAMAGE, SLASHRIPPLE_KNOCKBACK);
+	}
 }

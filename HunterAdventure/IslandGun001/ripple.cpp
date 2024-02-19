@@ -182,3 +182,21 @@ CRipple* CRipple::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D
 	// 波紋のポインタを返す
 	return pRipple;
 }
+
+//===========================================
+// 透明度の設定処理
+//===========================================
+void CRipple::SetAlpha(const float fAlpha)
+{
+	// 透明度を設定する
+	m_fAlpha = fAlpha;
+}
+
+//===========================================
+// 透明度の取得処理
+//===========================================
+float CRipple::GetAlpha(void) const
+{
+	// 透明度を返す
+	return m_fAlpha;
+}

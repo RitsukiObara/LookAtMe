@@ -46,7 +46,7 @@ namespace
 		"data\\TEXTURE\\LifeUIIcon.png"
 	};
 	const float METER_MEMORY = METER_WIDTH * 0.01f;		// メーターの1メモリのサイズ
-	const float METER_ADD = 0.2f;						// メーターの加算数
+	const float METER_ADD = 1.0f;						// メーターの加算数
 	const int ICON_FLASH_LIFE = 30;						// アイコンが明滅しだす体力
 	const D3DXCOLOR ICON_FLASH_COL = D3DXCOLOR(1.0f, 0.2f, 0.2f, 1.0f);		// アイコンの点滅時の色
 	const float ICON_CALC_COL = 0.05f;					// アイコンの色の移動量
@@ -194,16 +194,12 @@ void CLifeUI::SetData(const int nLife)
 			{
 			case POLY::POLY_GROUND:
 
-				m_apObject2D[nCnt]->SetVtxColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-
 				// 頂点座標の設定処理
 				m_apObject2D[nCnt]->SetVtxWidthGage();
 
 				break;
 
 			case POLY::POLY_METER:
-
-				m_apObject2D[nCnt]->SetVtxColor(D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
 
 				// 頂点座標の設定処理
 				m_apObject2D[nCnt]->SetVtxWidthGage();

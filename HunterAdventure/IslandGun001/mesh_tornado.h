@@ -33,10 +33,16 @@ public:		// 誰でもアクセスできる
 	void SetVertex(void);		// 頂点の設定処理
 
 	// セット・ゲット関係
+	void SetVortex(const int nVortex);		// 渦の設定処理
+	int GetVortex(void) const;				// 渦の取得処理
 	void SetWidth(const float fWidth);		// 幅の設定処理
 	float GetWidth(void) const;				// 幅の取得処理
 	void SetHeight(const float fHeight);	// 高さの設定処理
 	float GetHeight(void) const;			// 高さの取得処理
+	void SetShift(const float fShift);		// ずらす幅の取得処理
+	float GetShift(void) const;				// ずらす幅の取得処理
+	void SetCircum(const float fCircum);	// 円周の設定処理
+	float GetCircum(void) const;			// 円周の取得処理
 
 	// 静的メンバ関数
 	static CMeshTornado* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const float fWidth, const float fHeight, const int nVortex, const float fShift, const float fCircum, const SGrid& Divi, const PRIORITY priority);		// 生成処理

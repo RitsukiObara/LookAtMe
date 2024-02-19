@@ -24,7 +24,8 @@ public:
 	CBossState();			// コンストラクタ
 	virtual ~CBossState();	// デストラクタ
 
-	void Uninit();			// 終了処理
+	void Uninit(void);			// 終了処理
+	virtual void Delete(void);	// 完全消去処理
 
 	virtual void Process(CBoss* pBoss) = 0;	// 状態処理
 	virtual void SetData(CBoss* pBoss) = 0;	// 情報の設定処理

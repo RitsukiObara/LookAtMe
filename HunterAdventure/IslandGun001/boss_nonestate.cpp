@@ -15,8 +15,10 @@
 #include "game.h"
 #include "player.h"
 
+#include "boss_chargestate.h"
 #include "boss_flystate.h"
 #include "boss_windstate.h"
+#include "boss_firestate.h"
 
 //----------------------------------------------------------------------------------------------------------------
 // 無名名前空間
@@ -25,7 +27,11 @@ namespace
 {
 	const int STATECHANGE_COUNT = 90;			// 状態が変化するカウント数
 	const float GRAVITY = 0.1f;					// 重力
-	const float WIND_STATE_LENGTH = 5000.0f;	// 風攻撃状態になる距離
+
+	const float WIND_STATE_LENGTH = 2000.0f;	// 風攻撃状態になる距離
+	const int WIND_STATE_CHARGE = 180;			// 風状態のチャージカウント
+
+	const float FIRE_STATE_LENGTH = 5000.0f;	// 炎攻撃状態になる距離
 }
 
 //==========================
@@ -109,11 +115,18 @@ void CBossNoneState::StateSelect(CBoss* pBoss)
 		D3DXVECTOR3 posBoss = pBoss->GetPos();
 		float fLength = sqrtf((posPlayer.x - posBoss.x) * (posPlayer.x - posBoss.x) + (posPlayer.z - posBoss.z) * (posPlayer.z - posBoss.z));
 
+		// 近い順にif文を置く
 		if (fLength <= WIND_STATE_LENGTH)
-		{ // 長さが近い場合
+		{ // 風状態の距離の場合
 
-			// かまいたち状態にする
-			pBoss->ChangeState(new CBossWindState);
+			// チャージ状態にする
+			pBoss->ChangeState(new CBossChargeState(new CBossWindState, WIND_STATE_CHARGE));
+		}
+		else if (fLength <= FIRE_STATE_LENGTH)
+		{ // 炎状態の距離の場合
+
+			// 炎攻撃状態にする
+			pBoss->ChangeState(new CBossFireState);
 		}
 		else
 		{ // 上記以外

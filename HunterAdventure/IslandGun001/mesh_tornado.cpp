@@ -283,6 +283,24 @@ CMeshTornado* CMeshTornado::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& ro
 }
 
 //================================
+// ‰Q‚Ìİ’èˆ—
+//================================
+void CMeshTornado::SetVortex(const int nVortex)
+{
+	// ‰Q‚Ì”‚ğİ’è‚·‚é
+	m_nVortex = nVortex;
+}
+
+//================================
+// ‰Q‚Ìæ“¾ˆ—
+//================================
+int CMeshTornado::GetVortex(void) const
+{
+	// ‰Q‚Ì”‚ğ•Ô‚·
+	return m_nVortex;
+}
+
+//================================
 // ‰~ü‚Ìİ’èˆ—
 //================================
 void CMeshTornado::SetWidth(const float fWidth)
@@ -316,4 +334,40 @@ float CMeshTornado::GetHeight(void) const
 {
 	// ‚‚³‚ğ•Ô‚·
 	return m_fHeight;
+}
+
+//================================
+// ‚¸‚ç‚·•‚Ìæ“¾ˆ—
+//================================
+void CMeshTornado::SetShift(const float fShift)
+{
+	// ‚¸‚ç‚·•‚ğİ’è‚·‚é
+	m_fShift = fShift;
+}
+
+//================================
+// ‚¸‚ç‚·•‚Ìæ“¾ˆ—
+//================================
+float CMeshTornado::GetShift(void) const
+{
+	// ‚¸‚ç‚·•‚ğİ’è‚·‚é
+	return m_fShift;
+}
+
+//================================
+// ‰~ü‚Ìİ’èˆ—
+//================================
+void CMeshTornado::SetCircum(const float fCircum)
+{
+	// ‰~ü‚ğİ’è‚·‚é
+	m_fCircum = fCircum;
+}
+
+//================================
+// ‰~ü‚Ìæ“¾ˆ—
+//================================
+float CMeshTornado::GetCircum(void) const
+{
+	// ‰~ü‚ğ•Ô‚·
+	return m_fCircum;
 }

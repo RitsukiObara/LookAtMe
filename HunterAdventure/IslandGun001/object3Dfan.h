@@ -31,8 +31,15 @@ public:			// 誰でもアクセスできる
 	void SetVertex(void);						// 頂点情報の設定
 	void SetVtxColor(const D3DXCOLOR& col);		// 頂点カラーの設定処理
 
-	// 静的メンバ関数
-	static CObject3DFan* Create(const CObject::TYPE type, const PRIORITY priority);			// 生成処理
+	// セット・ゲット関係
+	void SetPos(const D3DXVECTOR3& pos);		// 位置の設定処理
+	D3DXVECTOR3 GetPos(void) const;				// 位置の取得処理
+	void SetRot(const D3DXVECTOR3& rot);		// 向きの設定処理
+	D3DXVECTOR3 GetRot(void) const;				// 向きの取得処理
+	void SetNumAngle(const int nNum);			// 角度の数の設定処理
+	int GetNumAngle(void) const;				// 角度の数の取得処理
+	void SetRadius(const float fRadius);		// 半径の設定処理
+	float GetRadius(void) const;				// 半径の取得処理
 
 private:
 

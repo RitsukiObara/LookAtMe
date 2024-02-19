@@ -14,6 +14,7 @@
 #include "collision.h"
 #include "useful.h"
 
+#include "game.h"
 #include "bomb_fuse.h"
 #include "objectElevation.h"
 #include "bomb_explosion.h"
@@ -119,71 +120,75 @@ void CBomb::Uninit(void)
 //========================================
 void CBomb::Update(void)
 {
-	// 前回の位置を設定する
-	SetPosOld(GetPos());
+	if (CGame::GetState() == CGame::STATE_PLAY)
+	{ // プレイ状態以外
 
-	switch (m_state)
-	{
-	case CBomb::STATE_GROWTH:		// 成長状態
+		// 前回の位置を設定する
+		SetPosOld(GetPos());
 
-		// 成長処理
-		Growth();
-
-		break;
-
-	case CBomb::STATE_RIPEN:		// 実り状態
-
-		break;
-
-	case CBomb::STATE_BOUND:		// バウンド状態
-
-		// バウンド処理
-		Bound();
-
-		break;
-
-	case CBomb::STATE_DETONATION:	// 起爆状態
-
-		// 起爆状態処理
-		Detonation();
-
-		// 移動処理
-		Move();
-
-		// 重力処理
-		Gravity();
-
-		// 当たり判定
-		Collision();
-
-		// 起伏地面との当たり判定
-		ElevationCollision();
-
-		break;
-
-	case CBomb::STATE_EXPLOSION:	// 爆発状態
-
-		// 爆発状態処理
-		if (Explosion() == true)
+		switch (m_state)
 		{
-			// 爆発の生成
-			CBombExplosion::Create(GetPos());
-				
-			// 終了処理
-			Uninit();
+		case CBomb::STATE_GROWTH:		// 成長状態
 
-			// この先の処理を行わない
-			return;
+			// 成長処理
+			Growth();
+
+			break;
+
+		case CBomb::STATE_RIPEN:		// 実り状態
+
+			break;
+
+		case CBomb::STATE_BOUND:		// バウンド状態
+
+			// バウンド処理
+			Bound();
+
+			break;
+
+		case CBomb::STATE_DETONATION:	// 起爆状態
+
+			// 起爆状態処理
+			Detonation();
+
+			// 移動処理
+			Move();
+
+			// 重力処理
+			Gravity();
+
+			// 当たり判定
+			Collision();
+
+			// 起伏地面との当たり判定
+			ElevationCollision();
+
+			break;
+
+		case CBomb::STATE_EXPLOSION:	// 爆発状態
+
+			// 爆発状態処理
+			if (Explosion() == true)
+			{
+				// 爆発の生成
+				CBombExplosion::Create(GetPos());
+
+				// 終了処理
+				Uninit();
+
+				// この先の処理を行わない
+				return;
+			}
+
+			break;
+
+		default:
+
+			// 停止
+			assert(false);
+
+			break;
 		}
-
-		break;
-
-	default:
-
-		// 停止
-		assert(false);
-
-		break;
 	}
 }
 

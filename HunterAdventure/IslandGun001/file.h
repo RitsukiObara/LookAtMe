@@ -12,6 +12,8 @@
 //********************************************
 #include "main.h"
 #include "ranking.h"
+#include "boss_collision.h"
+#include "motion.h"
 
 //--------------------------------------------
 // マクロ定義
@@ -37,6 +39,7 @@ public:			// 誰でもアクセスできる
 		TYPE_BLOCK,			// ブロック
 		TYPE_BANGFLOWER,	// 爆弾花
 		TYPE_WALL,			// 壁
+		TYPE_BOSSCOLL,		// ボスの当たり判定
 		TYPE_MAX			// この列挙型の総数
 	};
 
@@ -107,6 +110,21 @@ public:			// 誰でもアクセスできる
 		int nRotType;			// 向きの種類
 	};
 
+	// ボスの当たり判定の基盤
+	struct SBossCollBase
+	{
+		D3DXVECTOR3 offset;		// オフセット座標
+		float fRadius;			// 半径
+		bool bWeakness;			// 弱点状況
+	};
+
+	// ボスの当たり判定の情報
+	struct SBossCollinfo
+	{
+		SBossCollBase aBase[CBossCollision::MAX_COLLISION];		// 当たり判定
+		int nNum;				// 総数
+	};
+
 	//************************************************************************************************************************************************
 	// 情報構造体
 	//************************************************************************************************************************************************
@@ -174,6 +192,14 @@ public:			// 誰でもアクセスできる
 		bool bSuccess;							// 成功状況
 	};
 
+	// ボスの当たり判定のファイル
+	struct SBossCollFile
+	{
+		SBossCollinfo aFile[MAX_PARTS];			// 情報
+		int nNumData;							// モデルの総数
+		bool bSuccess;							// 成功状況
+	};
+
 	CFile();					// コンストラクタ
 	~CFile();					// デストラクタ
 
@@ -195,6 +221,7 @@ public:			// 誰でもアクセスできる
 	void SetBlock(void);		// ブロックの設定処理
 	void SetBangFlower(void);	// 爆弾花の設定処理
 	void SetWall(void);			// 壁の設定処理
+	void SetBossColl(CBossCollision** pColl);		// ボスの当たり判定の設定処理
 
 	// 静的メンバ関数
 	static CFile* Create(void);		// 生成処理
@@ -214,6 +241,7 @@ private:		// 自分のみアクセスできる
 	HRESULT LoadBlock(void);		// ブロックのロード処理
 	HRESULT LoadBangFlower(void);	// 爆弾花のロード処理
 	HRESULT LoadWall(void);			// 壁のロード処理
+	HRESULT LoadBossColl(void);		// ボスの当たり判定のロード処理
 
 	// メンバ変数
 	SRankingInfo m_RankingInfo;			// ランキングの情報
@@ -225,6 +253,7 @@ private:		// 自分のみアクセスできる
 	SBlockFile m_BlockFile;				// ブロックの情報
 	SBangFlowerFile m_BangFlowerFile;	// 爆弾花の情報
 	SWallFile m_WallFile;				// 壁の情報
+	SBossCollFile m_BossCollFile;		// ボスの当たり判定の情報
 
 	// 静的メンバ変数
 	static const char* c_apBooleanDisp[2];			// bool型の表示

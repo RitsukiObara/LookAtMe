@@ -10,8 +10,10 @@
 #include "useful.h"
 #include "boss.h"
 #include "boss_howlingstate.h"
+#include "sound.h"
 #include "motion.h"
 
+#include "game.h"
 #include "manager.h"
 #include "camera.h"
 
@@ -112,9 +114,15 @@ void CBossHowlingState::Process(CBoss* pBoss)
 			}
 		}
 
+		// ボスの雄たけび音を鳴らす
+		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_BOSSHOWLING);
+
 		break;
 
 	case NONESTATE_COUNT:			// 通常状態
+
+		// ボス出現状態を設定する
+		CGame::SetState(CGame::STATE_PLAY);
 
 		// 通常状態にする
 		pBoss->ChangeState(new CBossNoneState);

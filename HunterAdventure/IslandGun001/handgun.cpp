@@ -18,7 +18,7 @@ namespace
 	const char* MODEL = "data\\MODEL\\Pistol.x";		// モデルの名前
 	const float ADD_ROT_MOVE = 0.04f;					// 向きの移動量の加算数
 	const float MAX_ROT_MOVE = 0.4f;					// 向きの移動量の最大数
-	const float RELOAD_COUNT = 50;						// リロードカウント
+	const int RELOAD_COUNT = 50;						// リロードカウント
 	const float DEST_LENGTH = 200.0f;					// 目的の長さ
 	const float RELOAD_CORRECT = 5.0f;					// リロード中の補正倍率
 	const float RETURN_CORRECT = 16.0f;					// 戻り状態の補正倍率

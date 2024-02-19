@@ -123,51 +123,53 @@ void CIwakari::Uninit(void)
 //================================
 void CIwakari::Update(void)
 {
-	// ‘O‰ñ‚ÌˆÊ’u‚ðÝ’è‚·‚é
-	SetPosOld(GetPos());
+	if (CGame::GetState() == CGame::STATE_PLAY)
+	{ // ƒvƒŒƒCó‘ÔˆÈŠO
 
-	// ’ÇÕˆ—
-	Chase();
+		// ‘O‰ñ‚ÌˆÊ’u‚ðÝ’è‚·‚é
+		SetPosOld(GetPos());
 
-	switch (m_action)
-	{
-	case CIwakari::ACTION_NONE:		// ’Êíó‘Ô
+		// ’ÇÕˆ—
+		Chase();
 
+		switch (m_action)
+		{
+		case CIwakari::ACTION_NONE:		// ’Êíó‘Ô
 
+			break;
 
-		break;
+		case CIwakari::ACTION_MOVE:		// ˆÚ“®ó‘Ô
 
-	case CIwakari::ACTION_MOVE:		// ˆÚ“®ó‘Ô
+			if (GetState() == STATE_NONE)
+			{ // ’Êíó‘Ô‚Ìê‡
 
-		if (GetState() == STATE_NONE)
-		{ // ’Êíó‘Ô‚Ìê‡
+				// Œü‚«‚ÌˆÚ“®ˆ—
+				RotMove();
+			}
 
-			// Œü‚«‚ÌˆÚ“®ˆ—
-			RotMove();
+			// ˆÚ“®ˆ—
+			Move();
+
+			break;
+
+		default:
+
+			// ’âŽ~
+			assert(false);
+
+			break;
 		}
 
-		// ˆÚ“®ˆ—
-		Move();
+		// XVˆ—
+		CEnemy::Update();
 
-		break;
+		if (m_pShell != nullptr)
+		{ // Šk‚ª NULL ‚¶‚á‚È‚¢ê‡
 
-	default:
-
-		// ’âŽ~
-		assert(false);
-
-		break;
-	}
-
-	// XVˆ—
-	CEnemy::Update();
-
-	if (m_pShell != nullptr)
-	{ // Šk‚ª NULL ‚¶‚á‚È‚¢ê‡
-
-		// Šk‚ÌˆÊ’u‚ÆŒü‚«‚ðÝ’è‚·‚é
-		m_pShell->SetPos(GetPos());
-		m_pShell->SetRot(GetRot());
+			// Šk‚ÌˆÊ’u‚ÆŒü‚«‚ðÝ’è‚·‚é
+			m_pShell->SetPos(GetPos());
+			m_pShell->SetRot(GetRot());
+		}
 	}
 }
 

@@ -76,6 +76,9 @@
     <Filter Include="gimmick\Map\BangFlower">
       <UniqueIdentifier>{dc6fa207-aece-4428-ae6f-7048a3559fe5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Player\Airplane">
+      <UniqueIdentifier>{1a72ad39-88d2-4a23-8150-851ac102edb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -384,9 +387,6 @@
     <ClCompile Include="title_logo.cpp">
       <Filter>scene\title</Filter>
     </ClCompile>
-    <ClCompile Include="Kari_ResultLogo.cpp">
-      <Filter>scene\result</Filter>
-    </ClCompile>
     <ClCompile Include="ocean.cpp">
       <Filter>gimmick\Map</Filter>
     </ClCompile>
@@ -437,6 +437,42 @@
     </ClCompile>
     <ClCompile Include="wind_shot.cpp">
       <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="boss_lifeUI.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="boss_firestate.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="boss_chargestate.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="fire_warning.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="fire_shot.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="result_score.cpp">
+      <Filter>scene\result</Filter>
+    </ClCompile>
+    <ClCompile Include="boss_collision.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking_rank.cpp">
+      <Filter>scene\ranking</Filter>
+    </ClCompile>
+    <ClCompile Include="boss_destroystate.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="boss_stunstate.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="airplane.cpp">
+      <Filter>Player\Airplane</Filter>
+    </ClCompile>
+    <ClCompile Include="propeller.cpp">
+      <Filter>Player\Airplane</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -749,9 +785,6 @@
     <ClInclude Include="title_logo.h">
       <Filter>scene\title</Filter>
     </ClInclude>
-    <ClInclude Include="Kari_ResultLogo.h">
-      <Filter>scene\result</Filter>
-    </ClInclude>
     <ClInclude Include="ocean.h">
       <Filter>gimmick\Map</Filter>
     </ClInclude>
@@ -802,6 +835,42 @@
     </ClInclude>
     <ClInclude Include="wind_shot.h">
       <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="boss_lifeUI.h">
+      <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="boss_firestate.h">
+      <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="boss_chargestate.h">
+      <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="fire_warning.h">
+      <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="fire_shot.h">
+      <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="result_score.h">
+      <Filter>scene\result</Filter>
+    </ClInclude>
+    <ClInclude Include="boss_collision.h">
+      <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking_rank.h">
+      <Filter>scene\ranking</Filter>
+    </ClInclude>
+    <ClInclude Include="boss_destroystate.h">
+      <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="boss_stunstate.h">
+      <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="airplane.h">
+      <Filter>Player\Airplane</Filter>
+    </ClInclude>
+    <ClInclude Include="propeller.h">
+      <Filter>Player\Airplane</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

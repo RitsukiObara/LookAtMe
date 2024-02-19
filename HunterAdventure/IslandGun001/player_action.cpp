@@ -25,17 +25,20 @@
 //-------------------------------------------
 namespace
 {
-	const float DODGE_SPEED = 20.0f;	// 回避状態の速度
-	const int DODGE_COUNT = 27;			// 回避状態のカウント数
-	const int DAGGER_COUNT = 35;		// ダガー状態のカウント数
-	const int SWOOP_COUNT = 50;			// 急降下状態のカウント数
-	const int DODGE_BLUR_LIFE = 10;		// 回避状態のブラーの寿命
+	const float DODGE_SPEED = 20.0f;			// 回避状態の速度
+	const int DODGE_COUNT = 27;					// 回避状態のカウント数
+	const int DAGGER_COUNT = 35;				// ダガー状態のカウント数
+
+	const int SWOOP_COUNT = 50;					// 急降下状態のカウント数
+	const float SWOOP_RIPPLE_HEIGHT = 50.0f;	// 急降下状態の波紋の出る高さ
+
+	const int DODGE_BLUR_LIFE = 10;				// 回避状態のブラーの寿命
 	const D3DXCOLOR DODGE_BLUR_COL = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);		// 回避状態のブラーの色
-	const float DAGGER_HEIGHT = 80.0f;	// ダガーの高さ
+
 	const float ATTACK_DAGGER_HEIGHT = 150.0f;	// ダガー攻撃時の高さ
-	const float ATTACK_DAGGER_RADIUS = 180.0f;	// ダガー攻撃時の半径
-	const int DAGGER_ATTACK_START = 8;	// ダガーの攻撃判定が始まるカウント数
-	const int DAGGER_ATTACK_END = 28;	// ダガーの攻撃判定が終わるカウント数
+	const float ATTACK_DAGGER_RADIUS = 240.0f;	// ダガー攻撃時の半径
+	const int DAGGER_ATTACK_START = 8;			// ダガーの攻撃判定が始まるカウント数
+	const int DAGGER_ATTACK_END = 28;			// ダガーの攻撃判定が終わるカウント数
 }
 
 //=========================
@@ -50,6 +53,7 @@ CPlayerAction::CPlayerAction()
 	m_nDodgeInterval = 0;				// 回避のインターバルカウント
 	m_fDodgeRot = 0.0f;					// 回避する向き
 	m_bDodgeUse = true;					// 回避使用可能状況
+	m_bRipple = false;					// 波紋状況
 	m_bRecoil = false;					// 反動状況
 }
 
@@ -73,6 +77,7 @@ HRESULT CPlayerAction::Init(void)
 	m_nDodgeInterval = 0;				// 回避のインターバルカウント
 	m_fDodgeRot = 0.0f;					// 回避する向き
 	m_bDodgeUse = true;					// 回避使用可能状況
+	m_bRipple = false;					// 波紋状況
 	m_bRecoil = false;					// 反動状況
 
 	// 成功を返す
@@ -250,6 +255,9 @@ void CPlayerAction::SetAction(const ACTION action)
 
 	// 行動カウントをリセットする
 	m_nActionCount = 0;
+
+	// 波紋状況を false にする
+	m_bRipple = false;
 }
 
 //=========================
@@ -373,17 +381,17 @@ void CPlayerAction::DaggerPrecess(CPlayer* pPlayer)
 		// 軌跡の描画状況を true にする
 		pPlayer->GetDagger()->SetEnableDispOrbit(true);
 
-		// 木への攻撃判定処理
-		collision::TreeAttack(*pPlayer, DAGGER_HEIGHT);
+		// 爆弾花とダガーとの当たり判定
+		collision::BangFlowerHit(pPlayer->GetPos(), ATTACK_DAGGER_RADIUS, ATTACK_DAGGER_HEIGHT);
 
-		// ヤシの実との当たり判定
-		collision::PalmFruitHit(pPlayer, DAGGER_HEIGHT);
+		// 木への攻撃判定処理
+		collision::TreeAttack(*pPlayer, ATTACK_DAGGER_RADIUS, ATTACK_DAGGER_HEIGHT);
 
 		// 敵とダガーの当たり判定
 		collision::EnemyHitToDagger(pPlayer->GetPos(), ATTACK_DAGGER_HEIGHT, ATTACK_DAGGER_RADIUS);
 
 		// 爆弾とダガーの当たり判定
-		collision::BombHitToDagger(pPlayer->GetPos(), ATTACK_DAGGER_HEIGHT);
+		collision::BombHitToDagger(pPlayer->GetPos(), ATTACK_DAGGER_RADIUS, ATTACK_DAGGER_HEIGHT);
 	}
 
 	if (m_nActionCount % DAGGER_COUNT == 0)
@@ -506,16 +514,25 @@ void CPlayerAction::SwoopProcess(CPlayer* pPlayer)
 	// 移動量を取得する
 	D3DXVECTOR3 move = pPlayer->GetMove();
 
-	if (pPlayer->IsJump() == false)
+	if (pPlayer->IsJump() == false &&
+		m_bRipple == false)
 	{ // 地上に立った瞬間
 
+		D3DXVECTOR3 pos = pPlayer->GetPos();
+
+		// 位置を設定する
+		pos.y += SWOOP_RIPPLE_HEIGHT;
+
 		// 斬撃の波紋を生成する
-		CSlashRipple::Create(pPlayer->GetPos(), pPlayer->GetRot());
+		CSlashRipple::Create(pos, pPlayer->GetRot());
+
+		// 波紋を出した
+		m_bRipple = true;
 	}
 
 	// 移動量を設定する
 	move.x = 0.0f;
-	move.y = -20.0f + (m_nActionCount);
+	move.y = -20.0f - (m_nActionCount * 0.5f);
 	move.z = 0.0f;
 
 	// 移動量を適用する
@@ -532,10 +549,7 @@ void CPlayerAction::SwoopProcess(CPlayer* pPlayer)
 		pPlayer->GetDagger()->SetEnableDispOrbit(true);
 
 		// 木への攻撃判定処理
-		collision::TreeAttack(*pPlayer, DAGGER_HEIGHT);
-
-		// ヤシの実との当たり判定
-		collision::PalmFruitHit(pPlayer, DAGGER_HEIGHT);
+		collision::TreeAttack(*pPlayer, ATTACK_DAGGER_RADIUS, ATTACK_DAGGER_HEIGHT);
 
 		// 敵とダガーの当たり判定
 		collision::EnemyHitToDagger(pPlayer->GetPos(), ATTACK_DAGGER_HEIGHT, ATTACK_DAGGER_RADIUS);

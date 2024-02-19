@@ -288,7 +288,8 @@ bool CBullet::Hit(void)
 	D3DXVECTOR3 vtxMin = D3DXVECTOR3(-size.x, -size.y, -size.x);	// í∏ì_ÇÃç≈è¨íl
 
 	// ìGÇ∆èeÇÃìñÇΩÇËîªíË
-	if (collision::EnemyHitToGun(*this) == true ||
+	if (collision::BossHit(pos, size.x) == true ||
+		collision::EnemyHitToGun(*this) == true ||
 		collision::BangFlowerHit(pos, size.x, size.y) == true ||
 		collision::BombHitToGun(pos, posOld, size.x) == true ||
 		collision::BlockHit(&pos, posOld, vtxMax, vtxMin) == true ||

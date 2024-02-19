@@ -24,8 +24,7 @@
 namespace
 {
 	const float CHASE_CORRECT = 0.01f;			// 追跡の補正数
-	const int WIND_CREATE_COUNT = 180;			// 風が出るまでのカウント数
-	const int FINISH_COUNT = 450;				// 終了カウント
+	const int FINISH_COUNT = 400;				// 終了カウント
 }
 
 //==========================
@@ -35,7 +34,6 @@ CBossWindState::CBossWindState()
 {
 	// 全ての値をクリアする
 	m_pWindShot = nullptr;			// 風攻撃の情報
-	m_action = ACTION_CHARGE;		// 行動状況
 	m_nCount = 0;					// 経過カウント
 }
 
@@ -48,6 +46,7 @@ CBossWindState::~CBossWindState()
 	{ // 風攻撃が NULL じゃない場合
 
 		// 風攻撃を NULL にする
+		m_pWindShot->SetState(CWindShot::STATE_DELETE);
 		m_pWindShot = nullptr;
 	}
 }
@@ -57,63 +56,20 @@ CBossWindState::~CBossWindState()
 //==========================
 void CBossWindState::Process(CBoss* pBoss)
 {
-	switch (m_action)
-	{
-	case CBossWindState::ACTION_CHARGE:
+	// 追跡処理
+	Chase(pBoss);
 
-		// 経過カウントを加算する
-		m_nCount++;
+	// カウントを加算する
+	m_nCount++;
 
-		if (m_nCount % WIND_CREATE_COUNT == 0)
-		{ // 一定カウントを経過した場合
+	if (m_nCount >= FINISH_COUNT)
+	{ // 一定カウント経過した場合
 
-			// 経過カウントを初期化する
-			m_nCount = 0;
+		// 通常状態にする
+		pBoss->ChangeState(new CBossNoneState);
 
-			// 風発生状態にする
-			m_action = ACTION_WIND;
-
-			D3DXVECTOR3 pos = pBoss->GetPos();
-
-			if (m_pWindShot == nullptr)
-			{ // 風攻撃の情報が NULL じゃない場合
-
-				// 風を生成する
-				m_pWindShot = CWindShot::Create(pos);
-			}
-		}
-
-		break;
-
-	case CBossWindState::ACTION_WIND:
-
-		// 追跡処理
-		Chase(pBoss);
-
-		// カウントを加算する
-		m_nCount++;
-
-		if (m_nCount >= FINISH_COUNT)
-		{ // 一定カウント経過した場合
-
-			// 消去状態にする
-			m_pWindShot->SetState(CWindShot::STATE_DELETE);
-
-			// 通常状態にする
-			pBoss->ChangeState(new CBossNoneState);
-
-			// この先の処理を行わない
-			return;
-		}
-
-		break;
-
-	default:
-
-		// 停止
-		assert(false);
-
-		break;
+		// この先の処理を行わない
+		return;
 	}
 }
 
@@ -122,8 +78,11 @@ void CBossWindState::Process(CBoss* pBoss)
 //==========================
 void CBossWindState::SetData(CBoss* pBoss)
 {
-	// 飛行モーションにする
-	pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_CHARGE);
+	// 待機モーションにする
+	pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_NEUTRAL);
+
+	// 風攻撃を生成
+	m_pWindShot = CWindShot::Create(pBoss->GetPos());
 }
 
 //==========================
