@@ -51,6 +51,7 @@ private:			// 自分だけアクセスできる
 	// メンバ変数
 	STATE m_state;				// 状態
 	int m_nStateCount;			// 状態カウント
+	int m_nAreaIdx;				// 区分の番号
 	float m_fAlpha;				// 透明度
 
 	// 静的メンバ変数

@@ -76,6 +76,8 @@ public:					// 誰でもアクセスできる
 	void SetGravity(const float fGravity);	// 重力の設定処理
 	float GetGravity(void) const;			// 重力の取得処理
 
+	TYPE GetType(void) const;				// 種類の取得処理
+
 	// 静的メンバ関数
 	static CEnemy* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const TYPE type);		// 生成処理
 
@@ -85,11 +87,11 @@ private:				// 自分だけアクセスできる
 
 	// メンバ関数
 	void ElevationCollision(void);	// 起伏地面との当たり判定
-	void TreeCollision(void);		// 木との当たり判定
-	void RockCollision(void);		// 岩との当たり判定
-	void BlockCollision(void);		// ブロックとの当たり判定
-	void WallCollision(void);		// 壁との当たり判定
+	void Collision(void);			// 当たり判定処理
+	void BlockCollision(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DXVECTOR3& vtxMax, const D3DXVECTOR3& vtxMin, const int nAreaIdx);		// ブロックとの当たり判定
+	void AlterCollision(void);		// 祭壇との当たり判定
 	void SlashRippleHit(void);		// 斬撃の波紋との当たり判定
+	void StageCollision(void);		// ステージの当たり判定
 
 	// メンバ変数
 	CMotion* m_pMotion;		// モーションの情報
@@ -97,6 +99,7 @@ private:				// 自分だけアクセスできる
 	TYPE m_type;			// 種類
 	STATE m_state;			// 状態
 	D3DXVECTOR3 m_collSize;	// 当たり判定のサイズ
+	int m_nFieldIdx;		// 区分の番号
 	int m_nLife;			// 体力
 	int m_nStateCount;		// 状態カウント
 	float m_fGravity;		// 重力

@@ -25,10 +25,11 @@ public:
 private:
 
 	// メンバ関数
-	void RotMove(CBoss* pBoss);		// 向きの移動処理
-	void Standby(CBoss* pBoss);		// スタンバイ処理 
-	void Fly(CBoss* pBoss);			// 飛行処理
-	void Ripple(CBoss* pBoss);		// 波紋の生成処理
+	void RotMove(CBoss* pBoss);			// 向きの移動処理
+	void Standby(CBoss* pBoss);			// スタンバイ処理 
+	void Fly(CBoss* pBoss);				// 飛行処理
+	void Ripple(CBoss* pBoss);			// 波紋の生成処理
+	void StageCollision(CBoss* pBoss);	// ステージの当たり判定
 
 	// メンバ変数
 	D3DXVECTOR3 m_moveDest;			// 目的の移動量

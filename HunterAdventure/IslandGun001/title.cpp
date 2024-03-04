@@ -16,11 +16,18 @@
 
 #include "skybox.h"
 #include "title_logo.h"
+#include "ocean.h"
 #include "objectElevation.h"
 #include "Objectmesh.h"
 
-// マクロ定義
-#define SET_RANKING_TIMER		(600)		// ランキング画面に遷移するカウント数
+//--------------------------------------------
+// 定数定義
+//--------------------------------------------
+namespace
+{
+	const int SET_RANKING_TIMER = 600;		// ランキング画面に遷移するカウント数
+	const char* ELEVATION_TXT = "data/TXT/Elevation.txt";		// 起伏地面のテキスト
+}
 
 //=========================================
 // コンストラクタ
@@ -48,7 +55,7 @@ HRESULT CTitle::Init(void)
 	CScene::Init();
 
 	// テキスト読み込み処理
-	CElevation::TxtSet();
+	CElevation::TxtSet(ELEVATION_TXT);
 
 	// モーションの読み込み処理
 	CMotion::Load(CMotion::STYLE_PLAYER);		// プレイヤー
@@ -71,6 +78,9 @@ HRESULT CTitle::Init(void)
 
 	// スカイボックスの生成処理
 	CSkyBox::Create();
+
+	// 海の生成
+	COcean::Create();
 
 	// タイトルロゴの生成
 	CTitleLogo::Create();
@@ -118,7 +128,7 @@ void CTitle::Update(void)
 	{ // ENTERキーを押した場合
 
 		// ゲームに遷移する
-		CManager::Get()->GetFade()->SetFade(CScene::MODE_GAME);
+		CManager::Get()->GetFade()->SetFade(CScene::MODE_TUTORIAL);
 
 		// この先の処理を行わない
 		return;

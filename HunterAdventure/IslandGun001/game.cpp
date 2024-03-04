@@ -12,10 +12,10 @@
 #include "game.h"
 #include "fade.h"
 #include "file.h"
+#include "light.h"
 #include "renderer.h"
 #include "texture.h"
 
-#include "pause.h"
 #include "debugproc.h"
 #include "sound.h"
 
@@ -23,15 +23,22 @@
 #include "skybox.h"
 #include "motion.h"
 
+#include "pause.h"
 #include "player.h"
 #include "ocean.h"
 #include "game_score.h"
-#include "boss.h"
+#include "alter.h"
+#include "continueUI.h"
 
 //--------------------------------------------
 // マクロ定義
 //--------------------------------------------
-#define TRANS_COUNT		(80)		// 遷移カウント
+namespace
+{
+	const int TRANS_COUNT = 80;			// 遷移カウント
+	const int GAMEOVER_COUNT = 150;		// ゲームオーバーカウント
+	const char* ELEVATION_TXT = "data/TXT/Elevation.txt";		// 起伏地面のテキスト
+}
 
 //--------------------------------------------
 // 静的メンバ変数宣言
@@ -39,7 +46,8 @@
 CPause* CGame::m_pPause = nullptr;							// ポーズの情報
 CPlayer* CGame::m_pPlayer = nullptr;						// プレイヤーの情報
 CGameScore* CGame::m_pGameScore = nullptr;					// ゲームスコアの情報
-CGame::STATE CGame::m_GameState = CGame::STATE_START;		// ゲームの進行状態
+CAlter* CGame::m_pAlter = nullptr;							// 祭壇の情報
+CGame::STATE CGame::m_state = CGame::STATE_START;		// ゲームの進行状態
 int CGame::m_nScore = 0;									// スコア
 bool CGame::m_bPause = false;								// ポーズ状況
 
@@ -49,14 +57,18 @@ bool CGame::m_bPause = false;								// ポーズ状況
 CGame::CGame()
 {
 	// 全ての値をクリアする
-	m_nFinishCount = 0;			// 終了カウント
+	m_nStateCount = 0;			// 終了カウント
 
 	m_pPause = nullptr;			// ポーズ
 	m_pPlayer = nullptr;		// プレイヤー
 	m_pGameScore = nullptr;		// スコア
-	m_GameState = STATE_START;	// 状態
+	m_pAlter = nullptr;			// 祭壇
+	m_state = STATE_START;		// 状態
 	m_nScore = 0;				// スコア
 	m_bPause = false;			// ポーズ状況
+
+	// 得点の減算量のリセット処理
+	CContinueUI::SubScoreReset();
 }
 
 //=========================================
@@ -73,10 +85,11 @@ CGame::~CGame()
 HRESULT CGame::Init(void)
 {
 	// スタートカメラで描画
+	CManager::Get()->GetCamera()->Reset();
 	CManager::Get()->GetCamera()->SetType(CCamera::TYPE_START);
 
 	// テキスト読み込み処理
-	CElevation::TxtSet();
+	CElevation::TxtSet(ELEVATION_TXT);
 
 	// モーションの読み込み処理
 	CMotion::Load(CMotion::STYLE_PLAYER);		// プレイヤー
@@ -109,9 +122,12 @@ HRESULT CGame::Init(void)
 	// ゲームスコアの生成
 	m_pGameScore = CGameScore::Create();
 
+	// 祭壇の生成
+	m_pAlter = CAlter::Create();
+
 	// 情報の初期化
-	m_nFinishCount = 0;			// 終了カウント
-	m_GameState = STATE_START;	// 状態
+	m_nStateCount = 0;			// 終了カウント
+	m_state = STATE_START;		// 状態
 	m_bPause = false;			// ポーズ状況
 
 	// 成功を返す
@@ -136,11 +152,25 @@ void CGame::Uninit(void)
 	m_pGameScore = nullptr;		// ゲームスコア
 
 	// 情報を初期化する
-	m_GameState = STATE_START;	// ゲームの進行状態
+	m_state = STATE_START;		// ゲームの進行状態
 	m_bPause = false;			// ポーズ状況
 
 	// 終了カウントを初期化する
-	m_nFinishCount = 0;
+	m_nStateCount = 0;
+
+	if (CManager::Get()->GetLight() != nullptr)
+	{ // ライトが NULL じゃない場合
+
+		// ライトの色をリセットする
+		CManager::Get()->GetLight()->ResetCol();
+	}
+
+	if (CManager::Get()->GetRenderer() != nullptr)
+	{ // レンダラーが NULL じゃない場合
+
+		// 霧の色をリセットする
+		CManager::Get()->GetRenderer()->SetFogCol(NONE_D3DXCOLOR);
+	}
 
 	// 終了処理
 	CScene::Uninit();
@@ -151,14 +181,73 @@ void CGame::Uninit(void)
 //======================================
 void CGame::Update(void)
 {
-	switch (m_GameState)
+	switch (m_state)
 	{
 	case CGame::STATE_START:
+
+		if (CManager::Get()->GetInputKeyboard()->GetTrigger(DIK_RETURN) == true ||
+			CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_START, 0) == true ||
+			CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_A, 0) == true)
+		{ // ENTERキーを押した場合
+
+			if (m_pPlayer != nullptr)
+			{ // プレイヤーが存在する場合
+
+				// 飛行機到着処理
+				m_pPlayer->ArrivalAirplane();
+			}
+		}
+
+		// ポーズ処理
+		Pause();
+
+		break;
+
 	case CGame::STATE_PLAY:
 	case CGame::STATE_BOSSMOVIE:
 
 		// ポーズ処理
 		Pause();
+
+		break;
+
+	case CGame::STATE_GAMEOVER:
+
+		if (m_pGameScore->GetScore() >= CContinueUI::GetSubScore())
+		{ // 復活出来るほどスコアがある場合
+
+			// ポーズ処理
+			Pause();
+
+			// 終了カウントを加算する
+			m_nStateCount++;
+
+			if (m_nStateCount % GAMEOVER_COUNT == 0)
+			{ // 状態カウントが一定数以上になった場合
+
+				// 状態カウントをリセットする
+				m_nStateCount = 0;
+
+				// コンティニュー状態にする
+				m_state = STATE_CONTINUE;
+
+				// コンティニューUIを生成
+				CContinueUI::Create();
+			}
+		}
+		else
+		{ // 上記以外
+
+			// 終了処理にする
+			m_state = STATE_FINISH;
+		}
+
+		break;
+
+	case CGame::STATE_CONTINUE:
+
+		// コンティニューUIのみを動かす
+		CObject::AnyUpdate(CObject::TYPE_CONTINUEUI);
 
 		break;
 
@@ -177,25 +266,13 @@ void CGame::Update(void)
 		break;
 	}
 
-	//if (CManager::Get()->GetInputKeyboard()->GetTrigger(DIK_RETURN) == true ||
-	//	CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_START, 0) == true ||
-	//	CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_A, 0) == true)
-	//{ // ENTERキーを押した場合
-
-	//	// チュートリアルに遷移する
-	//	CManager::Get()->GetFade()->SetFade(CScene::MODE_RESULT);
-
-	//	// この先の処理を行わない
-	//	return;
-	//}
-
 	if (m_bPause == true)
 	{ // ポーズ状況が true の場合
 
 		// 更新処理
 		m_pPause->Update();
 	}
-	else
+	else if(m_state != STATE_CONTINUE)
 	{ // 上記以外
 
 		if (CManager::Get()->GetRenderer() != nullptr)
@@ -206,7 +283,7 @@ void CGame::Update(void)
 		}
 	}
 
-	CManager::Get()->GetDebugProc()->Print("状態：%d", m_GameState);
+	CManager::Get()->GetDebugProc()->Print("状態：%d", m_state);
 }
 
 //======================================
@@ -232,11 +309,11 @@ void CGame::SetData(const MODE mode)
 	CScene::SetData(mode);
 
 	// 全ての値を設定する
-	m_GameState = STATE_START;	// スタート状態にする
+	m_state = STATE_START;		// スタート状態にする
 	m_bPause = false;			// ポーズ状況
 
 	// 情報の初期化
-	m_nFinishCount = 0;				// 終了カウント
+	m_nStateCount = 0;				// 終了カウント
 }
 
 //======================================
@@ -297,9 +374,9 @@ void CGame::Pause(void)
 void CGame::Transition(void)
 {
 	// 終了カウントを加算する
-	m_nFinishCount++;
+	m_nStateCount++;
 
-	if (m_nFinishCount % TRANS_COUNT == 0)
+	if (m_nStateCount % TRANS_COUNT == 0)
 	{ // 終了カウントが一定数を超えた場合
 
 		if (m_pGameScore != nullptr)
@@ -338,7 +415,7 @@ bool CGame::IsPause(void)
 void CGame::SetState(const STATE state)
 {
 	// ゲームの進行状態を設定する
-	m_GameState = state;
+	m_state = state;
 }
 
 //======================================
@@ -347,7 +424,7 @@ void CGame::SetState(const STATE state)
 CGame::STATE CGame::GetState(void)
 {
 	// ゲームの進行状態を返す
-	return m_GameState;
+	return m_state;
 }
 
 //======================================
@@ -366,6 +443,15 @@ CGameScore* CGame::GetGameScore(void)
 {
 	// ゲームスコアのポインタを返す
 	return m_pGameScore;
+}
+
+//======================================
+// 祭壇の取得処理
+//======================================
+CAlter* CGame::GetAlter(void)
+{
+	// 祭壇のポインタを返す
+	return m_pAlter;
 }
 
 //======================================
@@ -402,4 +488,13 @@ void CGame::DeleteGameScore(void)
 {
 	// スコアのポインタを NULL にする
 	m_pGameScore = nullptr;
+}
+
+//======================================
+// 祭壇のNULL化処理
+//======================================
+void CGame::DeleteAlter(void)
+{
+	// 祭壇のポインタを NULL にする
+	m_pAlter = nullptr;
 }

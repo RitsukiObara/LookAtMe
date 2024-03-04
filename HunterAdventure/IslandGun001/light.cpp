@@ -139,6 +139,29 @@ void CLight::Update(void)
 }
 
 //=========================
+// 色のリセット処理
+//=========================
+void CLight::ResetCol(void)
+{
+	// 色をリセットする
+	for (int nCnt = 0; nCnt < NUM_LIGHT; nCnt++)
+	{
+		m_aLight[nCnt].Diffuse = LIGHT_DIFFUSE[nCnt];
+	}
+
+	m_lightCamera.Diffuse = CAMERALIGHT_DIFFUSE;
+}
+
+//=========================
+// ライトの設定処理
+//=========================
+void CLight::SetLightInfo(const int nIdx, const D3DLIGHT9& light)
+{
+	// ライトの情報を設定する
+	m_aLight[nIdx] = light;
+}
+
+//=========================
 // ライトの取得処理
 //=========================
 D3DLIGHT9 CLight::GetLightInfo(const int nIdx) const

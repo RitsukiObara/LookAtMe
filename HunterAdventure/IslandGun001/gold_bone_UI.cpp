@@ -14,7 +14,6 @@
 #include "useful.h"
 
 #include "object2D.h"
-#include "boss.h"
 
 namespace
 {
@@ -337,13 +336,6 @@ void CGoldBoneUI::GetGoldBone(void)
 
 			// 拡大状態を設定する
 			m_aBoneMark[nCnt].state = STATE_EXTEND;
-
-			if (nCnt == MAX_BONE_MARK - 1)
-			{ // 金の骨が全て集まった場合
-
-				// ボスを生成する
-				CBoss::Create(NONE_D3DXVECTOR3, NONE_D3DXVECTOR3);
-			}
 
 			// 抜け出す
 			break;

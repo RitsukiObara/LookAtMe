@@ -12,6 +12,12 @@
 //***********************************
 #include "model.h"
 #include "list_manager.h"
+#include "area.h"
+
+//-----------------------------------
+// 前方宣言
+//-----------------------------------
+class CPalmFruit;		// ヤシの実
 
 //-----------------------------------
 // クラス定義(木)
@@ -41,19 +47,21 @@ public:			// 誰でもアクセスできる
 
 	// セット・ゲット関係
 	TYPE GetType(void) const;				// 種類の取得処理
+	virtual CPalmFruit* GetFruit(void);		// ヤシの実の取得処理(ヤシの木で必要)
 
 	// 静的メンバ関数
 	static CTree* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const TYPE type);	// 生成処理
 
-	static CListManager<CTree*> GetList(void);			// リストの取得処理
+	static CListManager<CTree*> GetList(const int nIdx);		// リストの取得処理
 
 private:		// 自分だけアクセスできる
 
 	// メンバ変数
 	TYPE m_type;		// 種類
+	int m_nAreaIdx;		// 区分の番号
 	
 	// 静的メンバ変数
-	static CListManager<CTree*> m_list;		// リスト
+	static CListManager<CTree*> m_aList[area::NUM_AREA];		// リスト
 };
 
 #endif

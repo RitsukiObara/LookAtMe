@@ -13,6 +13,14 @@
 #include "object.h"
 #include "fade.h"
 
+//--------------------------------------------
+// 定数定義
+//--------------------------------------------
+namespace
+{
+	const D3DXCOLOR INIT_FOG_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.1f);		// 霧の色の初期値
+}
+
 //=========================================
 // コンストラクタ
 //=========================================
@@ -20,7 +28,9 @@ CRenderer::CRenderer()
 {
 	// 全ての値をクリアする
 	m_pD3D = nullptr;			// オブジェクトへのポインタ
-	m_pD3DDevice = nullptr;	// デバイスへのポインタ
+	m_pD3DDevice = nullptr;		// デバイスへのポインタ
+	m_fogCol = INIT_FOG_COL;	// 霧の色
+	m_bFog = false;				// 霧状況
 }
 
 //=========================================
@@ -179,8 +189,21 @@ void CRenderer::Draw(void)
 	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
 	{//描画開始が成功した場合
 
+		if (CManager::Get()->GetMode() == CScene::MODE_GAME)
+		{ // ゲームモードの場合
+
+			// 霧状況を true にする
+			m_bFog = true;
+		}
+		else
+		{ // 上記以外
+
+			// 霧状況を false にする
+			m_bFog = false;
+		}
+
 		// 霧の設定処理
-		SetFog(false, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.1f), 4000.0f, 50000.0f);
+		SetFog(m_bFog, m_fogCol, 500.0f, 40000.0f);
 
 		// 全ての描画処理
 		CObject::DrawAll();
@@ -286,4 +309,22 @@ void CRenderer::SetFog(const bool bFog, const D3DXCOLOR& col, const float fStart
 	m_pD3DDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);		//テーブルモード
 	m_pD3DDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&fStartPos));		//開始位置
 	m_pD3DDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&fEndPos));			//終了位置
+}
+
+//===========================================
+// 色のレベル
+//===========================================
+void CRenderer::SetFogCol(const D3DXCOLOR& col)
+{
+	// 色の設定
+	m_fogCol = col;
+}
+
+//===========================================
+// 色のレベルの取得処理
+//===========================================
+D3DXCOLOR CRenderer::GetFogCol(void) const
+{
+	// 色レベルを返す
+	return m_fogCol;
 }

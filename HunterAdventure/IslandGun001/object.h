@@ -76,6 +76,19 @@ public:			// 誰でもアクセスできる
 		TYPE_FIRESHOT,			// 炎攻撃
 		TYPE_RANKUI,			// 順位UI
 		TYPE_AIRPLANE,			// 飛行機
+		TYPE_ALTER,				// 祭壇
+		TYPE_BOSSBARRIER,		// ボスのバリア
+		TYPE_SIGNBOARD,			// 看板
+		TYPE_RANKINGTABLE,		// ランキングのスコア
+		TYPE_SIGNEXPLAIN,		// 看板の説明
+		TYPE_TARGET,			// 的
+		TYPE_ALTERLIGHT,		// 祭壇の光
+		TYPE_ADDSCOREUI,		// 追加スコアUI
+		TYPE_DOOR,				// ドア
+		TYPE_TUTORIALMAP,		// チュートリアルマップ
+		TYPE_ALTERFLASH,		// 祭壇閃光
+		TYPE_BOSSNAME,			// ボスの名前
+		TYPE_CONTINUEUI,		// コンティニューUI
 		TYPE_MAX				// この列挙型の総数
 	};
 
@@ -125,6 +138,7 @@ public:			// 誰でもアクセスできる
 
 	static void AnyAllClear(const TYPE type);		// 汎用的な全消去処理
 	static void AnyAllClear(const DIM dim, const PRIORITY priority, const TYPE type);		// 汎用的な全消去処理
+	static void AnyUpdate(const TYPE type);			// 種類限定の更新処理
 	static void DeathDecision(const int dim, const int nCnt);		// 死亡判別処理
 
 protected:		// 自分と派生クラスだけがアクセスできる

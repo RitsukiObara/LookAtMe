@@ -20,28 +20,20 @@
 //--------------------------------------------
 namespace
 {
-	const float METER_WIDTH = 350.0f;		// メーターの横幅
-	const D3DXVECTOR3 POLY_SIZE[CBossLifeUI::POLY_MAX] =		// ポリゴンのサイズ
-	{
-		D3DXVECTOR3(METER_WIDTH, 50.0f, 0.0f),
-		D3DXVECTOR3(METER_WIDTH, 50.0f, 0.0f),
-	};
+	const float METER_WIDTH = 480.0f;		// メーターの横幅
+	const D3DXVECTOR3 POLY_SIZE = D3DXVECTOR3(METER_WIDTH, 30.0f, 0.0f);		// ポリゴンのサイズ
 	const D3DXVECTOR3 POLY_POS[CBossLifeUI::POLY_MAX] =			// ポリゴンの位置
 	{
 		D3DXVECTOR3((SCREEN_WIDTH * 0.5f) - METER_WIDTH, 650.0f, 0.0f),
 		D3DXVECTOR3((SCREEN_WIDTH * 0.5f) - METER_WIDTH, 650.0f, 0.0f),
 	};
-	const D3DXVECTOR3 POLY_ROT[CBossLifeUI::POLY_MAX] =			// ポリゴンの向き
+	const D3DXVECTOR3 POLY_ROT = NONE_D3DXVECTOR3;			// ポリゴンの向き
+	const char* TEXTURE[CBossLifeUI::POLY_MAX] =			// テクスチャ
 	{
-		NONE_D3DXVECTOR3,
-		NONE_D3DXVECTOR3,
+		"data\\TEXTURE\\BossLifeGage.png",
+		"data\\TEXTURE\\BossLifeMeter.png",
 	};
-	const char* TEXTURE[CBossLifeUI::POLY_MAX] =		// テクスチャ
-	{
-		"data\\TEXTURE\\LifeUIGage.png",
-		"data\\TEXTURE\\LifeUIMeter.png",
-	};
-	const float METER_ADD = 1.0f;						// メーターの加算数
+	const float METER_ADD = 1.0f;							// メーターの加算数
 }
 
 //========================
@@ -167,8 +159,8 @@ void CBossLifeUI::SetData(const int nLife)
 			// 情報の設定処理
 			m_apObject2D[nCnt]->SetPos(POLY_POS[nCnt]);
 			m_apObject2D[nCnt]->SetPosOld(POLY_POS[nCnt]);
-			m_apObject2D[nCnt]->SetRot(POLY_ROT[nCnt]);
-			m_apObject2D[nCnt]->SetSize(POLY_SIZE[nCnt]);
+			m_apObject2D[nCnt]->SetRot(POLY_ROT);
+			m_apObject2D[nCnt]->SetSize(POLY_SIZE);
 			m_apObject2D[nCnt]->SetAngle();
 			m_apObject2D[nCnt]->SetLength();
 

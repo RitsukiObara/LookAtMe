@@ -35,6 +35,7 @@ public:			// 誰でもアクセスできる
 		TYPE_RING,			// 輪っか
 		TYPE_WOOD,			// 木
 		TYPE_ROCK,			// 岩
+		TYPE_DIRT,			// 土
 		TYPE_BOSSROCK,		// ボスの赤いとこ
 		TYPE_MAX			// この列挙型の総数
 	};
@@ -48,10 +49,10 @@ public:			// 誰でもアクセスできる
 	void Update(void) override;		// 更新処理
 	void Draw(void) override;		// 描画処理
 
-	void SetData(const D3DXVECTOR3& pos, const TYPE type, const int nLife, const int nMoveWidth, const int nMoveHeight);				// 情報の設定処理
+	void SetData(const D3DXVECTOR3& pos, const TYPE type, const int nLife, const int nMoveWidth, const int nMoveHeight, const D3DXVECTOR3 scale);				// 情報の設定処理
 
 	// 静的メンバ関数
-	static CFraction* Create(const D3DXVECTOR3& pos, const TYPE type, const int nLife, const int nMoveWidth, const int nMoveHeight);	// 生成処理
+	static CFraction* Create(const D3DXVECTOR3& pos, const TYPE type, const int nLife, const int nMoveWidth, const int nMoveHeight, const D3DXVECTOR3 scale = NONE_SCALE);	// 生成処理
 
 private:		// 自分だけアクセスできる
 

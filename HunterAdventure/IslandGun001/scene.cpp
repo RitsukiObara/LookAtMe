@@ -99,7 +99,7 @@ void CScene::SetData(const MODE mode)
 		case MODE_TUTORIAL:
 
 			// ƒ^ƒCƒgƒ‹BGM‚ð—¬‚·
-			CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_BGM_TITLE);
+			CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_BGM_TUTORIAL);
 
 			break;
 

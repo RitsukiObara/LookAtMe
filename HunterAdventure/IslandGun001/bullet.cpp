@@ -8,6 +8,7 @@
 #include "bullet.h"
 #include "renderer.h"
 #include "texture.h"
+#include "area.h"
 #include "useful.h"
 
 #include "locus3D.h"
@@ -51,6 +52,7 @@ CBullet::CBullet() : CBillboard(CObject::TYPE_BULLET, CObject::PRIORITY_ENTITY)
 	// 全ての値をクリアする
 	m_move = NONE_D3DXVECTOR3;	// 移動量
 	m_type = TYPE_HANDGUN;		// 種類
+	m_nAreaIdx = 0;				// 区分の番号
 	m_nLife = LIFE;				// 寿命
 	m_nDamage = 0;				// ダメージ
 	m_fKnockBack = 0.0f;		// ノックバック値
@@ -118,6 +120,9 @@ void CBullet::Update(void)
 
 	// 位置を適用する
 	SetPos(pos);
+
+	// 区分の番号の設定処理
+	m_nAreaIdx = area::SetFieldIdx(GetPos());
 
 	// 寿命を減算する
 	m_nLife--;
@@ -189,6 +194,9 @@ void CBullet::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const TYPE
 
 	// 頂点情報の初期化
 	SetVertex();
+
+	// 区分の番号の設定処理
+	m_nAreaIdx = area::SetFieldIdx(GetPos());
 
 	// テクスチャの読み込み処理
 	BindTexture(CManager::Get()->GetTexture()->Regist(TEXTURE));
@@ -286,17 +294,35 @@ bool CBullet::Hit(void)
 	D3DXVECTOR3 size = GetSize();		// サイズ
 	D3DXVECTOR3 vtxMax = D3DXVECTOR3(size.x, size.y, size.x);		// 頂点の最大値
 	D3DXVECTOR3 vtxMin = D3DXVECTOR3(-size.x, -size.y, -size.x);	// 頂点の最小値
+	int nIdx = 0;
 
-	// 敵と銃の当たり判定
-	if (collision::BossHit(pos, size.x) == true ||
+	for (int nCnt = 0; nCnt < area::NUM_COLL; nCnt++)
+	{
+		nIdx = m_nAreaIdx + area::COLL_ADD_IDX[nCnt];
+
+		if (area::IndexCheck(nIdx) == true)
+		{ // 区分内の場合
+
+			if (collision::BlockHit(&pos, posOld, vtxMax, vtxMin, nIdx) == true ||
+				collision::RockCollision(&pos, posOld, vtxMax.x, vtxMax.y, nIdx) == true ||
+				collision::TreeCollision(&pos, vtxMax.x, nIdx) == true ||
+				collision::WallCollision(&pos, posOld, vtxMax, vtxMin, nIdx) == true ||
+				collision::PalmFruitAttack(pos, size.x, nIdx) == true)
+			{ // 何かに当たった場合
+				
+				// true を返す
+				return true;
+			}
+		}
+	}
+
+	if (collision::BossHit(pos, size.x, m_nDamage) == true ||
 		collision::EnemyHitToGun(*this) == true ||
 		collision::BangFlowerHit(pos, size.x, size.y) == true ||
 		collision::BombHitToGun(pos, posOld, size.x) == true ||
-		collision::BlockHit(&pos, posOld, vtxMax, vtxMin) == true ||
-		collision::RockCollision(&pos, vtxMax.x, vtxMax.y) == true ||
-		collision::TreeCollision(&pos, vtxMax.x) == true ||
-		collision::WallCollision(&pos, posOld, vtxMax, vtxMin) == true)
-	{ // 敵に当たった場合
+		collision::AlterCollision(&pos, posOld, vtxMax, vtxMin) == true ||
+		collision::TargetHit(pos, size.x) == true)
+	{ // オブジェクトに当たった場合
 
 		// true を返す
 		return true;

@@ -24,10 +24,9 @@ namespace
 	};
 	const D3DXVECTOR3 TYPE_SIZE[CPushTiming::TYPE_MAX] =	// サイズ
 	{
-		D3DXVECTOR3(30.0f, 30.0f, 0.0f),		// Aボタンのサイズ
-		D3DXVECTOR3(60.0f, 30.0f, 0.0f),		// SPACEキーのサイズ
+		D3DXVECTOR3(1.0f, 1.0f, 0.0f),		// Aボタンのサイズ
+		D3DXVECTOR3(2.0f, 1.0f, 0.0f),		// SPACEキーのサイズ
 	};
-	const int ANIM_COUNT = 6;			// アニメーションカウント
 	const int ANIM_PATTERN = 2;			// アニメーションパターン
 }
 
@@ -93,16 +92,16 @@ void CPushTiming::Draw(void)
 //===========================================
 // 設定処理
 //===========================================
-void CPushTiming::SetData(const D3DXVECTOR3& pos, const TYPE type)
+void CPushTiming::SetData(const D3DXVECTOR3& pos, const float fSize, const TYPE type, const int nInterval)
 {
 	// 情報の設定処理
-	SetPos(pos);				// 位置
-	SetPosOld(pos);				// 前回の位置
-	SetSize(TYPE_SIZE[type]);	// サイズ
-	SetEnableLookY(true);		// Y軸状況
+	SetPos(pos);						// 位置
+	SetPosOld(pos);						// 前回の位置
+	SetSize(fSize * TYPE_SIZE[type]);	// サイズ
+	SetEnableLookY(true);				// Y軸状況
 
 	// アニメーションの設定処理
-	SetAnim(ANIM_COUNT, ANIM_PATTERN);
+	SetAnim(nInterval, ANIM_PATTERN);
 
 	// 頂点情報の初期化
 	SetVertex();
@@ -117,7 +116,7 @@ void CPushTiming::SetData(const D3DXVECTOR3& pos, const TYPE type)
 //===========================================
 // 生成処理
 //===========================================
-CPushTiming* CPushTiming::Create(const D3DXVECTOR3& pos, const TYPE type)
+CPushTiming* CPushTiming::Create(const D3DXVECTOR3& pos, const float fSize, const TYPE type, const int nInterval)
 {
 	// ローカルオブジェクトを生成
 	CPushTiming* pPushTiming = nullptr;			// 押しタイミングのインスタンスを生成
@@ -150,7 +149,7 @@ CPushTiming* CPushTiming::Create(const D3DXVECTOR3& pos, const TYPE type)
 		}
 
 		// 情報の設定処理
-		pPushTiming->SetData(pos, type);
+		pPushTiming->SetData(pos, fSize, type, nInterval);
 	}
 	else
 	{ // オブジェクトが NULL の場合

@@ -13,11 +13,6 @@
 #include "scene.h"
 
 //-----------------------------------
-// マクロ定義
-//-----------------------------------
-#define MAX_RANKING		(5)		// ランキングの数
-
-//-----------------------------------
 // クラス定義(ランキングシーン)
 //-----------------------------------
 class CRanking : public CScene
@@ -32,6 +27,9 @@ public:			// 誰でもアクセスできる
 	void Uninit(void) override;			// 終了処理
 	void Update(void) override;			// 更新
 	void Draw(void) override;			// 描画処理
+
+	// 定数
+	static const int MAX_RANKING = 5;	// ランキングの数
 
 private:		// 自分だけアクセスできる
 

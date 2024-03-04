@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "fire_shot.h"
 #include "texture.h"
+#include "sound.h"
 #include "useful.h"
 
 //-------------------------------------------
@@ -168,6 +169,9 @@ void CFireShot::SetData(const D3DXVECTOR3& pos)
 
 	// ‘S‚Ä‚Ì’l‚ðÝ’è‚·‚é
 	m_state = STATE_EXTEND;			// ó‘Ô
+
+	// ‰ŠUŒ‚‰¹‚ð–Â‚ç‚·
+	CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_FIRESHOT);
 }
 
 //=======================================

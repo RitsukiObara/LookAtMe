@@ -124,18 +124,8 @@ void CScore::Uninit(void)
 //========================
 void CScore::Update(void)
 {
-	if (m_nDispScore >= m_nScore)
-	{ // 描画用スコアが実際のスコアを上回った場合
-
-		// 描画用スコアを設定する
-		m_nDispScore = m_nScore;
-	}
-	else
-	{ // 上記以外
-
-		// 描画用スコアを加算する
-		m_nDispScore += m_nAddDisp;
-	}
+	// 得点を増やす
+	useful::FrameCorrect(m_nScore, &m_nDispScore, m_nAddDisp);
 
 	// 計算処理
 	Calculate();

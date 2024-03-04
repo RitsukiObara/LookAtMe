@@ -28,7 +28,7 @@ namespace
 //-------------------------------------------
 // 静的メンバ変数宣言
 //-------------------------------------------
-CListManager<CTree*> CTree::m_list = {};		// リスト
+CListManager<CTree*> CTree::m_aList[area::NUM_AREA] = {};		// リスト
 
 //==============================
 // コンストラクタ
@@ -37,9 +37,7 @@ CTree::CTree(CObject::TYPE type, PRIORITY priority) : CModel(type, priority)
 {
 	// 全ての値をクリアする
 	m_type = TYPE_PALM;		// 種類
-
-	// リストに追加する
-	m_list.Regist(this);
+	m_nAreaIdx = 0;			// 区分の番号
 }
 
 //==============================
@@ -71,11 +69,11 @@ HRESULT CTree::Init(void)
 //========================================
 void CTree::Uninit(void)
 {
+	// 引き抜き処理
+	m_aList[m_nAreaIdx].Pull(this);
+
 	// 終了処理
 	CModel::Uninit();
-
-	// 引き抜き処理
-	m_list.Pull(this);
 }
 
 //========================================
@@ -109,6 +107,12 @@ void CTree::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const TYPE t
 
 	// 全ての値を設定する
 	m_type = type;		// 種類
+
+	// 区分の番号の設定処理
+	m_nAreaIdx = area::SetFieldIdx(GetPos());
+
+	// リストに追加する
+	m_aList[m_nAreaIdx].Regist(this);
 }
 
 //=====================================
@@ -191,10 +195,10 @@ CTree* CTree::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const TYPE 
 //=======================================
 // リストの取得処理
 //=======================================
-CListManager<CTree*> CTree::GetList(void)
+CListManager<CTree*> CTree::GetList(const int nIdx)
 {
 	// リストマネージャーを返す
-	return m_list;
+	return m_aList[nIdx];
 }
 
 //=======================================
@@ -204,4 +208,13 @@ CTree::TYPE CTree::GetType(void) const
 {
 	// 種類を返す
 	return m_type;
+}
+
+//=======================================
+// ヤシの実の取得処理(ヤシの木で必要)
+//=======================================
+CPalmFruit* CTree::GetFruit(void)
+{
+	// NULL を返す
+	return nullptr;
 }

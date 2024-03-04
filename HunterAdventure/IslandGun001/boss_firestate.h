@@ -27,9 +27,6 @@ public:
 
 private:
 
-	// メンバ関数
-	void Chase(CBoss* pBoss);			// 追跡処理
-
 	// メンバ変数
 	int m_nCount;				// 経過カウント
 };

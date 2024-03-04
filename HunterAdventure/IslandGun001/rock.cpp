@@ -37,7 +37,7 @@ namespace
 //-------------------------------------------
 // 静的メンバ変数宣言
 //-------------------------------------------
-CListManager<CRock*> CRock::m_list = {};		// リスト
+CListManager<CRock*> CRock::m_aList[area::NUM_AREA] = {};		// リスト
 
 //==============================
 // コンストラクタ
@@ -49,9 +49,7 @@ CRock::CRock() : CModel(TYPE_ROCK, PRIORITY_BLOCK)
 	m_fRadius = 0.0f;			// 半径
 	m_fTop = 0.0f;				// 上の高さ
 	m_fBottom = 0.0f;			// 下の高さ
-
-	// リストに追加する
-	m_list.Regist(this);
+	m_nFieldIdx = 0;			// 区分の番号
 }
 
 //==============================
@@ -83,11 +81,11 @@ HRESULT CRock::Init(void)
 //========================================
 void CRock::Uninit(void)
 {
+	// 引き抜き処理
+	m_aList[m_nFieldIdx].Pull(this);
+
 	// 終了処理
 	CModel::Uninit();
-
-	// 引き抜き処理
-	m_list.Pull(this);
 }
 
 //========================================
@@ -135,6 +133,12 @@ void CRock::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVE
 	// 高さを設定する
 	m_fTop = GetFileData().vtxMax.y * scale.y;
 	m_fBottom = GetFileData().vtxMin.y * scale.y;
+
+	// 区分の設定処理
+	m_nFieldIdx = area::SetFieldIdx(GetPos());
+
+	// リストに追加する
+	m_aList[m_nFieldIdx].Regist(this);
 }
 
 //=====================================
@@ -220,10 +224,10 @@ CRock* CRock::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXV
 //=======================================
 // リストの取得処理
 //=======================================
-CListManager<CRock*> CRock::GetList(void)
+CListManager<CRock*> CRock::GetList(const int nIdx)
 {
 	// リストマネージャーを返す
-	return m_list;
+	return m_aList[nIdx];
 }
 
 //=======================================

@@ -12,6 +12,7 @@
 //***********************************
 #include "model.h"
 #include "list_manager.h"
+#include "area.h"
 
 //-----------------------------------
 // クラス定義(岩)
@@ -50,18 +51,19 @@ public:			// 誰でもアクセスできる
 	// 静的メンバ関数
 	static CRock* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& scale, const TYPE type);	// 生成処理
 
-	static CListManager<CRock*> GetList(void);			// リストの取得処理
+	static CListManager<CRock*> GetList(const int nIdx);			// リストの取得処理
 
 private:		// 自分だけアクセスできる
 	
 	// メンバ変数
 	TYPE m_type;		// 種類
+	int m_nFieldIdx;	// 区分の番号
 	float m_fRadius;	// 半径
 	float m_fTop;		// 上の高さ
 	float m_fBottom;	// 下の高さ
 
 	// 静的メンバ変数
-	static CListManager<CRock*> m_list;		// リスト
+	static CListManager<CRock*> m_aList[area::NUM_AREA];		// リスト
 };
 
 #endif

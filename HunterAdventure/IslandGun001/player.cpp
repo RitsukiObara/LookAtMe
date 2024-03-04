@@ -12,6 +12,8 @@
 #include "renderer.h"
 #include "debugproc.h"
 #include "model.h"
+#include "area.h"
+#include "sound.h"
 #include "useful.h"
 
 #include "player.h"
@@ -24,6 +26,7 @@
 #include "lifeUI.h"
 #include "player_controller.h"
 #include "airplane.h"
+#include "shadowCircle.h"
 
 #include "collision.h"
 #include "camera.h"
@@ -39,10 +42,13 @@ namespace
 {
 	const float GRAVITY = 1.0f;						// 重力
 	const float LAND_GRAVITY = -50.0f;				// 着地時の重力
+	const float SHADOW_RADIUS = 70.0f;				// 影の半径
 	const D3DXVECTOR3 INIT_CAMERA_ROT = D3DXVECTOR3(D3DX_PI * 0.5f, 0.0f, 0.0f);		// カメラの初期向き
 	const float INIT_POSV_CAMERA_Y = 250.0f;		// カメラの視点のY座標
 	const float ROT_CORRECT = 0.2f;					// 向きの補正倍率
-	const D3DXVECTOR3 COLLISION_SIZE = D3DXVECTOR3(40.0f, 190.0f, 40.0f);		// 当たり判定時のサイズ
+	const D3DXVECTOR3 AIRPLANE_ARRIVAL_MOVE = D3DXVECTOR3(0.0f, 30.0f, 0.0f);			// 飛行機到着時の移動量
+	const D3DXVECTOR3 AIRPLANE_ARRIVAL_POSV = D3DXVECTOR3(-1000.0f, 1500.0f, 0.0f);		// 飛行機到着時のカメラの視点の位置
+	const D3DXVECTOR3 COLLISION_SIZE = D3DXVECTOR3(40.0f, 200.0f, 40.0f);				// 当たり判定時のサイズ
 	const D3DXVECTOR3 GUN_POS[NUM_HANDGUN] =		// 拳銃の位置
 	{
 		D3DXVECTOR3(-10.0f, 0.0f, 0.0f),
@@ -64,6 +70,8 @@ namespace
 	const float KNOCKBACK_MOVE = 23.0f;				// 吹き飛ぶ移動量
 	const float KNOCKBACK_JUMP = 15.0f;				// 吹き飛ぶ高さ
 	const int WIND_SHOT_DAMAGE = 10;				// 風攻撃のダメージ
+	const int FIRE_SHOT_DAMAGE = 20;				// 炎攻撃のダメージ
+	const int BOSS_RUSH_DAMAGE = 50;				// ボス突進のダメージ
 }
 
 //=========================================
@@ -85,6 +93,7 @@ CPlayer::CPlayer() : CCharacter(CObject::TYPE_PLAYER, CObject::PRIORITY_PLAYER)
 	m_pLifeUI = nullptr;					// 寿命UIの情報
 	m_pController = nullptr;				// プレイヤーのコントローラーの情報
 	m_pAirplane = nullptr;					// 飛行機の情報
+	m_pShadow = nullptr;					// 丸影の情報
 
 	m_stateInfo.state = STATE_NONE;			// 状態
 	m_stateInfo.nCount = 0;					// 状態カウント
@@ -92,6 +101,7 @@ CPlayer::CPlayer() : CCharacter(CObject::TYPE_PLAYER, CObject::PRIORITY_PLAYER)
 	m_rotDest = NONE_D3DXVECTOR3;			// 目標の向き
 	m_move = NONE_D3DXVECTOR3;				// 移動量
 	m_nLife = MAX_LIFE;						// 体力
+	m_nAreaIdx = 0;							// 区分の番号
 	m_bMove = false;						// 移動状況
 	m_bJump = false;						// ジャンプ状況
 }
@@ -229,6 +239,7 @@ HRESULT CPlayer::Init(void)
 	}
 	m_pAim = nullptr;					// エイムの情報
 	m_pDagger = nullptr;				// ダガーの情報
+	m_pShadow = nullptr;				// 丸影の情報
 
 	m_stateInfo.state = STATE_NONE;		// 状態
 	m_stateInfo.nCount = 0;				// 状態カウント
@@ -437,29 +448,29 @@ void CPlayer::Update(void)
 			m_pLifeUI->SetLife(m_nLife);
 		}
 
+		// 区分の設定処理
+		m_nAreaIdx = area::SetFieldIdx(GetPos());
+
 		// ヤシの実との当たり判定
 		collision::PalmFruitHit(this, COLLISION_SIZE.x, COLLISION_SIZE.y);
-
-		// 小判との当たり判定
-		collision::CoinCollision(this, COLLISION_SIZE);
 
 		// 金の骨との当たり判定
 		collision::GoldBoneCollision(*this, COLLISION_SIZE);
 
-		// 木との当たり判定
-		TreeCollision();
+		// 祭壇の周囲の当たり判定
+		collision::AlterSurrounding(GetPos(), COLLISION_SIZE.x);
 
 		// 起伏地面との当たり判定処理
 		ElevationCollision();
 
-		// ブロックとの当たり判定処理
-		BlockCollision();
+		// 当たり判定処理
+		Collision();
 
-		// 岩との当たり判定
-		RockCollision();
+		// 祭壇との当たり判定
+		AlterCollision();
 
-		// 壁との当たり判定
-		WallCollision();
+		// ステージの当たり判定
+		StageCollision();
 
 		CManager::Get()->GetDebugProc()->Print("位置：%f %f %f", GetPos().x, GetPos().y, GetPos().z);
 
@@ -467,9 +478,42 @@ void CPlayer::Update(void)
 
 	case CGame::STATE_BOSSMOVIE:	// ボス出現状態
 
+		// 起伏地面との当たり判定処理
+		ElevationCollision();
+
+		break;
+
+	case CGame::STATE_GAMEOVER:		// ゲームオーバー状態
+
+		if (m_pMotion != nullptr)
+		{ // モーションが NULL じゃない場合
+
+			// モーションの更新処理
+			m_pMotion->Update();
+		}
+
+		// 起伏地面との当たり判定処理
+		ElevationCollision();
+
 		break;
 
 	case CGame::STATE_FINISH:		// 終了状態
+
+		if (m_pMotion != nullptr)
+		{ // モーションが NULL じゃない場合
+
+			// モーションの更新処理
+			m_pMotion->Update();
+		}
+
+		// 起伏地面との当たり判定処理
+		ElevationCollision();
+
+		break;
+
+	case CGame::STATE_CONTINUE:		// コンティニュー状態
+
+		// 特に無し
 
 		break;
 
@@ -480,6 +524,9 @@ void CPlayer::Update(void)
 
 		break;
 	}
+
+	// 影の位置設定処理
+	ShadowPosSet();
 }
 
 //===========================================
@@ -570,6 +617,23 @@ void CPlayer::Hit(const int nDamage, const float fRotSmash)
 
 		// 移動量を0にする
 		m_move = NONE_D3DXVECTOR3;
+
+		if (m_pMotion->GetType() != MOTIONTYPE_DEATH)
+		{ // 死亡モーションじゃない場合
+
+			// 死亡モーションを行う
+			m_pMotion->Set(MOTIONTYPE_DEATH);
+		}
+
+		if (CManager::Get()->GetMode() == CScene::MODE_GAME)
+		{ // ゲームモードの場合
+
+			// ゲームオーバーにする
+			CGame::SetState(CGame::STATE_GAMEOVER);
+
+			// ゲームオーバーカメラにする
+			CManager::Get()->GetCamera()->SetType(CCamera::TYPE_GAMEOVER);
+		}
 	}
 	else
 	{ // 上記以外
@@ -599,6 +663,16 @@ void CPlayer::Hit(const int nDamage, const float fRotSmash)
 		m_move.x = sinf(fRotSmash) * KNOCKBACK_MOVE;
 		m_move.y = KNOCKBACK_JUMP;
 		m_move.z = cosf(fRotSmash) * KNOCKBACK_MOVE;
+
+		if (m_pMotion->GetType() != MOTIONTYPE_DAMAGE)
+		{ // ダメージモーションじゃなかった場合
+
+			// ダメージモーションを設定
+			m_pMotion->Set(MOTIONTYPE_DAMAGE);
+		}
+
+		// ダメージ音を鳴らす
+		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_DAMAGE);
 	}
 }
 
@@ -691,12 +765,78 @@ CLifeUI* CPlayer::GetLifeUI(void) const
 }
 
 //=======================================
-// 飛行機の管轄外し処理
+// コントローラーの情報の取得処理
 //=======================================
-void CPlayer::RemoveAirplane(void)
+CPlayerController* CPlayer::GetController(void) const
+{
+	// コントローラー情報を返す
+	return m_pController;
+}
+
+//=======================================
+// 飛行機の情報の取得処理
+//=======================================
+CAirplane* CPlayer::GetAirplane(void) const
+{
+	// 飛行機の情報を返す
+	return m_pAirplane;
+}
+
+//=======================================
+// 飛行機のNULL化処理
+//=======================================
+void CPlayer::DeleteAirplane()
 {
 	// 飛行機を NULL にする
 	m_pAirplane = nullptr;
+}
+
+//=======================================
+// 飛行機の到着処理
+//=======================================
+void CPlayer::ArrivalAirplane(void)
+{
+	if (m_pAirplane != nullptr)
+	{ // 飛行機が NULL じゃない場合
+
+		// 飛行機の位置を取得
+		D3DXVECTOR3 pos = m_pAirplane->GetPos();
+
+		// 目的の位置に補正する
+		pos.x = m_pAirplane->GetPosDest().x;
+		pos.z = m_pAirplane->GetPosDest().z;
+
+		// 位置を適用
+		m_pAirplane->SetPos(pos);
+
+		// プレイヤー登場状態にする
+		CManager::Get()->GetCamera()->SetType(CCamera::TYPE_PLAYERAPPEAR);
+
+		// カメラの視点を設定する
+		CManager::Get()->GetCamera()->SetPosV(pos + AIRPLANE_ARRIVAL_POSV);
+
+		// 位置を設定する
+		SetPos(pos);
+
+		// 移動量の設定処理
+		SetMove(AIRPLANE_ARRIVAL_MOVE);
+
+		// 墜落状態にする
+		m_pAirplane->SetState(CAirplane::STATE_FALL);
+
+		// 種類を飛行機に変える
+		m_pAirplane->SetType(TYPE_AIRPLANE);
+
+		// 飛行機を NULL にする
+		m_pAirplane = nullptr;
+
+		if (m_pMotion->GetType() != MOTIONTYPE_AIRDIVE)
+		{ // 飛行機降り状態以外の場合
+
+			// 飛行機降りモーションを行う
+			m_pMotion->Set(MOTIONTYPE_AIRDIVE);
+		}
+	}
 }
 
 //=======================================
@@ -765,6 +905,16 @@ void CPlayer::SetData(const D3DXVECTOR3& pos)
 	m_nLife = MAX_LIFE;					// 体力
 	m_bMove = false;					// 移動状況
 	m_bJump = false;					// ジャンプ状況
+
+	// 区分の設定処理
+	m_nAreaIdx = area::SetFieldIdx(GetPos());
+
+	if (m_pShadow == nullptr)
+	{ // 丸影が NULL の場合
+
+		// 丸影を生成
+		m_pShadow = CShadowCircle::Create(GetPos(), SHADOW_RADIUS, m_nAreaIdx);
+	}
 }
 
 //===========================================
@@ -853,6 +1003,33 @@ D3DXVECTOR3 CPlayer::GetMove(void) const
 }
 
 //=======================================
+// 寿命の設定処理
+//======================================
+void CPlayer::SetLife(const int nLife)
+{
+	// 時縫い
+	m_nLife = nLife;
+}
+
+//======================================
+// 体力の取得処理
+//======================================
+int CPlayer::GetLife(void) const
+{
+	// 体力を返す
+	return m_nLife;
+}
+
+//=======================================
+// 状態の設定処理
+//=======================================
+void CPlayer::SetState(const SState state)
+{
+	// 状態を設定する
+	m_stateInfo = state;
+}
+
+//=======================================
 // 状態の取得処理
 //=======================================
 CPlayer::SState CPlayer::GetState(void) const
@@ -877,6 +1054,24 @@ bool CPlayer::IsJump(void) const
 {
 	//ジャンプ状況を返す
 	return m_bJump;
+}
+
+//=======================================
+// 区分の番号の設定処理
+//=======================================
+void CPlayer::SetAreaIdx(const int nIdx)
+{
+	// 区分の番号を設定する
+	m_nAreaIdx = nIdx;
+}
+
+//=======================================
+// 区分の番号の取得処理
+//=======================================
+int CPlayer::GetAreaIdx(void) const
+{
+	// 区分の番号を返す
+	return m_nAreaIdx;
 }
 
 //=======================================
@@ -946,6 +1141,44 @@ void CPlayer::ElevationCollision(void)
 }
 
 //=======================================
+// 当たり判定処理
+//=======================================
+void CPlayer::Collision(void)
+{
+	D3DXVECTOR3 pos = GetPos();									// 位置
+	D3DXVECTOR3 posOld = GetPosOld();							// 前回の位置
+	D3DXVECTOR3 vtxMin = useful::VtxMinConv(COLLISION_SIZE);	// 頂点の最小値
+	int nIdx = 0;
+
+	for (int nCnt = 0; nCnt < area::NUM_COLL; nCnt++)
+	{
+		nIdx = m_nAreaIdx + area::COLL_ADD_IDX[nCnt];
+
+		if (area::IndexCheck(nIdx) == true)
+		{ // 区分内の場合
+
+			// 小判との当たり判定
+			collision::CoinCollision(this, COLLISION_SIZE, nIdx);
+
+			// 木との当たり判定
+			collision::TreeCollision(&pos, COLLISION_SIZE.x, nIdx);
+
+			// ブロックとの当たり判定
+			BlockCollision(&pos, posOld, COLLISION_SIZE, vtxMin, nIdx);
+
+			// 岩との当たり判定
+			collision::RockCollision(&pos, posOld, COLLISION_SIZE.x, COLLISION_SIZE.y, nIdx, &m_move.y, &m_bJump);
+
+			// 岩との当たり判定
+			collision::WallCollision(&pos, posOld, COLLISION_SIZE, vtxMin, nIdx);
+		}
+	}
+
+	// 位置を適用する
+	SetPos(pos);
+}
+
+//=======================================
 // 状態管理処理
 //=======================================
 void CPlayer::StateManager(void)
@@ -968,13 +1201,25 @@ void CPlayer::StateManager(void)
 
 			// 吹き飛ぶ向き
 			float fRotSmash = 0.0f;
+			D3DXVECTOR3 pos = GetPos();
 
-			if (collision::WindShotHit(GetPos(), COLLISION_SIZE.x, COLLISION_SIZE.y, &fRotSmash) == true ||
-				collision::FireShotHit(GetPos(), COLLISION_SIZE.x, COLLISION_SIZE.y, &fRotSmash) == true)
-			{ // 当たった場合
+			if (collision::WindShotHit(pos, COLLISION_SIZE.x, COLLISION_SIZE.y, &fRotSmash) == true)
+			{ // 風攻撃に当たった場合
 
 				// ヒット処理
 				Hit(WIND_SHOT_DAMAGE, fRotSmash);
+			}
+			else if (collision::FireShotHit(pos, COLLISION_SIZE.x, COLLISION_SIZE.y, &fRotSmash) == true)
+			{ // 炎攻撃に当たった場合
+
+				// ヒット処理
+				Hit(FIRE_SHOT_DAMAGE, fRotSmash);
+			}
+			else if (collision::BossAttack(D3DXVECTOR3(pos.x, pos.y + (COLLISION_SIZE.y * 0.5f), pos.z), COLLISION_SIZE.x, &fRotSmash) == true)
+			{ // ボスの突進に当たった場合
+
+				// ヒット処理
+				Hit(BOSS_RUSH_DAMAGE, fRotSmash);
 			}
 		}
 
@@ -997,6 +1242,22 @@ void CPlayer::StateManager(void)
 
 	case CPlayer::STATE_DEATH:
 
+		if (m_pMotion->GetType() != MOTIONTYPE_DEATH)
+		{ // 死亡モーションじゃない場合
+
+			// 死亡モーションを行う
+			m_pMotion->Set(MOTIONTYPE_DEATH);
+		}
+
+		if (CManager::Get()->GetMode() == CScene::MODE_GAME)
+		{ // ゲームモードの場合
+
+			// ゲームオーバーにする
+			CGame::SetState(CGame::STATE_GAMEOVER);
+
+			// ゲームオーバーカメラにする
+			CManager::Get()->GetCamera()->SetType(CCamera::TYPE_GAMEOVER);
+		}
 
 		break;
 
@@ -1104,31 +1365,36 @@ void CPlayer::EmergentReload(void)
 }
 
 //=======================================
-// 木との当たり判定
+// 影の位置設定処理
 //=======================================
-void CPlayer::TreeCollision(void)
+void CPlayer::ShadowPosSet(void)
 {
-	// 位置を取得する
+	// 位置を取得
 	D3DXVECTOR3 pos = GetPos();
 
-	// 木との当たり判定
-	collision::TreeCollision(&pos, COLLISION_SIZE.x);
+	// 影の位置と区分の番号を設定する
+	m_pShadow->SetPos(pos);
+	m_pShadow->SetAreaIdx(m_nAreaIdx);
 
-	// 位置を適用する
-	SetPos(pos);
+	if (m_bJump == true)
+	{ // ジャンプしている場合
+
+		// 高さを最下層にする
+		pos.y = FLT_MIN;
+
+		// 影の当たり判定
+		m_pShadow->Collision();
+	}
 }
 
 //=======================================
 // ブロックとの当たり判定
 //=======================================
-void CPlayer::BlockCollision(void)
+void CPlayer::BlockCollision(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DXVECTOR3& vtxMax, const D3DXVECTOR3& vtxMin, const int nAreaIdx)
 {
 	// ローカル変数宣言
 	collision::SCollision coll = { false,false,false,false,false,false };				// 当たり判定の変数
-	D3DXVECTOR3 pos = GetPos();							// 位置を取得する
-	D3DXVECTOR3 vtxMin = D3DXVECTOR3(-COLLISION_SIZE.x, 0.0f, -COLLISION_SIZE.z);		// 最小値を取得する
-	D3DXVECTOR3 vtxMax = COLLISION_SIZE;				// 最大値を取得する
-	CListManager<CBlock*> list = CBlock::GetList();
+	CListManager<CBlock*> list = CBlock::GetList(nAreaIdx);
 	CBlock* pBlock = nullptr;		// 先頭の値
 	CBlock* pBlockEnd = nullptr;	// 末尾の値
 	int nIdx = 0;
@@ -1149,9 +1415,9 @@ void CPlayer::BlockCollision(void)
 			// 六面体の当たり判定
 			coll = collision::HexahedronClush
 			(
-				&pos,
+				pos,
 				pBlock->GetPos(),
-				GetPosOld(),
+				posOld,
 				pBlock->GetPosOld(),
 				vtxMin,
 				pBlock->GetVtxMin(),
@@ -1183,36 +1449,18 @@ void CPlayer::BlockCollision(void)
 			nIdx++;
 		}
 	}
-
-	// 位置を適用する
-	SetPos(pos);
 }
 
 //=======================================
-// 岩との当たり判定
+// 祭壇との当たり判定
 //=======================================
-void CPlayer::RockCollision(void)
+void CPlayer::AlterCollision(void)
 {
 	// 位置を取得する
 	D3DXVECTOR3 pos = GetPos();
 
-	// 岩との当たり判定
-	collision::RockCollision(&pos, COLLISION_SIZE.x, COLLISION_SIZE.y);
-
-	// 位置の設定処理
-	SetPos(pos);
-}
-
-//=======================================
-// 壁との当たり判定
-//=======================================
-void CPlayer::WallCollision(void)
-{
-	// 位置を取得する
-	D3DXVECTOR3 pos = GetPos();
-
-	// 岩との当たり判定
-	collision::WallCollision
+	// 祭壇との当たり判定
+	collision::AlterCollision
 	(
 		&pos,
 		GetPosOld(),
@@ -1221,5 +1469,20 @@ void CPlayer::WallCollision(void)
 	);
 
 	// 位置の設定処理
+	SetPos(pos);
+}
+
+//=======================================
+// ステージとの当たり判定
+//=======================================
+void CPlayer::StageCollision(void)
+{
+	// 位置を取得
+	D3DXVECTOR3 pos = GetPos();
+
+	// ステージの当たり判定
+	collision::StageCollision(&pos, COLLISION_SIZE.x);
+
+	// 位置を適用
 	SetPos(pos);
 }

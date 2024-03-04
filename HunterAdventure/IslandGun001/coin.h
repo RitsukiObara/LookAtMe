@@ -12,6 +12,7 @@
 //***********************************
 #include "model.h"
 #include "list_manager.h"
+#include "area.h"
 
 //-----------------------------------
 // クラス定義(小判)
@@ -47,7 +48,7 @@ public:			// 誰でもアクセスできる
 	// 静的メンバ関数
 	static CCoin* Create(const D3DXVECTOR3& pos);	// 生成処理
 
-	static CListManager<CCoin*> GetList(void);		// リストの取得処理
+	static CListManager<CCoin*> GetList(const int nIdx);		// リストの取得処理
 
 private:		// 自分だけアクセスできる
 
@@ -57,12 +58,13 @@ private:		// 自分だけアクセスできる
 
 	// メンバ変数
 	STATE m_state;			// 状態
+	int m_nAreaIdx;			// 区分の番号
 	int m_nDeathCount;		// 死亡カウント
 	float m_fCycleSpeed;	// 回転速度
 	float m_fHeightDest;	// 目標の高さ
 
 	// 静的メンバ変数
-	static CListManager<CCoin*> m_list;		// リスト
+	static CListManager<CCoin*> m_aList[area::NUM_AREA];		// リスト
 };
 
 #endif

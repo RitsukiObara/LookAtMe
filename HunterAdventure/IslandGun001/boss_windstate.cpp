@@ -8,9 +8,11 @@
 //	インクルードファイル
 //****************************************************************************************************************
 #include "useful.h"
+#include "manager.h"
 #include "boss.h"
 #include "boss_windstate.h"
 #include "motion.h"
+#include "sound.h"
 
 #include "game.h"
 #include "player.h"
@@ -24,6 +26,7 @@
 namespace
 {
 	const float CHASE_CORRECT = 0.01f;			// 追跡の補正数
+	const int WIND_CREATE_COUNT = 70;			// 風攻撃発生カウント
 	const int FINISH_COUNT = 400;				// 終了カウント
 }
 
@@ -56,11 +59,19 @@ CBossWindState::~CBossWindState()
 //==========================
 void CBossWindState::Process(CBoss* pBoss)
 {
-	// 追跡処理
-	Chase(pBoss);
-
 	// カウントを加算する
 	m_nCount++;
+
+	if (m_nCount == WIND_CREATE_COUNT)
+	{ // 風攻撃発生カウントになった場合
+
+		// 風攻撃を生成
+		m_pWindShot = CWindShot::Create(pBoss->GetPos());
+
+		// 風攻撃音を鳴らす
+		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_WINDSHOT);
+		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_BOSSHOWLING);
+	}
 
 	if (m_nCount >= FINISH_COUNT)
 	{ // 一定カウント経過した場合
@@ -78,34 +89,10 @@ void CBossWindState::Process(CBoss* pBoss)
 //==========================
 void CBossWindState::SetData(CBoss* pBoss)
 {
-	// 待機モーションにする
-	pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_NEUTRAL);
+	if (pBoss->GetMotion()->GetType() != CBoss::MOTIONTYPE_HOWLING)
+	{ // 遠吠えモーション以外の場合
 
-	// 風攻撃を生成
-	m_pWindShot = CWindShot::Create(pBoss->GetPos());
-}
-
-//==========================
-// 追跡処理
-//==========================
-void CBossWindState::Chase(CBoss* pBoss)
-{
-	// プレイヤーの情報を取得する
-	CPlayer* pPlayer = CGame::GetPlayer();
-
-	if (pPlayer != nullptr)
-	{ // プレイヤーが NULL じゃない場合
-
-		// 位置と向きを宣言
-		D3DXVECTOR3 posPlayer = pPlayer->GetPos();
-		D3DXVECTOR3 posBoss = pBoss->GetPos();
-		D3DXVECTOR3 rotBoss = pBoss->GetRot();
-		float fRotDest = atan2f(posPlayer.x - posBoss.x, posPlayer.z - posBoss.z);
-
-		// 向きの補正処理
-		useful::RotCorrect(fRotDest, &rotBoss.y, CHASE_CORRECT);
-
-		// 向きを適用する
-		pBoss->SetRot(rotBoss);
+		// 遠吠えモーションにする
+		pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_HOWLING);
 	}
 }

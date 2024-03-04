@@ -295,6 +295,57 @@ void CObject::AnyAllClear(const DIM dim, const PRIORITY priority, const TYPE typ
 }
 
 //===========================================
+// 種類限定の更新処理
+//===========================================
+void CObject::AnyUpdate(const TYPE type)
+{
+	// ローカル変数宣言
+	CObject* pObj = nullptr;		// 現在のオブジェクトのポインタ
+	CObject* pObjNext = nullptr;	// 次のオブジェクトのポインタ
+
+	for (int nCntDim = 0; nCntDim < DIM_MAX; nCntDim++)
+	{
+		for (int nCntPri = 0; nCntPri < PRIORITY_MAX; nCntPri++)
+		{
+			// オブジェクトを代入する
+			pObj = m_apTop[nCntDim][nCntPri];
+
+			while (pObj != nullptr)
+			{ // オブジェクトが NULL じゃない限り回す
+
+				// 次のオブジェクトを代入する
+				pObjNext = pObj->m_pNext;
+
+				if (pObj->GetType() == type &&
+					pObj->m_bDeath == false)
+				{ // オブジェクトの種類が NONEとPAUSE以外かつ、死亡フラグがfalseの場合
+
+					// オブジェクトの更新
+					pObj->Update();
+
+					if (pObj != nullptr &&
+						pObj->m_pNext == nullptr)
+					{ // 次のオブジェクトが NULL の場合
+
+						// 次のオブジェクトを NULL にする
+						pObjNext = nullptr;
+					}
+				}
+
+				// 次のオブジェクトを代入する
+				pObj = pObjNext;
+			}
+		}
+
+		for (int nCnt = 0; nCnt < PRIORITY_MAX; nCnt++)
+		{
+			// 死亡判定処理
+			DeathDecision(nCntDim, nCnt);
+		}
+	}
+}
+
+//===========================================
 // 全ての更新処理
 //===========================================
 void CObject::UpdateAll(void)
@@ -511,7 +562,7 @@ void CObject::DeathDecision(const int dim, const int nCnt)
 			if (pObj->m_pNext != nullptr)
 			{ // 次のオブジェクトが NULL じゃない場合
 
-				// リスト構造か.ら自分を抜き出す
+				// リスト構造から自分を抜き出す
 				pObj->m_pNext->m_pPrev = pObj->m_pPrev;
 			}
 

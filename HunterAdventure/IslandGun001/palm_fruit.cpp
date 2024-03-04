@@ -14,6 +14,7 @@
 #include "useful.h"
 
 #include "objectElevation.h"
+#include "collision.h"
 
 //-------------------------------------------
 // 無名名前空間
@@ -150,6 +151,9 @@ void CPalmFruit::Update(void)
 
 		break;
 	}
+
+	// ステージの当たり判定
+	StageCollision();
 }
 
 //=====================================
@@ -383,4 +387,19 @@ bool CPalmFruit::ElevationCollision(void)
 
 	// false を返す
 	return false;
+}
+
+//=======================================
+// ステージの当たり判定
+//=======================================
+void CPalmFruit::StageCollision(void)
+{
+	// 位置を取得
+	D3DXVECTOR3 pos = GetPos();
+
+	// ステージの当たり判定
+	collision::StageCollision(&pos, GetFileData().fRadius);
+
+	// 位置を適用
+	SetPos(pos);
 }

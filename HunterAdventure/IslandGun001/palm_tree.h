@@ -36,6 +36,9 @@ public:			// 誰でもアクセスできる
 	void SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const TYPE type) override;		// 情報の設定処理
 	void Hit(void) override;		// ヒット処理
 
+	// セット・ゲット関係
+	CPalmFruit* GetFruit(void) override;		// ヤシの実の取得処理
+
 private:		// 自分だけアクセスできる
 
 	// メンバ変数

@@ -13,17 +13,32 @@
 #include "renderer.h"
 #include "useful.h"
 
+#include "game.h"
+#include "alter.h"
+#include "alter_pole.h"
+#include "blur_org.h"
+#include "gold_bone_light.h"
+
 //-------------------------------------------
 // 無名名前空間
 //-------------------------------------------
 namespace
 {
 	const char* MODEL = "data\\MODEL\\GoldBone.x";		// モデルの名前
-	const float ROT_MOVE = 0.01f;		// モデルの向きの移動量
-	const float GET_HEIGHT = 300.0f;	// 取得時の高さ
-	const float ADD_HEIGHT = 30.0f;		// 高さの加算数
-	const float ADD_ROT_MOVE = 0.01f;	// 向きの移動量の加算数
-	const float DELETE_ROT_MOVE = 0.8f;	// 消去する向きの移動量
+	const float ROT_MOVE = 0.01f;			// モデルの向きの移動量
+	const float GET_HEIGHT = 300.0f;		// 取得時の高さ
+	const float ADD_HEIGHT = 30.0f;			// 高さの加算数
+	const float ADD_ROT_MOVE = 0.008f;		// 向きの移動量の加算数
+
+	const float UP_ROT_MOVE = 0.8f;			// 上昇状態に遷移する時の向きの移動量
+	const float UP_DEST_HEIGHT = 5000.0f;	// 上昇状態の目標の高さ
+	const float UP_MOVE_Y = 100.0f;			// 上昇状態の移動量
+	const float UP_BLUR_ALPHA = 0.6f;		// 上昇状態の残像の透明度
+	const int UP_BLUR_LIFE = 7;				// 上昇状態の残像の寿命
+
+	const float ALTER_SET_MOVE_Y = 30.0f;	// 祭壇設定状態の移動量
+	const float ALTER_SET_ROT_MOVE = 0.0f;	// 祭壇設定状態の向きの移動量
+	const float ALTER_ROT_CORRECT = 0.02f;	// 祭壇設定状態の向きの補正数
 }
 
 //-------------------------------------------
@@ -37,6 +52,7 @@ CListManager<CGoldBone*> CGoldBone::m_list = {};		// リスト
 CGoldBone::CGoldBone() : CModel(CObject::TYPE_GOLDBONE, CObject::PRIORITY_ENTITY)
 {
 	// 全ての値をクリアする
+	m_pLight = nullptr;			// ライトの情報
 	m_state = STATE_NONE;		// 状態
 	m_fDestHeight = 0.0f;		// 目的の高さ
 	m_fRotMove = ROT_MOVE;		// 向きの移動量
@@ -74,6 +90,14 @@ HRESULT CGoldBone::Init(void)
 //========================================
 void CGoldBone::Uninit(void)
 {
+	if (m_pLight != nullptr)
+	{ // ライトが NULL じゃない場合
+
+		// 終了処理
+		m_pLight->Uninit();
+		m_pLight = nullptr;
+	}
+
 	// 終了処理
 	CModel::Uninit();
 
@@ -95,12 +119,21 @@ void CGoldBone::Update(void)
 	case CGoldBone::STATE_GET:
 
 		// 取得処理
-		if (Get() == true)
-		{ // 消えた場合
+		Get();
 
-			// この先の処理を行わない
-			return;
-		}
+		break;
+
+	case CGoldBone::STATE_UP:
+
+		// 上昇処理
+		Up();
+
+		break;
+
+	case CGoldBone::STATE_ALTERSET:
+
+		// 祭壇設定処理
+		AlterSet();
 
 		break;
 
@@ -114,6 +147,21 @@ void CGoldBone::Update(void)
 
 	// 回転処理
 	Cycle();
+
+	if (m_pLight != nullptr)
+	{ // ライトが NULL じゃない場合
+
+		// 描画処理
+		m_pLight->Update();
+
+		if (m_pLight->GetCircum() <= 0.0f)
+		{ // 円周が0以下の場合
+
+			// 終了処理
+			m_pLight->Uninit();
+			m_pLight = nullptr;
+		}
+	}
 }
 
 //=====================================
@@ -123,6 +171,13 @@ void CGoldBone::Draw(void)
 {
 	// 描画処理
 	CModel::Draw();
+
+	if (m_pLight != nullptr)
+	{ // ライトが NULL じゃない場合
+
+		// 描画処理
+		m_pLight->Draw();
+	}
 }
 
 //=====================================
@@ -194,8 +249,8 @@ CGoldBone* CGoldBone::Create(const D3DXVECTOR3& pos)
 		return nullptr;
 	}
 
-	// 金の骨のポインタを返す
-	return pBone;
+// 金の骨のポインタを返す
+return pBone;
 }
 
 //=======================================
@@ -238,6 +293,28 @@ CGoldBone::STATE CGoldBone::GetState(void) const
 }
 
 //=======================================
+// 光の設定処理
+//=======================================
+void CGoldBone::SetLight(void)
+{
+	if (m_pLight == nullptr)
+	{ // 光が NULL の場合
+
+		// 光を生成
+		m_pLight = CGoldBoneLight::Create(GetPos());
+	}
+}
+
+//=======================================
+// 光の取得処理
+//=======================================
+CGoldBoneLight* CGoldBone::GetLight(void)
+{
+	// 光の情報を返す
+	return m_pLight;
+}
+
+//=======================================
 // 回転処理
 //=======================================
 void CGoldBone::Cycle(void)
@@ -258,7 +335,7 @@ void CGoldBone::Cycle(void)
 //=======================================
 // 取得処理
 //=======================================
-bool CGoldBone::Get(void)
+void CGoldBone::Get(void)
 {
 	// 位置を取得する
 	D3DXVECTOR3 pos = GetPos();
@@ -272,16 +349,112 @@ bool CGoldBone::Get(void)
 	// 向きの移動量を加算する
 	m_fRotMove += ADD_ROT_MOVE;
 
-	if (m_fRotMove >= DELETE_ROT_MOVE)
+	if (m_fRotMove >= UP_ROT_MOVE)
 	{ // 向きの移動量が一定数以上になった場合
 
-		// 終了処理
-		Uninit();
+		// 上昇状態にする
+		m_state = STATE_UP;
 
-		// true を返す
-		return true;
+		// 目標の高さを設定する
+		m_fDestHeight = UP_DEST_HEIGHT;
+	}
+}
+
+//=======================================
+// 上昇処理
+//=======================================
+void CGoldBone::Up(void)
+{
+	// 位置を取得する
+	D3DXVECTOR3 pos = GetPos();
+
+	// 位置を一定の場所まで上げる
+	if (useful::FrameCorrect(m_fDestHeight, &pos.y, UP_MOVE_Y) == true)
+	{
+		// 祭壇の情報を取得
+		CAlter* pAlter = CGame::GetAlter();
+		CAlterPole* pPole = nullptr;
+
+		if (pAlter != nullptr)
+		{ // 祭壇が NULL じゃない場合
+
+			for (int nCnt = 0; nCnt < CAlter::NUM_POLE; nCnt++)
+			{
+				// 石柱の情報を取得
+				pPole = pAlter->GetPole(nCnt);
+
+				if (pPole != nullptr &&
+					pPole->IsEmpty() == true)
+				{ // 石柱に金の骨が無い場合
+
+					// 位置を設定する
+					pos.x = pPole->GetPos().x;
+					pos.y = pPole->GetPos().y + m_fDestHeight;
+					pos.z = pPole->GetPos().z;
+
+					// 目的の高さを設定する
+					m_fDestHeight = pPole->GetPos().y + pPole->GetFileData().vtxMax.y;
+
+					// 石柱のインデックスを設定する
+					m_nPoleIdx = nCnt;
+
+					// 金の骨を供える
+					pPole->SetEnableEmpty(false);
+					pPole->SetGoldBone(this);
+
+					//祭壇設定状態にする
+					m_state = STATE_ALTERSET;
+
+					// for文を抜ける
+					break;
+				}
+			}
+		}
 	}
 
-	// false を返す
-	return false;
+	// 位置を適用する
+	SetPos(pos);
+
+	// 向きの移動量を加算する
+	m_fRotMove += ADD_ROT_MOVE;
+
+	// 残像の生成処理
+	CBlurOrg::Create(pos, GetRot(), GetScale(), UP_BLUR_ALPHA, GetFileData(), UP_BLUR_LIFE, PRIORITY_EFFECT);
+}
+
+//=======================================
+// 祭壇設定処理
+//=======================================
+void CGoldBone::AlterSet(void)
+{
+	// 位置を取得する
+	D3DXVECTOR3 pos = GetPos();
+
+	if (useful::FrameCorrect(m_fDestHeight, &pos.y, ALTER_SET_MOVE_Y) == true)
+	{ // 石柱に到着したとき
+
+		// 祭壇の情報を取得
+		CAlter* pAlter = CGame::GetAlter();
+		CAlterPole* pPole = nullptr;
+
+		if (pAlter != nullptr)
+		{ // 祭壇が NULL じゃない場合
+
+			// 石柱の情報を取得
+			pPole = pAlter->GetPole(m_nPoleIdx);
+
+			if (pPole != nullptr)
+			{ // ポールが NULL じゃない場合
+
+				// 到着状況を true にする
+				pPole->SetEnableArrival(true);
+			}
+		}
+	}
+
+	// 位置を適用する
+	SetPos(pos);
+
+	// 向きの移動量を0にしていく
+	useful::RotCorrect(ALTER_SET_ROT_MOVE, &m_fRotMove, ALTER_ROT_CORRECT);
 }

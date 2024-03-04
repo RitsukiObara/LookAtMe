@@ -14,6 +14,7 @@
 
 #include "game.h"
 #include "player.h"
+#include "fraction.h"
 #include "fire_warning.h"
 
 #include "boss_nonestate.h"
@@ -25,7 +26,11 @@ namespace
 {
 	const float CHASE_CORRECT = 0.01f;		// 追跡の補正数
 	const int FIRE_CREATE_COUNT = 30;		// 炎を出すカウント数
-	const int FINISH_COUNT = 180;			// 終了カウント
+	const int FIRST_FRACTION_COUNT = 20;	// 1回目の破片を出すカウント数
+	const int SECOND_FRACTION_COUNT = 112;	// 2回目の破片を出すカウント数
+	const int THIRD_FRACTION_COUNT = 187;	// 3回目の破片を出すカウント数
+	const int FIRE_CREATE_RANGE = 180;		// 炎を出している間のカウント数
+	const int FINISH_COUNT = 240;			// 終了カウント
 }
 
 //==========================
@@ -50,20 +55,56 @@ CBossFireState::~CBossFireState()
 //==========================
 void CBossFireState::Process(CBoss* pBoss)
 {
-	// 追跡処理
-	Chase(pBoss);
-
 	// カウントを加算する
 	m_nCount++;
 
 	CPlayer* pPlayer = CGame::GetPlayer();
 
 	if (m_nCount % FIRE_CREATE_COUNT == 0 &&
+		m_nCount <= FIRE_CREATE_RANGE &&
 		pPlayer != nullptr)
 	{ // 経過カウントが一定数経過した場合
 
 		// 炎注意の生成
 		CFireWarning::Create(pPlayer->GetPos());
+	}
+	
+	if (m_nCount == FIRST_FRACTION_COUNT ||
+		m_nCount == SECOND_FRACTION_COUNT ||
+		m_nCount == THIRD_FRACTION_COUNT)
+	{ // 破片を出すカウント数だった場合
+
+		D3DXMATRIX mtx;
+		D3DXVECTOR3 pos = NONE_D3DXVECTOR3;
+
+		pBoss->GetHierarchy(7)->MatrixCalc(&mtx, pBoss->GetMatrix());
+
+		pos = D3DXVECTOR3(mtx._41, mtx._42, mtx._43);
+
+		for (int nCnt = 0; nCnt < 15; nCnt++)
+		{
+			CFraction::Create(pos, CFraction::TYPE::TYPE_DIRT, 30, 4, 45);
+		}
+
+		pBoss->GetHierarchy(8)->MatrixCalc(&mtx, pBoss->GetMatrix());
+
+		pos = D3DXVECTOR3(mtx._41, mtx._42, mtx._43);
+
+		for (int nCnt = 0; nCnt < 15; nCnt++)
+		{
+			CFraction::Create(pos, CFraction::TYPE::TYPE_DIRT, 30, 4, 45);
+		}
+	}
+
+	if (m_nCount == FIRE_CREATE_RANGE)
+	{ // カウントが一定数の場合
+
+		if (pBoss->GetMotion()->GetType() != CBoss::MOTIONTYPE_NEUTRAL)
+		{ // 通常モーション以外の場合
+
+			// 通常モーションにする
+			pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_NEUTRAL);
+		}
 	}
 
 	if (m_nCount >= FINISH_COUNT)
@@ -79,31 +120,10 @@ void CBossFireState::Process(CBoss* pBoss)
 //==========================
 void CBossFireState::SetData(CBoss* pBoss)
 {
-	// 待機モーションにする
-	pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_NEUTRAL);
-}
+	if (pBoss->GetMotion()->GetType() != CBoss::MOTIONTYPE_STOMP)
+	{ // 足踏みモーション以外の場合
 
-//==========================
-// 追跡処理
-//==========================
-void CBossFireState::Chase(CBoss* pBoss)
-{
-	// プレイヤーの情報を取得する
-	CPlayer* pPlayer = CGame::GetPlayer();
-
-	if (pPlayer != nullptr)
-	{ // プレイヤーが NULL じゃない場合
-
-		// 位置と向きを宣言
-		D3DXVECTOR3 posPlayer = pPlayer->GetPos();
-		D3DXVECTOR3 posBoss = pBoss->GetPos();
-		D3DXVECTOR3 rotBoss = pBoss->GetRot();
-		float fRotDest = atan2f(posPlayer.x - posBoss.x, posPlayer.z - posBoss.z);
-
-		// 向きの補正処理
-		useful::RotCorrect(fRotDest, &rotBoss.y, CHASE_CORRECT);
-
-		// 向きを適用する
-		pBoss->SetRot(rotBoss);
+		// 足踏みモーションにする
+		pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_STOMP);
 	}
 }

@@ -11,11 +11,14 @@
 #include "useful.h"
 #include "manager.h"
 #include "renderer.h"
+#include "input.h"
+#include "sound.h"
 
 #include "shadowCircle.h"
 #include "objectElevation.h"
 #include "coin.h"
 #include "game_score.h"
+#include "addscoreUI.h"
 #include "enemy.h"
 #include "tree.h"
 #include "gold_bone.h"
@@ -32,10 +35,17 @@
 #include "block.h"
 #include "boss.h"
 #include "boss_collision.h"
+#include "alter.h"
+#include "alter_pole.h"
 #include "slash_ripple.h"
 #include "wind_shot.h"
 #include "fire_shot.h"
+#include "signboard.h"
 #include "game.h"
+#include "tutorial.h"
+#include "balloon.h"
+#include "balloon_spawner.h"
+#include "door.h"
 
 //===============================
 // マクロ定義
@@ -47,8 +57,10 @@ namespace
 	{
 		50.5f,		// 木の半径
 	};
+	
+	const float COIN_COLLISION_MAGNI = 3.0f;		// コインの当たり判定の倍率
 
-	const int DAGGER_DAMAGE = 40;					// ダガーのダメージ
+	const int DAGGER_DAMAGE = 30;					// ダガーのダメージ
 	const float DAGGER_KNOCKBACK = 100.0f;			// ダガーのノックバック
 
 	const int EXPLOSION_DAMAGE = 30;				// 爆風のダメージ
@@ -58,9 +70,19 @@ namespace
 
 	const int COIN_SCORE = 100;						// コインのスコア
 
+	const float SIGNBOARD_ADD_RADIUS = 50.0f;		// 看板の追加の半径
+
+	const float ALTER_SURROUND_RADIUS = 800.0f;		// 祭壇の周囲の半径
+	
+	const float DOOR_ADD_RADIUS = 100.0f;			// ドアの追加の半径
+	const float DOOR_HIT_ANGLE = 0.6f;				// ドアのヒット判定が出る方向
+
 	const float BOMB_BULLET_SMASH = 10.0f;			// 銃弾で爆弾の吹き飛ぶ速度
 	const float BOMB_DAGGER_SMASH = 23.0f;			// ダガーで爆弾の吹き飛ぶ速度
 	const float BOMB_SLASH_RIPPLE_SMASH = 10.0f;	// 斬撃波紋で爆弾の吹き飛ぶ速度
+	const int BOSS_DAMAGE = 5;						// ボスへのダメージ
+
+	const float STAGE_RANGE = 8000.0f;				// ステージの範囲
 }
 
 //===============================
@@ -136,7 +158,7 @@ bool collision::ElevOutRangeCollision(D3DXVECTOR3* pPos, const D3DXVECTOR3& posO
 //===============================
 // 小判との当たり判定
 //===============================
-void collision::CoinCollision(CPlayer* pPlayer, const D3DXVECTOR3 size)
+void collision::CoinCollision(CPlayer* pPlayer, const D3DXVECTOR3 size, const int nAreaIdx)
 {
 	// ローカル変数宣言
 	D3DXVECTOR3 posCoin = NONE_D3DXVECTOR3;
@@ -145,7 +167,7 @@ void collision::CoinCollision(CPlayer* pPlayer, const D3DXVECTOR3 size)
 	D3DXVECTOR3 posPlayer = pPlayer->GetPos();
 	D3DXVECTOR3 vtxMax = size;		// 最大値
 	D3DXVECTOR3 vtxMin = useful::VtxMinConv(size);	// 最小値
-	CListManager<CCoin*> list = CCoin::GetList();
+	CListManager<CCoin*> list = CCoin::GetList(nAreaIdx);
 	CCoin* pCoin = nullptr;			// 先頭の小判
 	CCoin* pCoinEnd = nullptr;		// 末尾の値
 	int nIdx = 0;
@@ -164,8 +186,12 @@ void collision::CoinCollision(CPlayer* pPlayer, const D3DXVECTOR3 size)
 
 			// コインの変数を取得する
 			posCoin = pCoin->GetPos();
-			vtxMaxCoin = pCoin->GetFileData().vtxMax;
-			vtxMinCoin = pCoin->GetFileData().vtxMin;
+			vtxMaxCoin.x = pCoin->GetFileData().vtxMax.x * COIN_COLLISION_MAGNI;
+			vtxMaxCoin.y = pCoin->GetFileData().vtxMax.y;
+			vtxMaxCoin.z = pCoin->GetFileData().vtxMax.z * COIN_COLLISION_MAGNI;
+			vtxMinCoin.x = pCoin->GetFileData().vtxMin.x * COIN_COLLISION_MAGNI;
+			vtxMinCoin.y = pCoin->GetFileData().vtxMin.y;
+			vtxMinCoin.z = pCoin->GetFileData().vtxMin.z * COIN_COLLISION_MAGNI;
 
 			if (useful::RectangleCollisionXY(posPlayer, posCoin, vtxMax, vtxMaxCoin, vtxMin, vtxMinCoin) == true &&
 				useful::RectangleCollisionXZ(posPlayer, posCoin, vtxMax, vtxMaxCoin, vtxMin, vtxMinCoin) == true &&
@@ -178,11 +204,17 @@ void collision::CoinCollision(CPlayer* pPlayer, const D3DXVECTOR3 size)
 					// 取得処理
 					pCoin->Hit();
 
+					// コインゲット音を鳴らす
+					CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_COINGET);
+
 					if (CGame::GetGameScore() != nullptr)
 					{ // ゲームスコアが NULL じゃない場合
 
 						// コイン分のスコアを加算する
 						CGame::GetGameScore()->SetScore(CGame::GetGameScore()->GetScore() + COIN_SCORE);
+
+						// 追加スコアUIを生成
+						CAddScoreUI::Create(posCoin, CAddScoreUI::TYPE_COIN);
 					}
 				}
 			}
@@ -305,13 +337,35 @@ bool collision::EnemyHitToDagger(const D3DXVECTOR3& pos, const float fHeight, co
 			posEnemy = pEnemy->GetPos();				// 敵の位置
 			sizeEnemy = pEnemy->GetCollSize();		// 敵の高さ
 
-			if (pos.y <= posEnemy.y + sizeEnemy.y &&
-				pos.y + fHeight >= posEnemy.y &&
-				useful::CircleCollisionXZ(pos, posEnemy, fRadius, (sizeEnemy.x + sizeEnemy.z) * 0.5f) == true)
+			if (useful::CircleCollisionXZ(pos, posEnemy, fRadius, (sizeEnemy.x + sizeEnemy.z) * 0.5f) == true &&
+				pEnemy->GetState() == CEnemy::STATE_NONE &&
+				pos.y <= posEnemy.y + sizeEnemy.y &&
+				pos.y + fHeight >= posEnemy.y)
 			{ // 敵と重なった場合
 
-				// ヒット処理
-				pEnemy->Hit(DAGGER_DAMAGE, DAGGER_KNOCKBACK);
+				switch (pEnemy->GetType())
+				{
+				case CEnemy::TYPE::TYPE_TORDLE:
+
+					// ヒット処理
+					pEnemy->Hit(DAGGER_DAMAGE, DAGGER_KNOCKBACK);
+
+					break;
+
+				case CEnemy::TYPE::TYPE_IWAKARI:
+
+					// ヒット処理
+					pEnemy->Hit(DAGGER_DAMAGE * DAGGER_DAMAGE, DAGGER_KNOCKBACK);
+
+					break;
+
+				default:
+
+					// 停止
+					assert(false);
+
+					break;
+				}
 
 				// true を返す
 				return true;
@@ -368,9 +422,9 @@ bool collision::EnemyHitToPlayer(CPlayer* pPlayer, const float fRadius, const fl
 			posEnemy = pEnemy->GetPos();			// 敵の位置
 			sizeEnemy = pEnemy->GetCollSize();		// 敵の高さ
 
-			if (posPlayer.y <= posEnemy.y + sizeEnemy.y &&
-				posPlayer.y + fHeight >= posEnemy.y &&
-				useful::CircleCollisionXZ(posPlayer, posEnemy, fRadius, (sizeEnemy.x + sizeEnemy.z) * 0.5f) == true)
+			if (useful::CircleCollisionXZ(posPlayer, posEnemy, fRadius, (sizeEnemy.x + sizeEnemy.z) * 0.5f) == true &&
+				posPlayer.y <= posEnemy.y + sizeEnemy.y &&
+				posPlayer.y + fHeight >= posEnemy.y)
 			{ // 敵と重なった場合
 
 				// プレイヤーのヒット処理
@@ -536,13 +590,13 @@ void collision::GoldBoneCollision(const CPlayer& pPlayer, const D3DXVECTOR3& siz
 //===============================
 // 木の当たり判定
 //===============================
-bool collision::TreeCollision(D3DXVECTOR3* pos, const float fRadius)
+bool collision::TreeCollision(D3DXVECTOR3* pos, const float fRadius, const int nAreaIdx)
 {
 	// ローカル変数宣言
 	D3DXVECTOR3 posTree = NONE_D3DXVECTOR3;			// 木の位置
 	float fObjectRadius;							// 半径
 	bool bCollision = false;						// 当たり判定状況
-	CListManager<CTree*> list = CTree::GetList();
+	CListManager<CTree*> list = CTree::GetList(nAreaIdx);
 	CTree* pTree = nullptr;		// 先頭の値
 	CTree* pTreeEnd = nullptr;	// 末尾の値
 	int nIdx = 0;
@@ -596,7 +650,7 @@ void collision::TreeAttack(const CPlayer& pPlayer, const float fRadius, const fl
 	// ローカル変数宣言
 	D3DXVECTOR3 posTree = NONE_D3DXVECTOR3;			// 木の位置
 	D3DXVECTOR3 posPlayer = pPlayer.GetPos();		// プレイヤーの位置
-	CListManager<CTree*> list = CTree::GetList();
+	CListManager<CTree*> list = CTree::GetList(pPlayer.GetAreaIdx());
 	CTree* pTree = nullptr;		// 先頭の値
 	CTree* pTreeEnd = nullptr;	// 末尾の値
 	int nIdx = 0;
@@ -647,7 +701,7 @@ void collision::TreeAttack(const CPlayer& pPlayer, const float fRadius, const fl
 void collision::PalmFruitHit(CPlayer* pPlayer, const float fRadius, const float fHeight)
 {
 	// ローカル変数宣言
-	D3DXVECTOR3 posFruit = NONE_D3DXVECTOR3;		// 木の位置
+	D3DXVECTOR3 posFruit = NONE_D3DXVECTOR3;		// 実の位置
 	D3DXVECTOR3 posPlayer = pPlayer->GetPos();		// プレイヤーの位置
 	float fRadiusFruit = 0.0f;						// 半径
 
@@ -668,7 +722,7 @@ void collision::PalmFruitHit(CPlayer* pPlayer, const float fRadius, const float 
 		while (true)
 		{ // 無限ループ
 
-			posFruit = pFruit->GetPos();					// 木の位置
+			posFruit = pFruit->GetPos();					// 実の位置
 			fRadiusFruit = pFruit->GetFileData().vtxMax.x;	// 半径
 
 			if (posPlayer.y <= posFruit.y + pFruit->GetFileData().vtxMax.y &&
@@ -702,9 +756,80 @@ void collision::PalmFruitHit(CPlayer* pPlayer, const float fRadius, const float 
 }
 
 //===============================
+// ヤシの実への攻撃判定
+//===============================
+bool collision::PalmFruitAttack(const D3DXVECTOR3& pos, const float fRadius, const int nAreaIdx)
+{
+	// ローカル変数宣言
+	CPalmFruit* pFruit = nullptr;	// ヤシの実の情報
+	D3DXVECTOR3 posFruit = NONE_D3DXVECTOR3;	// 実の位置
+	float fRadiusFruit = 0.0f;		// 実の半径
+
+	CListManager<CTree*> list = CTree::GetList(nAreaIdx);
+	CTree* pTree = nullptr;			// 先頭の値
+	CTree* pTreeEnd = nullptr;		// 末尾の値
+	int nIdx = 0;
+
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		// 先頭の値を取得する
+		pTree = list.GetTop();
+
+		// 末尾の値を取得する
+		pTreeEnd = list.GetEnd();
+
+		while (true)
+		{ // 無限ループ
+
+			if (pTree->GetType() == CTree::TYPE::TYPE_PALM)
+			{
+				// ヤシの実を取得する
+				pFruit = pTree->GetFruit();
+
+				if (pFruit != nullptr)
+				{ // ヤシの実が NULL じゃない場合
+
+					posFruit = pFruit->GetPos();					// 実の位置
+					fRadiusFruit = pFruit->GetFileData().vtxMax.x;	// 実の半径
+
+					if (useful::CircleCollisionXY(pos, posFruit, fRadius, fRadiusFruit) == true &&
+						useful::CircleCollisionXZ(pos, posFruit, fRadius, fRadiusFruit) == true &&
+						useful::CircleCollisionYZ(pos, posFruit, fRadius, fRadiusFruit) == true)
+					{ // ヤシの実に当たった場合
+
+						// ヒット処理
+						pTree->Hit();
+
+						// この先の処理を行わない
+						return true;
+					}
+				}
+			}
+
+			if (pTree == pTreeEnd)
+			{ // 末尾に達した場合
+
+				// while文を抜け出す
+				break;
+			}
+
+			// 次のオブジェクトを代入する
+			pTree = list.GetData(nIdx + 1);
+
+			// インデックスを加算する
+			nIdx++;
+		}
+	}
+
+	// false を返す
+	return false;
+}
+
+//===============================
 // 岩との当たり判定
 //===============================
-bool collision::RockCollision(D3DXVECTOR3* pos, const float fRadius, const float fHeight)
+bool collision::RockCollision(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const float fRadius, const float fHeight, const int nAreaIdx, float* fGravity, bool* bJump)
 {
 	// ローカル変数宣言
 	D3DXVECTOR3 posRock = NONE_D3DXVECTOR3;		// 岩の位置
@@ -713,11 +838,11 @@ bool collision::RockCollision(D3DXVECTOR3* pos, const float fRadius, const float
 	float fBottomRock = 0.0f;					// 岩の下の高さ
 	bool bCollision = false;					// 当たり判定状況
 
-	CListManager<CRock*> list = CRock::GetList();
+	CListManager<CRock*> list = CRock::GetList(nAreaIdx);
 	CRock* pRock = nullptr;			// 先頭の値
 	CRock* pRockEnd = nullptr;		// 末尾の値
 	int nIdx = 0;
-	
+
 	if (list.IsEmpty() == false)
 	{ // 空白じゃない場合
 
@@ -736,18 +861,52 @@ bool collision::RockCollision(D3DXVECTOR3* pos, const float fRadius, const float
 			// 岩の半径を取得する
 			fRadiusRock = pRock->GetRadius();
 
-			// 岩の上の高さを取得する
-			fTopRock = pRock->GetTopHeight();
+			if (useful::CircleCollisionXZ(*pos, posRock, fRadius, fRadiusRock) == true)
+			{ // 円周に入った場合
 
-			// 岩の下の高さを取得する
-			fBottomRock = pRock->GetBottomHeight();
+				// 岩の上の高さを取得する
+				fTopRock = pRock->GetTopHeight();
 
-			if (pos->y <= posRock.y + fTopRock &&
-				pos->y + fHeight >= posRock.y + fBottomRock)
-			{ // 範囲内にいた場合
+				// 岩の下の高さを取得する
+				fBottomRock = pRock->GetBottomHeight();
 
-				// 円柱の当たり判定
-				if (useful::CylinderCollision(pos, posRock, fRadiusRock + fRadius) == true)
+				if (posRock.y + fTopRock <= posOld.y &&
+					posRock.y + fTopRock >= pos->y)
+				{ // 上にぶつかった場合
+
+					// 位置を設定する
+					pos->y = posRock.y + fTopRock + COLLISION_ADD_DIFF_LENGTH;
+
+					if (bJump != nullptr)
+					{ // ジャンプ状況が NULL じゃない場合
+
+						// ジャンプ状況を false にする
+						*bJump = false;
+					}
+
+					if (fGravity != nullptr)
+					{ // 重力が NULL じゃない場合
+
+						// 重力を0にする
+						*fGravity = 0.0f;
+					}
+
+					// 当たり判定状況を true にする
+					bCollision = true;
+				}
+				else if (posRock.y + fBottomRock >= posOld.y + fHeight &&
+					posRock.y + fBottomRock <= pos->y + fHeight)
+				{ // 下にぶつかった場合
+
+					// 位置を設定する
+					pos->y = posRock.y + fBottomRock - (fHeight + COLLISION_ADD_DIFF_LENGTH);
+
+					// 当たり判定状況を true にする
+					bCollision = true;
+				}
+				else if (pos->y <= posRock.y + fTopRock &&
+					pos->y + fHeight >= posRock.y + fBottomRock &&
+					useful::CylinderCollision(pos, posRock, fRadiusRock + fRadius) == true)
 				{ // 当たった場合
 
 					// 当たり判定状況を true にする
@@ -814,9 +973,9 @@ bool collision::BangFlowerHit(const D3DXVECTOR3& pos, const float fRadius, const
 				// 爆弾の高さを取得する
 				fHeightBomb = pBomb->GetFileData().vtxMax.y;
 
-				if (pos.y + fHeight >= posBomb.y &&
-					pos.y <= posBomb.y + fHeightBomb &&
-					useful::CircleCollisionXZ(pos, posBomb, fRadius, fRadiusBomb) == true)
+				if (useful::CircleCollisionXZ(pos, posBomb, fRadius, fRadiusBomb) == true &&
+					pos.y + fHeight >= posBomb.y &&
+					pos.y <= posBomb.y + fHeightBomb)
 				{ // 範囲内にいた場合
 
 					// ヒット処理
@@ -953,9 +1112,9 @@ bool collision::BombHitToDagger(const D3DXVECTOR3& pos, const float fRadius, con
 				fRadiusBomb = pBomb->GetFileData().fRadius;
 				fHeightBomb = pBomb->GetFileData().vtxMax.y;
 
-				if (pos.y + fHeight >= posBomb.y &&
-					pos.y <= posBomb.y + fHeightBomb &&
-					useful::CircleCollisionXZ(pos, posBomb, fRadius, fRadiusBomb) == true)
+				if (useful::CircleCollisionXZ(pos, posBomb, fRadius, fRadiusBomb) == true &&
+					pos.y + fHeight >= posBomb.y &&
+					pos.y <= posBomb.y + fHeightBomb)
 				{ // 範囲内にいた場合
 
 					// 向きを算出する
@@ -1025,9 +1184,9 @@ bool collision::BombHitToSlashRipple(const D3DXVECTOR3& pos, const float fRadius
 				fRadiusBomb = pBomb->GetFileData().fRadius;
 				fHeightBomb = pBomb->GetFileData().vtxMax.y;
 
-				if (pos.y + fHeight >= posBomb.y &&
-					pos.y <= posBomb.y + fHeightBomb &&
-					useful::CircleCollisionXZ(pos, posBomb, fRadius, fRadiusBomb) == true)
+				if (useful::CircleCollisionXZ(pos, posBomb, fRadius, fRadiusBomb) == true &&
+					pos.y + fHeight >= posBomb.y &&
+					pos.y <= posBomb.y + fHeightBomb)
 				{ // 範囲内にいた場合
 
 					// 向きを算出する
@@ -1061,9 +1220,9 @@ bool collision::BombHitToSlashRipple(const D3DXVECTOR3& pos, const float fRadius
 }
 
 //===============================
-// 爆風と敵との当たり判定
+// 爆風と岩との当たり判定
 //===============================
-void collision::ExplosionHitToRock(const D3DXVECTOR3& pos, const float fRadius, const float fHeight)
+void collision::ExplosionHitToRock(const D3DXVECTOR3& pos, const float fRadius, const float fHeight, const int nAreaIdx)
 {
 	// ローカル変数宣言
 	D3DXVECTOR3 posRock = NONE_D3DXVECTOR3;		// 岩の位置
@@ -1071,7 +1230,7 @@ void collision::ExplosionHitToRock(const D3DXVECTOR3& pos, const float fRadius, 
 	float fTopRock = 0.0f;						// 岩の上の高さ
 	float fBottomRock = 0.0f;					// 岩の下の高さ
 
-	CListManager<CRock*> list = CRock::GetList();
+	CListManager<CRock*> list = CRock::GetList(nAreaIdx);
 	CRock* pRock = nullptr;			// 先頭の値
 	CRock* pRockEnd = nullptr;		// 末尾の値
 	int nIdx = 0;
@@ -1103,13 +1262,16 @@ void collision::ExplosionHitToRock(const D3DXVECTOR3& pos, const float fRadius, 
 				// 岩の下の高さを取得する
 				fBottomRock = pRock->GetBottomHeight();
 
-				if (pos.y <= posRock.y + fTopRock &&
-					pos.y + fHeight >= posRock.y + fBottomRock &&
-					useful::CircleCollisionXZ(pos, posRock, fRadius, fRadiusRock) == true)
+				if (useful::CircleCollisionXZ(pos, posRock, fRadius, fRadiusRock) == true &&
+					pos.y <= posRock.y + fTopRock &&
+					pos.y + fHeight >= posRock.y + fBottomRock)
 				{ // 範囲内にいた場合
 
 					// 破壊処理
 					pRock->Break();
+
+					// 岩の破壊音を鳴らす
+					CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_ROCKBREAK);
 				}
 			}
 
@@ -1164,9 +1326,9 @@ void collision::ExplosionHitToEnemy(const D3DXVECTOR3& pos, const float fRadius,
 				fRadiusEnemy = pEnemy->GetCollSize().x;
 				fHeightEnemy = pEnemy->GetCollSize().y;
 
-				if (pos.y <= posEnemy.y + fHeightEnemy &&
-					pos.y + fHeight >= posEnemy.y &&
-					useful::CircleCollisionXZ(pos, posEnemy, fRadius, fRadiusEnemy) == true)
+				if (useful::CircleCollisionXZ(pos, posEnemy, fRadius, fRadiusEnemy) == true &&
+					pos.y <= posEnemy.y + fHeightEnemy &&
+					pos.y + fHeight >= posEnemy.y)
 				{ // 範囲内にいた場合
 
 					// 破壊処理
@@ -1224,9 +1386,9 @@ bool collision::ExplosionHitToPlayer(CPlayer* pPlayer, const float fRadius, cons
 			fRadiusExpl = pBombExplosion->GetCircum();
 			fHeightExpl = pBombExplosion->GetHeight();
 
-			if (pos.y <= posExpl.y + fHeightExpl &&
-				pos.y + fHeight >= posExpl.y - fHeightExpl &&
-				useful::CircleCollisionXZ(pos, posExpl, fRadius, fRadiusExpl) == true)
+			if (useful::CircleCollisionXZ(pos, posExpl, fRadius, fRadiusExpl) == true &&
+				pos.y <= posExpl.y + fHeightExpl &&
+				pos.y + fHeight >= posExpl.y - fHeightExpl)
 			{ // 範囲内にいた場合
 
 				// 吹き飛ぶ向きを算出する
@@ -1261,7 +1423,7 @@ bool collision::ExplosionHitToPlayer(CPlayer* pPlayer, const float fRadius, cons
 //===============================
 // 壁との当たり判定
 //===============================
-bool collision::WallCollision(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DXVECTOR3& vtxMax, const D3DXVECTOR3& vtxMin)
+bool collision::WallCollision(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DXVECTOR3& vtxMax, const D3DXVECTOR3& vtxMin, const int nAreaIdx)
 {
 	// ローカル変数宣言
 	D3DXVECTOR3 posWall = NONE_D3DXVECTOR3;			// 壁の位置
@@ -1269,7 +1431,7 @@ bool collision::WallCollision(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const
 	D3DXVECTOR3 vtxMaxWall = NONE_D3DXVECTOR3;		// 壁の最大値
 	D3DXVECTOR3 vtxMinWall = NONE_D3DXVECTOR3;		// 壁の最小値
 
-	CListManager<CWall*> list = CWall::GetList();
+	CListManager<CWall*> list = CWall::GetList(nAreaIdx);
 	CWall* pWall = nullptr;			// 先頭の値
 	CWall* pWallEnd = nullptr;		// 末尾の値
 	int nIdx = 0;
@@ -1334,7 +1496,7 @@ bool collision::WallCollision(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const
 //===============================
 // ブロックとのヒット判定
 //===============================
-bool collision::BlockHit(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DXVECTOR3& vtxMax, const D3DXVECTOR3& vtxMin)
+bool collision::BlockHit(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DXVECTOR3& vtxMax, const D3DXVECTOR3& vtxMin, const int nAreaIdx)
 {
 	// ローカル変数宣言
 	D3DXVECTOR3 posBlock = NONE_D3DXVECTOR3;		// 壁の位置
@@ -1342,7 +1504,7 @@ bool collision::BlockHit(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DX
 	D3DXVECTOR3 vtxMaxBlock = NONE_D3DXVECTOR3;		// 壁の最大値
 	D3DXVECTOR3 vtxMinBlock = NONE_D3DXVECTOR3;		// 壁の最小値
 
-	CListManager<CBlock*> list = CBlock::GetList();
+	CListManager<CBlock*> list = CBlock::GetList(nAreaIdx);
 	CBlock* pBlock = nullptr;			// 先頭の値
 	CBlock* pBlockEnd = nullptr;		// 末尾の値
 	int nIdx = 0;
@@ -1407,7 +1569,7 @@ bool collision::BlockHit(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DX
 //===============================
 // ボスの当たり判定
 //===============================
-bool collision::BossHit(const D3DXVECTOR3& pos, const float fRadius)
+bool collision::BossHit(const D3DXVECTOR3& pos, const float fRadius, const int nDamage)
 {
 	// ローカル変数宣言
 	D3DXVECTOR3 posPart = NONE_D3DXVECTOR3;
@@ -1489,13 +1651,13 @@ bool collision::BossHit(const D3DXVECTOR3& pos, const float fRadius)
 							{ // 弱点だった場合
 
 								// バリア破壊処理
-								pBoss->BarrierBreak(pos, nCntPart);
+								pBoss->BarrierBreak(pos, nCntPart, nDamage);
 							}
 							else
 							{ // 上記以外
 
 								// ヒット処理
-								pBoss->Hit(10);
+								pBoss->Hit(BOSS_DAMAGE);
 							}
 
 							// true を返す
@@ -1522,6 +1684,222 @@ bool collision::BossHit(const D3DXVECTOR3& pos, const float fRadius)
 
 	// false を返す
 	return false;
+}
+
+//===============================
+// ボスとのヒット判定
+//===============================
+bool collision::BossAttack(const D3DXVECTOR3& pos, const float fRadius, float* fRotSmash)
+{
+	// ローカル変数宣言
+	D3DXVECTOR3 posPart = NONE_D3DXVECTOR3;
+	CBossCollision* coll = nullptr;
+	D3DXMATRIX mtxScale, mtxRot, mtxTrans, mtx, mtxColl;	// 計算用マトリックス
+	D3DXMATRIX mtxWorld;		// マトリックスを取得する
+
+	CListManager<CBoss*> list = CBoss::GetList();
+	CBoss* pBoss = nullptr;			// 先頭の値
+	CBoss* pBossEnd = nullptr;		// 末尾の値
+	int nIdx = 0;
+
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		// 先頭の値を取得する
+		pBoss = list.GetTop();
+
+		// 末尾の値を取得する
+		pBossEnd = list.GetEnd();
+
+		while (true)
+		{ // 無限ループ
+
+			if (pBoss->IsHit() == true)
+			{ // ヒット状況が true の場合
+
+				// ワールドマトリックスの初期化
+				D3DXMatrixIdentity(&mtxWorld);
+
+				// 拡大率を反映
+				D3DXMatrixScaling(&mtxScale, pBoss->GetScale().x, pBoss->GetScale().y, pBoss->GetScale().z);
+				D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxScale);
+
+				// 向きを反映
+				D3DXMatrixRotationYawPitchRoll(&mtxRot, pBoss->GetRot().y + D3DX_PI, pBoss->GetRot().x, pBoss->GetRot().z);
+				D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+
+				// 位置を反映
+				D3DXMatrixTranslation(&mtxTrans, pBoss->GetPos().x, pBoss->GetPos().y, pBoss->GetPos().z);
+				D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
+
+				for (int nCntPart = 0; nCntPart < pBoss->GetNumModel(); nCntPart++)
+				{
+					// マトリックスの計算処理
+					pBoss->GetHierarchy(nCntPart)->MatrixCalc(&mtx, mtxWorld);
+
+					// 当たり判定の情報を取得
+					coll = pBoss->GetColl(nCntPart);
+
+					if (coll != nullptr)
+					{ // 当たり判定が NULL じゃない場合
+
+						for (int nCntColl = 0; nCntColl < coll->GetNumColl(); nCntColl++)
+						{
+							// マトリックスの初期化
+							D3DXMatrixIdentity(&mtxColl);
+
+							// 位置を反映
+							D3DXMatrixTranslation(&mtxTrans, coll->GetCollOffset(nCntColl).x, coll->GetCollOffset(nCntColl).y, coll->GetCollOffset(nCntColl).z);
+							D3DXMatrixMultiply(&mtxColl, &mtxColl, &mtxTrans);
+
+							// 算出した「パーツのワールドマトリックス」と「親のマトリックス」を掛け合わせる
+							D3DXMatrixMultiply
+							(
+								&mtxColl,
+								&mtxColl,
+								&mtx
+							);
+
+							// 位置を設定する
+							posPart.x = mtxColl._41;
+							posPart.y = mtxColl._42;
+							posPart.z = mtxColl._43;
+
+							if (useful::CircleCollisionXY(pos, posPart, fRadius, coll->GetRadius(nCntColl)) == true &&
+								useful::CircleCollisionYZ(pos, posPart, fRadius, coll->GetRadius(nCntColl)) == true &&
+								useful::CircleCollisionXZ(pos, posPart, fRadius, coll->GetRadius(nCntColl)) == true)
+							{ // 球が当たった場合
+
+								if (fRotSmash != nullptr)
+								{ // 吹き飛ぶ向きが NULL じゃない場合
+
+									// 吹き飛ぶ向きを設定する
+									*fRotSmash = atan2f(pos.x - posPart.x, pos.z - posPart.z);
+								}
+
+								// true を返す
+								return true;
+							}
+						}
+					}
+				}
+			}
+
+			if (pBoss == pBossEnd)
+			{ // 末尾に達した場合
+
+				// while文を抜け出す
+				break;
+			}
+
+			// 次のオブジェクトを代入する
+			pBoss = list.GetData(nIdx + 1);
+
+			// インデックスを加算する
+			nIdx++;
+		}
+	}
+
+	// false を返す
+	return false;
+}
+
+//===============================
+// 祭壇との当たり判定
+//===============================
+bool collision::AlterCollision(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DXVECTOR3& vtxMax, const D3DXVECTOR3& vtxMin)
+{
+	// 当たり判定の変数を宣言
+	CAlter* pAlter = CGame::GetAlter();
+	CAlterPole* pPole = nullptr;
+	D3DXVECTOR3 posAlter;
+	D3DXVECTOR3 posOldAlter;
+	D3DXVECTOR3 vtxMinAlter;
+	D3DXVECTOR3 vtxMaxAlter;
+
+	if (pAlter != nullptr &&
+		pAlter->GetState() != CAlter::STATE_BREAK)
+	{ // 祭壇が壊れていない場合
+
+		// 位置とサイズを取得する
+		posAlter = pAlter->GetPos();
+		posOldAlter = pAlter->GetPosOld();
+		vtxMinAlter = pAlter->GetFileData().vtxMin;
+		vtxMaxAlter = pAlter->GetFileData().vtxMax;
+
+		if (HexahedronCollision
+		(
+			pos,
+			posAlter,
+			posOld,
+			posOldAlter,
+			vtxMin,
+			vtxMinAlter,
+			vtxMax,
+			vtxMaxAlter
+		) == true)
+		{ // 祭壇に当たった場合
+
+			// true を返す
+			return true;
+		}
+
+		for (int nCntPole = 0; nCntPole < CAlter::NUM_POLE; nCntPole++)
+		{
+			// 石柱の情報を取得する
+			pPole = pAlter->GetPole(nCntPole);
+
+			if (pPole != nullptr)
+			{ // 石柱が NULL じゃない場合
+
+				// 位置とサイズを取得する
+				posAlter = pPole->GetPos();
+				posOldAlter = pPole->GetPosOld();
+				vtxMaxAlter = pPole->GetFileData().vtxMax;
+
+				if (useful::CylinderCollision(pos, posAlter, vtxMax.x + vtxMaxAlter.x) == true)
+				{ // 祭壇に当たった場合
+
+					// true を返す
+					return true;
+				}
+			}
+		}
+	}
+
+	// false を返す
+	return false;
+}
+
+//===============================
+// 祭壇周囲の当たり判定
+//===============================
+void collision::AlterSurrounding(const D3DXVECTOR3& pos, const float fRadius)
+{
+	// 当たり判定の変数を宣言
+	CAlter* pAlter = CGame::GetAlter();
+	D3DXVECTOR3 posAlter = NONE_D3DXVECTOR3;
+
+	if (pAlter != nullptr &&
+		pAlter->GetState() == CAlter::STATE_NONE)
+	{ // 祭壇に骨が揃っていない場合
+
+		// 位置とサイズを取得する
+		posAlter = pAlter->GetPos();
+
+		if (useful::CircleCollisionXZ(pos,posAlter,fRadius, ALTER_SURROUND_RADIUS))
+		{ // 祭壇の周囲にいた場合
+
+			// ライト点灯状況を true にする
+			pAlter->SetEnableLightUp(true);
+		}
+		else
+		{ // 上記以外
+
+			// ライト点灯状況を false にする
+			pAlter->SetEnableLightUp(false);
+		}
+	}
 }
 
 //===============================
@@ -1556,9 +1934,9 @@ bool collision::RippleHit(const D3DXVECTOR3& pos, const float fRadius, const flo
 			fRadiusRipple = pRipple->GetFileData().fRadius * pRipple->GetScale().x;
 			fHeightRipple = pRipple->GetFileData().vtxMax.y;
 
-			if (pos.y <= posRipple.y + fHeightRipple &&
-				pos.y + fHeight >= posRipple.y &&
-				useful::CircleCollisionXZ(pos, posRipple, fRadius, fRadiusRipple) == true)
+			if (useful::CircleCollisionXZ(pos, posRipple, fRadius, fRadiusRipple) == true &&
+				pos.y <= posRipple.y + fHeightRipple &&
+				pos.y + fHeight >= posRipple.y)
 			{ // 斬撃に当たった場合
 
 				if (fRotSmash != nullptr)
@@ -1626,9 +2004,9 @@ bool collision::WindShotHit(const D3DXVECTOR3& pos, const float fRadius, const f
 				fRadiusWind = pWind->GetCircum() + pWind->GetWidth();
 				fHeightWind = pWind->GetHeight() * pWind->GetVortex();
 
-				if (pos.y <= posWind.y + fHeightWind &&
-					pos.y + fHeight >= posWind.y &&
-					useful::CircleCollisionXZ(pos, posWind, fRadius, fRadiusWind) == true)
+				if (useful::CircleCollisionXZ(pos, posWind, fRadius, fRadiusWind) == true &&
+					pos.y <= posWind.y + fHeightWind &&
+					pos.y + fHeight >= posWind.y)
 				{ // 風攻撃に当たった場合
 
 					if (fSmashRot != nullptr)
@@ -1694,9 +2072,9 @@ bool collision::FireShotHit(const D3DXVECTOR3& pos, const float fRadius, const f
 			fRadiusFire = pFire->GetCircum();
 			fHeightFire = pFire->GetHeight();
 
-			if (pos.y <= posFire.y + fHeightFire &&
-				pos.y + fHeight >= posFire.y &&
-				useful::CircleCollisionXZ(pos, posFire, fRadius, fRadiusFire) == true)
+			if (useful::CircleCollisionXZ(pos, posFire, fRadius, fRadiusFire) == true &&
+				pos.y <= posFire.y + fHeightFire &&
+				pos.y + fHeight >= posFire.y)
 			{ // 炎攻撃に当たった場合
 
 				if (fSmashRot != nullptr)
@@ -1727,6 +2105,276 @@ bool collision::FireShotHit(const D3DXVECTOR3& pos, const float fRadius, const f
 
 	// false を返す
 	return false;
+}
+
+//===============================
+// 看板との当たり判定
+//===============================
+bool collision::SignboardCollision(const D3DXVECTOR3& pos, const float fRadius)
+{
+	// ローカル変数宣言
+	D3DXVECTOR3 posSign = NONE_D3DXVECTOR3;		// 壁の位置
+	float fRadiusSign = 0.0f;					// 看板の半径
+
+	CListManager<CSignboard*> list = CSignboard::GetList();
+	CSignboard* pSign = nullptr;			// 先頭の値
+	CSignboard* pSignEnd = nullptr;			// 末尾の値
+	int nIdx = 0;
+
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		// 先頭の値を取得する
+		pSign = list.GetTop();
+
+		// 末尾の値を取得する
+		pSignEnd = list.GetEnd();
+
+		while (true)
+		{ // 無限ループ
+
+			// 看板関係の変数を設定する
+			posSign = pSign->GetPos();
+			fRadiusSign = pSign->GetFileData().fRadius;
+
+			if (useful::CircleCollisionXZ(pos, posSign, fRadius, fRadiusSign + SIGNBOARD_ADD_RADIUS) == true)
+			{ // 看板に近づいた場合
+
+				// ボタンを描画する
+				pSign->SetEnableDisp(true);
+
+				if (CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_A, 0) == true ||
+					CManager::Get()->GetInputKeyboard()->GetTrigger(DIK_SPACE) == true)
+				{ // ボタンを押した場合
+
+					// 説明移行処理
+					pSign->Explain();
+
+					// 看板音を鳴らす
+					CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_SIGNBOARD);
+
+					// true を返す
+					return true;
+				}
+			}
+			else
+			{ // 上記以外
+
+				// ボタンを描画しない
+				pSign->SetEnableDisp(false);
+			}
+
+			if (pSign == pSignEnd)
+			{ // 末尾に達した場合
+
+				// while文を抜け出す
+				break;
+			}
+
+			// 次のオブジェクトを代入する
+			pSign = list.GetData(nIdx + 1);
+
+			// インデックスを加算する
+			nIdx++;
+		}
+	}
+
+	// false を返す
+	return false;
+}
+
+//===============================
+// 的との当たり判定
+//===============================
+bool collision::TargetHit(const D3DXVECTOR3& pos, const float fRadius)
+{
+	// ローカル変数宣言
+	CBalloon* pBalloon = nullptr;				// 風船の情報
+	D3DXVECTOR3 posBalloon = NONE_D3DXVECTOR3;	// 風船の位置
+	float fRadiusBalloon = 0.0f;				// 風船の半径
+	CListManager<CBalloonSpawner*> list = CBalloonSpawner::GetList();
+	CBalloonSpawner* pSpawner = nullptr;		// 先頭の風船スポナー
+	CBalloonSpawner* pSpawnerEnd = nullptr;		// 末尾の値
+	int nIdx = 0;
+
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		// 先頭の値を取得する
+		pSpawner = list.GetTop();
+
+		// 末尾の値を取得する
+		pSpawnerEnd = list.GetEnd();
+
+		while (true)
+		{ // 無限ループ
+
+			if (pSpawner->GetBalloon() != nullptr)
+			{ // 風船が NULL じゃない場合
+
+				// 風船の情報を取得
+				pBalloon = pSpawner->GetBalloon();
+
+				// 情報を設定
+				posBalloon = pBalloon->GetPos();
+				fRadiusBalloon = pBalloon->GetFileData().fRadius;
+
+				if (useful::CircleCollisionXY(pos, posBalloon, fRadius, fRadiusBalloon) == true &&
+					useful::CircleCollisionXZ(pos, posBalloon, fRadius, fRadiusBalloon) == true &&
+					useful::CircleCollisionYZ(pos, posBalloon, fRadius, fRadiusBalloon) == true)
+				{ // 風船と重なった場合
+
+					// ヒット処理
+					pSpawner->Hit();
+
+					// true を返す
+					return true;
+				}
+			}
+
+			if (pSpawner == pSpawnerEnd)
+			{ // 末尾に達した場合
+
+				// while文を抜け出す
+				break;
+			}
+
+			// 次のオブジェクトを代入する
+			pSpawner = list.GetData(nIdx + 1);
+
+			// インデックスを加算する
+			nIdx++;
+		}
+	}
+
+	// false を返す
+	return false;
+}
+
+//===============================
+// ドアとのヒット判定
+//===============================
+bool collision::DoorHit(const D3DXVECTOR3& pos, const float fRadius)
+{
+	// ローカル変数宣言
+	CDoor* pDoor = CTutorial::GetDoor();		// ドアの情報
+
+	if (pDoor != nullptr)
+	{ // ドアが存在する場合
+
+		// ドアの情報を取得する
+		D3DXVECTOR3 posDoor = pDoor->GetPos();									// ドアの位置
+		float fRadiusDoor = pDoor->GetFileData().vtxMax.x + DOOR_ADD_RADIUS;	// ドアの半径
+		float fAngle = atan2f(pos.x - posDoor.x, pos.z - posDoor.z);			// 方向
+
+		if (((fAngle <= -D3DX_PI + DOOR_HIT_ANGLE && fAngle >= -D3DX_PI) ||
+			(fAngle >= D3DX_PI - DOOR_HIT_ANGLE && fAngle <= D3DX_PI)) &&
+			useful::CircleCollisionXZ(pos, posDoor, fRadius, fRadiusDoor) == true)
+		{ // ドアの近くにいた場合
+
+			// ボタン表示を描画する
+			pDoor->SetEnableDisp(true);
+
+			if (CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_A, 0) == true ||
+				CManager::Get()->GetInputKeyboard()->GetTrigger(DIK_SPACE) == true)
+			{ // ボタンを押した場合
+
+				// 開き状態にする
+				pDoor->SetState(CDoor::STATE_OPEN);
+
+				// 遷移状態にする
+				CTutorial::SetState(CTutorial::STATE_TRANS);
+
+				// true を返す
+				return true;
+			}
+		}
+		else
+		{ // 上記以外
+
+			// ボタン表示を描画しない
+			pDoor->SetEnableDisp(false);
+		}
+	}
+
+	// false を返す
+	return false;
+}
+
+//===============================
+// ドアとの当たり判定
+//===============================
+bool collision::DoorCollision(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DXVECTOR3& size)
+{
+	// ローカル変数宣言
+	CDoor* pDoor = CTutorial::GetDoor();		// ドアの情報
+
+	if (pDoor != nullptr)
+	{ // ドアが存在する場合
+
+		// ドアの情報を取得する
+		D3DXVECTOR3 posDoor = pDoor->GetPos();					// ドアの位置
+		D3DXVECTOR3 posOldDoor = pDoor->GetPosOld();			// ドアの前回の位置
+		D3DXVECTOR3 vtxMaxDoor = pDoor->GetFileData().vtxMax;	// ドアの頂点の最大値
+		D3DXVECTOR3 vtxMinDoor = pDoor->GetFileData().vtxMin;	// ドアの頂点の最小値
+		D3DXVECTOR3 vtxMax = size;								// 頂点の最大値
+		D3DXVECTOR3 vtxMin = useful::VtxMinConv(size);			// 頂点の最小値
+
+		// 六面体の当たり判定
+		if (HexahedronClush
+		(
+			pos,
+			posDoor,
+			posOld,
+			posOldDoor,
+			vtxMin,
+			vtxMinDoor,
+			vtxMax,
+			vtxMaxDoor
+		).bTop == true)
+		{ // 上に乗った場合
+
+			// true を返す
+			return true;
+		}
+	}
+
+	// false を返す
+	return false;
+}
+
+//===============================
+// ステージの当たり判定
+//===============================
+void collision::StageCollision(D3DXVECTOR3* pos, const float fWidth)
+{
+	if (pos->x + fWidth >= STAGE_RANGE)
+	{ // 右から出た場合
+
+		// 位置を補正する
+		pos->x = STAGE_RANGE - fWidth;
+	}
+
+	if (pos->x - fWidth <= -STAGE_RANGE)
+	{ // 左から出た場合
+
+		// 位置を補正する
+		pos->x = -STAGE_RANGE + fWidth;
+	}
+
+	if (pos->z + fWidth >= STAGE_RANGE)
+	{ // 奥から出た場合
+
+		// 位置を補正する
+		pos->z = STAGE_RANGE - fWidth;
+	}
+
+	if (pos->z - fWidth <= -STAGE_RANGE)
+	{ // 手前から出た場合
+
+		// 位置を補正する
+		pos->z = -STAGE_RANGE + fWidth;
+	}
 }
 
 /*

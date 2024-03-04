@@ -19,15 +19,19 @@
 #include "boss_destroystate.h"
 #include "boss_stunstate.h"
 #include "boss_lifeUI.h"
+#include "boss_barrier.h"
 #include "objectElevation.h"
 #include "boss_collision.h"
 #include "fraction.h"
+#include "enemy.h"
+#include "anim_reaction.h"
 
 //------------------------------------------------------------
 // 無名名前空間
 //------------------------------------------------------------
 namespace
 {
+	const D3DXVECTOR3 DEATH_EXPLOSION_SIZE = D3DXVECTOR3(200.0f, 200.0f, 0.0f);		// 敵の死亡時の爆発のサイズ
 	const float LAND_GRAVITY = -50.0f;			// 着地時の重力
 	const int MAX_LIFE = 3000;					// 体力の最大数
 	const int BARRIER_FRAC_MOVE_WIDTH = 40;		// バリア攻撃時の破片の横の移動量
@@ -37,7 +41,7 @@ namespace
 	const int BARRIER_FRAC_LIFE = 100;			// バリア攻撃時の破片の寿命
 	const int WEAK_LIFE[CBoss::WEAK_MAX] =		// 弱点のライフ
 	{
-		40,
+		50,
 		10,
 		10,
 		10,
@@ -52,6 +56,9 @@ namespace
 		14
 	};
 	const int WEAK_MATERIAL_NUM = 0;			// 弱点のマテリアル番号
+	const int BODY_IDX = 2;						// 胸のパーツ
+	const D3DXCOLOR WEAK_DAMAGE_COL = D3DXCOLOR(0.5f, 0.0f, 0.0f, 1.0f);	// 弱点を攻撃された時の色
+	const int DAMAGE_COUNT = 20;				// ダメージカウント数
 }
 
 // 静的メンバ変数
@@ -68,12 +75,15 @@ CBoss::CBoss() : CCharacter(CObject::TYPE_BOSS, CObject::PRIORITY_ENTITY)
 	m_pLifeUI = nullptr;			// 体力UIの情報
 	memset(m_apColl, 0, sizeof(m_apColl));			// 当たり判定の球
 	memset(m_apMatCopy, 0, sizeof(m_apMatCopy));	// マテリアルのコピー
+	m_damage.nCount = 0;			// ダメージカウント
+	m_damage.bDamage = false;		// ダメージ状況
 	for (int nCnt = 0; nCnt < WEAK_MAX; nCnt++)
 	{
 		m_aWeakPointLife[nCnt] = WEAK_LIFE[nCnt];	// 弱点のライフ
 	}
 	m_nLife = MAX_LIFE;				// 体力
 	m_bDown = false;				// ダウン状況
+	m_bHit = false;					// ヒット状況
 
 	// リストに追加する
 	m_list.Regist(this);
@@ -136,6 +146,26 @@ HRESULT CBoss::Init(void)
 
 		// 停止
 		assert(false);
+	}
+
+	CListManager<CEnemy*> list = CEnemy::GetList();
+	CEnemy* pEnemy = nullptr;
+
+	for (int nCnt = 0; nCnt < list.GetNumData(); nCnt++)
+	{
+		// 敵の情報を取得する
+		pEnemy = list.GetData(nCnt);
+
+		// 位置を取得する
+		D3DXVECTOR3 pos = pEnemy->GetPos();
+
+		// 位置を真ん中にする
+		pos.y += (pEnemy->GetCollSize().y * 0.5f);
+
+		// アニメーションリアクションを生成
+		CAnimReaction::Create(pos, DEATH_EXPLOSION_SIZE, NONE_D3DXCOLOR, CAnimReaction::TYPE::TYPE_GUNEXPLOSION, 4, 1);
+
+		pEnemy->Uninit();
 	}
 
 	// 値を返す
@@ -217,6 +247,9 @@ void CBoss::Update(void)
 		// モーションの更新処理
 		m_pMotion->Update();
 	}
+
+	// ダメージ処理
+	Damage();
 }
 
 //================================
@@ -258,37 +291,62 @@ void CBoss::Hit(const int nDamage)
 //================================
 // バリア破壊処理
 //================================
-void CBoss::BarrierBreak(const D3DXVECTOR3& pos, const int nPart)
+void CBoss::BarrierBreak(const D3DXVECTOR3& pos, const int nPart, const int nDamage)
 {
-	for (int nCntPart = 0; nCntPart < WEAK_MAX; nCntPart++)
-	{
-		if (m_aWeakPointLife[nCntPart] > 0 &&
-			nPart == WEAK_PART[nCntPart])
-		{
-			// バリアのヒット処理
-			BarrierHit(pos, nPart, nCntPart);
+	if (nPart == WEAK_PART[WEAK_BODY])
+	{ // 胸の弱点に当たった場合
 
-			// for文から抜ける
-			break;
+		if (m_bDown == true)
+		{ // ダウン中胸に当たった場合
+
+			// ヒット処理
+			Hit(nDamage);
+
+			// ダメージ状況を true にする
+			m_damage.bDamage = true;
+			m_damage.nCount = 0;
+		}
+		else
+		{ // 上記以外
+
+			// バリア処理
+			CBossBarrier::Create(pos);
 		}
 	}
+	else
+	{ // 上記以外
 
-	if (m_bDown == false &&
-		m_aWeakPointLife[WEAK_RFSHIN] <= 0 &&
-		m_aWeakPointLife[WEAK_LFSHIN] <= 0 &&
-		m_aWeakPointLife[WEAK_RBSHIN] <= 0 &&
-		m_aWeakPointLife[WEAK_LBSHIN] <= 0)
-	{ // 弱点が全て壊された場合
+		for (int nCntPart = WEAK_RFSHIN; nCntPart < WEAK_MAX; nCntPart++)
+		{
+			if (m_aWeakPointLife[nCntPart] > 0 &&
+				nPart == WEAK_PART[nCntPart])
+			{ // バリアに当たった場合
 
-		// 状態の消去処理(メモリリークが起きる可能性があるため)
-		m_pState->Delete();
-		m_pState = nullptr;
+				// バリアのヒット処理
+				BarrierHit(pos, nPart, nCntPart);
 
-		// 気絶状態にする
-		ChangeState(new CBossStunState);
+				// for文から抜ける
+				break;
+			}
+		}
 
-		// 気絶状態にする
-		m_bDown = true;
+		if (m_bDown == false &&
+			m_aWeakPointLife[WEAK_RFSHIN] <= 0 &&
+			m_aWeakPointLife[WEAK_LFSHIN] <= 0 &&
+			m_aWeakPointLife[WEAK_RBSHIN] <= 0 &&
+			m_aWeakPointLife[WEAK_LBSHIN] <= 0)
+		{ // 弱点が全て壊された場合
+
+			// 状態の消去処理(メモリリークが起きる可能性があるため)
+			m_pState->Delete();
+			m_pState = nullptr;
+
+			// 気絶状態にする
+			ChangeState(new CBossStunState);
+
+			// 気絶状態にする
+			m_bDown = true;
+		}
 	}
 }
 
@@ -389,8 +447,11 @@ void CBoss::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 
 	// 全ての値を設定する
 	m_pLifeUI = CBossLifeUI::Create(MAX_LIFE);		// 体力UI
-	m_nLife = MAX_LIFE;		// 体力
-	m_bDown = false;		// ダウン状況
+	m_nLife = MAX_LIFE;			// 体力
+	m_damage.nCount = 0;		// カウント
+	m_damage.bDamage = false;	// ダメージ状況
+	m_bDown = false;			// ダウン状況
+	m_bHit = false;				// ヒット状況
 
 	// 当たり判定を設定する
 	CManager::Get()->GetFile()->SetBossColl(&m_apColl[0]);
@@ -565,4 +626,50 @@ CBossCollision* CBoss::GetColl(const int nIdx)
 {
 	// 当たり判定の情報を返す
 	return m_apColl[nIdx];
+}
+
+//===========================================
+// ヒット状況の設定処理
+//===========================================
+void CBoss::SetEnableHit(const bool bHit)
+{
+	// ヒット状況を設定する
+	m_bHit = bHit;
+}
+
+//===========================================
+// ヒット状況の取得処理
+//===========================================
+bool CBoss::IsHit(void) const
+{
+	// ヒット状況を返す
+	return m_bHit;
+}
+
+//===========================================
+// ダメージ処理
+//===========================================
+void CBoss::Damage(void)
+{
+	if (m_damage.bDamage == true)
+	{ // ダメージ状況が true の場合
+
+		// カウントを加算する
+		m_damage.nCount++;
+
+		// 色を変える
+		m_apMatCopy[BODY_IDX][WEAK_MATERIAL_NUM].MatD3D.Diffuse = WEAK_DAMAGE_COL;
+		m_apMatCopy[BODY_IDX][WEAK_MATERIAL_NUM].MatD3D.Emissive = WEAK_DAMAGE_COL;
+
+		if (m_damage.nCount >= DAMAGE_COUNT)
+		{ // 一定カウント経過した場合
+
+			// リセットする
+			m_damage.nCount = 0;
+			m_damage.bDamage = false;
+
+			// 色を変える
+			m_apMatCopy[BODY_IDX][WEAK_MATERIAL_NUM].MatD3D = GetHierarchy(BODY_IDX)->GetMaterial(WEAK_MATERIAL_NUM).MatD3D;
+		}
+	}
 }

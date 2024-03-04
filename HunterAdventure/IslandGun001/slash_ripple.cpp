@@ -94,6 +94,9 @@ void CSlashRipple::Update(void)
 	// ”š’e‰Ô‚Æ‚Ì“–‚½‚è”»’è
 	collision::BangFlowerHit(GetPos(), GetFileData().vtxMax.x * scale.x, GetFileData().vtxMax.y);
 
+	// “I(•—‘D)‚Æ‚Ì“–‚½‚è”»’è
+	collision::TargetHit(GetPos(), GetFileData().vtxMax.x * scale.x);
+
 	if (m_nLife < 0)
 	{ // Žõ–½‚ª 0 –¢–ž‚Ìê‡
 

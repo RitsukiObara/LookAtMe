@@ -24,7 +24,7 @@ namespace
 //-------------------------------------------
 // 静的メンバ変数宣言
 //-------------------------------------------
-CListManager<CBlock*> CBlock::m_list = {};			// リスト
+CListManager<CBlock*> CBlock::m_aList[area::NUM_AREA] = {};			// リスト
 
 //==============================
 // コンストラクタ
@@ -34,9 +34,7 @@ CBlock::CBlock() : CModel(TYPE_BLOCK, PRIORITY_BLOCK)
 	// 全ての値をクリアする
 	m_vtxMax = NONE_D3DXVECTOR3;		// 頂点の最大値
 	m_vtxMin = NONE_D3DXVECTOR3;		// 頂点の最小値
-
-	// リストに追加する
-	m_list.Regist(this);
+	m_nFieldIdx = 0;					// 区分の番号
 }
 
 //==============================
@@ -68,11 +66,11 @@ HRESULT CBlock::Init(void)
 //========================================
 void CBlock::Uninit(void)
 {
+	// 引き抜き処理
+	m_aList[m_nFieldIdx].Pull(this);
+
 	// 終了処理
 	CModel::Uninit();
-
-	// 引き抜き処理
-	m_list.Pull(this);
 }
 
 //========================================
@@ -116,6 +114,12 @@ void CBlock::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& scale)
 	m_vtxMin.x = file.vtxMin.x * scale.x;
 	m_vtxMin.y = file.vtxMin.y * scale.y;
 	m_vtxMin.z = file.vtxMin.z * scale.z;
+
+	// 区分の設定処理
+	m_nFieldIdx = area::SetFieldIdx(GetPos());
+
+	// リストに追加する
+	m_aList[m_nFieldIdx].Regist(this);
 }
 
 //=======================================
@@ -194,8 +198,8 @@ D3DXVECTOR3 CBlock::GetVtxMin(void) const
 //=======================================
 // リストの取得処理
 //=======================================
-CListManager<CBlock*> CBlock::GetList(void)
+CListManager<CBlock*> CBlock::GetList(const int nIdx)
 {
 	// リストマネージャーを返す
-	return m_list;
+	return m_aList[nIdx];
 }

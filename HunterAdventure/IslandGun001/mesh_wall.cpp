@@ -43,8 +43,8 @@ HRESULT CMeshWall::Init(void)
 		return E_FAIL;
 	}
 
-	// 頂点情報の設定処理
-	SetVertex();
+	// 頂点情報の全設定処理
+	SetVertexAll();
 
 	// インデックスの設定処理
 	SetIndex(GetVtx().nHeight, GetVtx().nWidth);
@@ -108,11 +108,11 @@ void CMeshWall::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const fl
 }
 
 //================================
-// 頂点の設定処理
+// 頂点の全設定処理
 //================================
-void CMeshWall::SetVertex(void)
+void CMeshWall::SetVertexAll(void)
 {
-	VERTEX_3D *pVtx;									// 頂点情報へのポインタ
+	VERTEX_3D* pVtx;									// 頂点情報へのポインタ
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();	// 頂点バッファ
 	SGrid Divi = GetDivi();			// 分割数
 	SGrid vtx = GetVtx();			// 頂点数
@@ -143,6 +143,43 @@ void CMeshWall::SetVertex(void)
 
 				// テクスチャ座標の設定
 				pVtx[0].tex = D3DXVECTOR2(nCntWid * (1.0f / 5.0f), nCntDep * (1.0f / 5.0f));
+
+				pVtx++;				// 頂点データを進める
+			}
+		}
+
+		// 頂点バッファをアンロックする
+		pVtxBuff->Unlock();
+	}
+}
+
+//================================
+// 頂点の設定処理
+//================================
+void CMeshWall::SetVertex(void)
+{
+	VERTEX_3D *pVtx;									// 頂点情報へのポインタ
+	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();	// 頂点バッファ
+	SGrid Divi = GetDivi();			// 分割数
+	SGrid vtx = GetVtx();			// 頂点数
+
+	if (pVtxBuff != nullptr)
+	{ // 頂点バッファのポインタが NULL じゃない場合
+
+		// 頂点バッファをロックし、頂点情報へのポインタを取得
+		pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+		for (int nCntDep = 0; nCntDep < vtx.nHeight; nCntDep++)
+		{
+			for (int nCntWid = 0; nCntWid < vtx.nWidth; nCntWid++)
+			{
+				// 頂点座標の設定
+				pVtx[0].pos = D3DXVECTOR3
+				( // 引数
+					(nCntWid * m_fWidthSizeDivi) - (m_fWidthSize / 2.0f),	// X座標
+					m_fHeightSize - (nCntDep * m_fHeightSizeDivi),			// Y座標
+					0.0f													// Z座標
+				);
 
 				pVtx++;				// 頂点データを進める
 			}

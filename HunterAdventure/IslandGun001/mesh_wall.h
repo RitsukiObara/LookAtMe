@@ -29,7 +29,8 @@ public:		// 誰でもアクセスできる
 	virtual void Draw(void) override;		// 描画処理
 
 	void SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const float fWidth, const float fHeight, const SGrid& Divi);			// 情報の設定処理
-	void SetVertex(void);	// 頂点の設定処理
+	void SetVertexAll(void);	// 頂点の全設定処理
+	void SetVertex(void);		// 頂点の設定処理
 
 	// 静的メンバ関数
 	static CMeshWall* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const float fWidth, const float fHeight, const SGrid& Divi, const PRIORITY priority);		// 生成処理

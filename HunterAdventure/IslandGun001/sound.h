@@ -20,6 +20,7 @@ public:			// 誰でもアクセス出来る
 	enum SOUND_LABEL
 	{
 		SOUND_LABEL_BGM_TITLE = 0,		// タイトルBGM
+		SOUND_LABEL_BGM_TUTORIAL,		// チュートリアルBGM
 		SOUND_LABEL_BGM_GAME,			// ゲームBGM
 		SOUND_LABEL_BGM_RESULT,			// リザルトBGM
 		SOUND_LABEL_BGM_RANKING,		// ランキングBGM
@@ -27,7 +28,17 @@ public:			// 誰でもアクセス出来る
 		SOUND_LABEL_SE_DECIDE,			// 決定音
 		SOUND_LABEL_SE_GUNSHOT,			// 銃の発射音
 		SOUND_LABEL_SE_GUNRELOAD,		// 銃のリロード音
+		SOUND_LABEL_SE_DAGGER,			// ダガー音
+		SOUND_LABEL_SE_WALK,			// 歩行音
+		SOUND_LABEL_SE_AVOID,			// 回避音
 		SOUND_LABEL_SE_BOSSHOWLING,		// ボスの雄たけび音
+		SOUND_LABEL_SE_WINDSHOT,		// 風攻撃
+		SOUND_LABEL_SE_FIRESHOT,		// 炎攻撃
+		SOUND_LABEL_SE_EXPLOSION,		// 爆発
+		SOUND_LABEL_SE_COINGET,			// コインゲット
+		SOUND_LABEL_SE_ROCKBREAK,		// 岩の破壊
+		SOUND_LABEL_SE_SIGNBOARD,		// 看板
+		SOUND_LABEL_SE_DAMAGE,			// ダメージ音
 		SOUND_LABEL_MAX					// この列挙型の総数
 	};
 

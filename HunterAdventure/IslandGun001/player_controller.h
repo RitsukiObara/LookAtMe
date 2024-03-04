@@ -32,6 +32,10 @@ public:			// 誰でもアクセスできる
 	void Uninit(void);					// 終了処理
 	void Control(CPlayer* pPlayer);		// 操作処理
 
+	// セット・ゲット関係
+	void SetSpeed(const float fSpeed);	// 速度の設定処理
+	float GetSpeedInit(void) const;		// 初期速度の取得処理
+
 	// 静的メンバ関数
 	static CPlayerController* Create(void);		// 生成処理
 
@@ -52,6 +56,7 @@ private:		// 誰でもアクセスできる
 
 	// メンバ変数
 	int m_nShotCount;			// 射撃カウント
+	int m_nWalkCount;			// 歩行カウント
 	float m_fStickRot;			// スティックの向き
 	float m_fSpeed;				// 速度
 	bool m_bRightShot;			// 右で撃つかどうか

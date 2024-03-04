@@ -37,6 +37,10 @@ public:						// 誰でもアクセスできる
 
 	void SetFog(const bool bFog, const D3DXCOLOR& col, const float fStartPos, const float fEndPos);				// 霧の設定処理
 
+	// セット・ゲット関係
+	void SetFogCol(const D3DXCOLOR& col);		// 色のレベルの設定処理
+	D3DXCOLOR GetFogCol(void) const;			// 色のレベルの取得処理
+
 	// 静的メンバ関数
 	static CRenderer* Create(HWND hWnd, BOOL bWindow);		// 生成処理
 
@@ -45,6 +49,8 @@ private:					// 自分だけアクセスできる
 	// メンバ変数
 	LPDIRECT3D9 m_pD3D;							// Direct3Dオブジェクトへのポインタ
 	LPDIRECT3DDEVICE9 m_pD3DDevice;				// Direct3Dデバイスへのポインタ
+	D3DXCOLOR m_fogCol;							// 霧の色
+	bool m_bFog;								// 霧状況
 };
 
 #endif

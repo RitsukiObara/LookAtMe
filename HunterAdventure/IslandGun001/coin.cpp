@@ -29,7 +29,7 @@ namespace
 //-------------------------------------------
 // 静的メンバ変数宣言
 //-------------------------------------------
-CListManager<CCoin*> CCoin::m_list = {};		// リスト
+CListManager<CCoin*> CCoin::m_aList[area::NUM_AREA] = {};		// リスト
 
 //==============================
 // コンストラクタ
@@ -38,12 +38,10 @@ CCoin::CCoin() : CModel(CObject::TYPE_COIN, CObject::PRIORITY_ENTITY)
 {
 	// 全ての値をクリアする
 	m_state = STATE_NONE;		// 状態
+	m_nAreaIdx = 0;				// 区分の番号
 	m_nDeathCount = 0;			// 死亡カウント
 	m_fCycleSpeed = 0.0f;		// 回転速度
 	m_fHeightDest = 0.0f;		// 目標の高さ
-
-	// リストに追加する
-	m_list.Regist(this);
 }
 
 //==============================
@@ -75,11 +73,11 @@ HRESULT CCoin::Init(void)
 //========================================
 void CCoin::Uninit(void)
 {
+	// 引き抜き処理
+	m_aList[m_nAreaIdx].Pull(this);
+
 	// 終了処理
 	CModel::Uninit();
-
-	// 引き抜き処理
-	m_list.Pull(this);
 }
 
 //========================================
@@ -157,6 +155,12 @@ void CCoin::SetData(const D3DXVECTOR3& pos)
 	m_nDeathCount = 0;							// 死亡カウント
 	m_fCycleSpeed = INIT_CYCLESPEED;			// 回転速度
 	m_fHeightDest = pos.y + GET_HEIGHTDEST;		// 目標の高さ
+
+	// 区分の番号の設定処理
+	m_nAreaIdx = area::SetFieldIdx(GetPos());
+
+	// リストに追加する
+	m_aList[m_nAreaIdx].Regist(this);
 }
 
 //=======================================
@@ -217,10 +221,10 @@ CCoin* CCoin::Create(const D3DXVECTOR3& pos)
 //=======================================
 // リストの取得処理
 //=======================================
-CListManager<CCoin*> CCoin::GetList(void)
+CListManager<CCoin*> CCoin::GetList(const int nIdx)
 {
 	// リストマネージャーを返す
-	return m_list;
+	return m_aList[nIdx];
 }
 
 //=======================================

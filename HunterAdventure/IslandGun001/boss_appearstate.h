@@ -28,6 +28,7 @@ private:
 	void Length(void);			// 距離関係処理
 	void PosRot(CBoss* pBoss);	// 位置向き設定処理
 	void Ripple(CBoss* pBoss);	// 波紋の設置処理
+	void LightCol(void);		// 光の色の設定処理
 
 	// メンバ変数
 	int m_nCount;			// 経過カウント

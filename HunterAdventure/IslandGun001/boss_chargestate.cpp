@@ -79,6 +79,10 @@ void CBossChargeState::Process(CBoss* pBoss)
 //==========================
 void CBossChargeState::SetData(CBoss* pBoss)
 {
-	// チャージモーションにする
-	pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_CHARGE);
+	if (pBoss->GetMotion()->GetType() != CBoss::MOTIONTYPE_CHARGE)
+	{ // チャージモーション以外の場合
+
+		// チャージモーションにする
+		pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_CHARGE);
+	}
 }

@@ -36,13 +36,13 @@ public:			// 誰でもアクセスできる
 	void Update(void) override;		// 更新処理
 	void Draw(void) override;		// 描画処理
 
-	void SetData(const D3DXVECTOR3& pos, const TYPE type);					// 設定処理
+	void SetData(const D3DXVECTOR3& pos, const float fSize, const TYPE type, const int nInterval);					// 設定処理
 
 	// セット・ゲット関係
 	void SetType(const TYPE type);		// 種類の設定処理
 
 	// 静的メンバ関数
-	static CPushTiming* Create(const D3DXVECTOR3& pos, const TYPE type);	// 生成処理
+	static CPushTiming* Create(const D3DXVECTOR3& pos, const float fSize, const TYPE type, const int nInterval);	// 生成処理
 
 private:		// 自分だけアクセスできる
 

@@ -39,6 +39,7 @@ public:					// 誰でもアクセスできる
 		MOTIONTYPE_FLYING,			// 飛行モーション
 		MOTIONTYPE_CHARGE,			// チャージモーション
 		MOTIONTYPE_DOWN,			// ダウンモーション
+		MOTIONTYPE_STOMP,			// 足踏みモーション
 		MOTIONTYPE_MAX				// この列挙型の総数
 	};
 
@@ -53,6 +54,13 @@ public:					// 誰でもアクセスできる
 		WEAK_MAX					// この列挙型の総数
 	};
 
+	// ダメージ状況関係
+	struct SDamage
+	{
+		int nCount;		// カウント
+		bool bDamage;	// ダメージ状況
+	};
+
 	CBoss();		// コンストラクタ
 	~CBoss();		// デストラクタ
 
@@ -63,7 +71,7 @@ public:					// 誰でもアクセスできる
 	void Draw(void) override;		// 描画処理
 
 	void Hit(const int nDamage);	// ヒット処理
-	void BarrierBreak(const D3DXVECTOR3& pos, const int nPart);			// バリア破壊処理
+	void BarrierBreak(const D3DXVECTOR3& pos, const int nPart, const int nDamage);		// バリア破壊処理
 	void BarrierHit(const D3DXVECTOR3& pos, const int nPart, const int nCntPart);		// バリアのヒット処理
 	void StunRecovery(void);		// 気絶回復処理
 
@@ -76,12 +84,18 @@ public:					// 誰でもアクセスできる
 	CMotion* GetMotion(void);		// モーションの取得処理
 	CBossCollision* GetColl(const int nIdx);		// 当たり判定の取得処理
 
+	void SetEnableHit(const bool bHit);		// ヒット状況の設定処理
+	bool IsHit(void) const;					// ヒット状況の取得処理
+
 	// 静的メンバ関数
 	static CBoss* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);		// 生成処理
 
 	static CListManager<CBoss*> GetList(void);			// リストの取得処理
 
 private:				// 自分だけアクセスできる
+
+	// メンバ関数
+	void Damage(void);		// ダメージ処理
 
 	// メンバ変数
 	CMotion* m_pMotion;		// モーションの情報
@@ -90,9 +104,11 @@ private:				// 自分だけアクセスできる
 	CBossCollision* m_apColl[MAX_PARTS];	// 当たり判定の球
 	D3DXMATERIAL* m_apMatCopy[MAX_PARTS];	// マテリアルのコピー
 
+	SDamage m_damage;		// ダメージ情報
 	int m_aWeakPointLife[WEAK_MAX];			// 弱点のライフ
 	int m_nLife;			// 体力
 	bool m_bDown;			// ダウン状況
+	bool m_bHit;			// ヒット状況
 
 	// 静的メンバ変数
 	static CListManager<CBoss*> m_list;		// リスト

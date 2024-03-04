@@ -12,6 +12,7 @@
 CSound::SOUNDINFO CSound::m_aSoundInfo[CSound::SOUND_LABEL_MAX] =
 {
 	{ "data\\BGM\\TitleBGM.wav",-1 },		// タイトルBGM
+	{ "data\\BGM\\TutorialBGM.wav",-1 },	// チュートリアルBGM
 	{ "data\\BGM\\GameBGM.wav",-1 },		// ゲームBGM
 	{ "data\\BGM\\ResultBGM.wav",-1 },		// リザルトBGM
 	{ "data\\BGM\\RankingBGM.wav",-1 },		// ランキングBGM
@@ -19,7 +20,17 @@ CSound::SOUNDINFO CSound::m_aSoundInfo[CSound::SOUND_LABEL_MAX] =
 	{ "data\\SE\\Decide.wav",0 },			// 決定音
 	{ "data\\SE\\GunShot.wav",0 },			// 銃の発射音
 	{ "data\\SE\\GunReload.wav",0 },		// 銃のリロード音
+	{ "data\\SE\\Dagger.wav",0 },			// ダガー音
+	{ "data\\SE\\Walk.wav",0 },				// 歩行音
+	{ "data\\SE\\Avoid.wav",0 },			// 回避音
 	{ "data\\SE\\BossHowling.wav",0 },		// ボスの雄たけび音
+	{ "data\\SE\\WindShot.wav",0 },			// ボスの風攻撃
+	{ "data\\SE\\BossFireShot.wav",0 },		// ボスの炎攻撃
+	{ "data\\SE\\Explosion.wav",0 },		// 爆発
+	{ "data\\SE\\CoinGet.wav",0 },			// コインゲット
+	{ "data\\SE\\RockBreak.wav",0 },		// 岩の破壊
+	{ "data\\SE\\Signboard.wav",0 },		// 看板
+	{ "data\\SE\\EnemyDeath.wav",0 },		// ダメージ音
 }; 
 
 //=============================================================================

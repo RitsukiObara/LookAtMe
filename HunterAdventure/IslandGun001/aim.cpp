@@ -12,6 +12,8 @@
 #include "useful.h"
 
 #include "enemy.h"
+#include "balloon_spawner.h"
+#include "balloon.h"
 
 //---------------------------------------
 // 無名名前空間
@@ -28,11 +30,12 @@ namespace
 //=========================
 // コンストラクタ
 //=========================
-CAim::CAim() : CBillboard(CObject::TYPE_NONE, CObject::PRIORITY_EFFECT)
+CAim::CAim() : CBillboard(CObject::TYPE_NONE, CObject::PRIORITY_UI)
 {
 	// 全ての値をクリアする
 	m_posPlayer = NONE_D3DXVECTOR3;		// プレイヤーの位置
 	m_fLength = NONE_LENGTH;			// 長さ
+	m_bColl = false;					// 当たり判定状況
 }
 
 //=========================
@@ -85,8 +88,8 @@ void CAim::Update(void)
 	// 位置を適用する
 	SetPos(pos);
 
-	// 敵との当たり判定処理
-	EnemyCollision();
+	// 当たり判定処理
+	Collision();
 
 	// 頂点座標の設定処理
 	SetVertex();
@@ -118,6 +121,7 @@ void CAim::SetData(const D3DXVECTOR3& pos)
 	// 全ての値を設定する
 	m_posPlayer = NONE_D3DXVECTOR3;		// プレイヤーの位置
 	m_fLength = NONE_LENGTH;			// 長さ
+	m_bColl = false;					// 当たり判定状況
 
 	// 頂点情報の初期化
 	SetVertex();
@@ -191,14 +195,37 @@ void CAim::SetPosPlayer(const D3DXVECTOR3& pos)
 }
 
 //=========================
+// 当たり判定処理
+//=========================
+void CAim::Collision(void)
+{
+	if (EnemyCollision() == true ||
+		BalloonCollision() == true)
+	{ // 何かに当たった場合
+
+		// 色を付ける
+		SetVtxColor(HIT_COL);
+	}
+	else
+	{ // 上記以外
+
+		// 長さを初期化する
+		m_fLength = NONE_LENGTH;
+
+		// 色を通常に戻す
+		SetVtxColor(NONE_D3DXCOLOR);
+	}
+}
+
+//=========================
 // 敵との当たり判定
 //=========================
-void CAim::EnemyCollision(void)
+bool CAim::EnemyCollision(void)
 {
 	// ローカル変数宣言
 	D3DXVECTOR3 pos = GetPos();					// 位置
 	D3DXVECTOR3 posEnemy = NONE_D3DXVECTOR3;	// 敵の位置
-	D3DXVECTOR3 sizeEnemy = NONE_D3DXVECTOR3;	// 敵のサイズ
+	float fHeightEnemy = 0.0f;					// 敵の高さ
 	D3DXVECTOR3 vecBullet = NONE_D3DXVECTOR3;	// 弾道のベクトル
 	D3DXVECTOR3 vecEnemy = NONE_D3DXVECTOR3;	// プレイヤーから敵に向けてのベクトル
 	float fLength = 0.0f;						// 長さ
@@ -206,7 +233,6 @@ void CAim::EnemyCollision(void)
 	CEnemy* pEnemy = nullptr;		// 先頭の敵
 	CEnemy* pEnemyEnd = nullptr;	// 末尾の値
 	int nIdx = 0;					// 敵の番号
-	bool bColl = false;				// 当たり判定状況
 
 	if (list.IsEmpty() == false)
 	{ // 空白じゃない場合
@@ -223,11 +249,11 @@ void CAim::EnemyCollision(void)
 			// 敵の位置を取得する
 			posEnemy = pEnemy->GetPos();
 
-			// 敵のサイズを取得する
-			sizeEnemy = pEnemy->GetCollSize();
+			// 敵の高さを取得する
+			fHeightEnemy = pEnemy->GetCollSize().y;
 
 			// 位置を中心にする
-			posEnemy.y += sizeEnemy.y * 0.5f;
+			posEnemy.y += fHeightEnemy * 0.5f;
 
 			// 弾道のベクトルを算出する
 			vecBullet = pos - m_posPlayer;
@@ -254,11 +280,8 @@ void CAim::EnemyCollision(void)
 				// 長さを算出する
 				m_fLength = fLength;
 
-				// 当たり判定を true にする
-				bColl = true;
-
-				// 抜け出す
-				break;
+				// true を返す
+				return true;
 			}
 
 			if (pEnemy == pEnemyEnd)
@@ -276,19 +299,94 @@ void CAim::EnemyCollision(void)
 		}
 	}
 
-	if (bColl == true)
-	{ // 当たっている場合
+	// false を返す
+	return false;
+}
 
-		// 色を付ける
-		SetVtxColor(HIT_COL);
+//=========================
+// 風船との当たり判定
+//=========================
+bool CAim::BalloonCollision(void)
+{
+	// ローカル変数宣言
+	CBalloon* pBalloon = nullptr;				// 風船
+	D3DXVECTOR3 pos = GetPos();					// 位置
+	D3DXVECTOR3 posBalloon = NONE_D3DXVECTOR3;	// 敵の位置
+	D3DXVECTOR3 vecBullet = NONE_D3DXVECTOR3;	// 弾道のベクトル
+	D3DXVECTOR3 vecBalloon = NONE_D3DXVECTOR3;	// プレイヤーから敵に向けてのベクトル
+	float fLength = 0.0f;						// 長さ
+
+	CListManager<CBalloonSpawner*> list = CBalloonSpawner::GetList();		// 敵のリスト
+	CBalloonSpawner* pSpawner = nullptr;		// 先頭の敵
+	CBalloonSpawner* pSpawnerEnd = nullptr;		// 末尾の値
+	int nIdx = 0;					// 敵の番号
+
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		// 先頭の値を取得する
+		pSpawner = list.GetTop();
+
+		// 末尾の値を取得する
+		pSpawnerEnd = list.GetEnd();
+
+		while (true)
+		{ // 無限ループ
+
+			// 風船の情報を取得
+			pBalloon = pSpawner->GetBalloon();
+
+			if (pBalloon != nullptr)
+			{ // 風船が NULL じゃない場合
+
+				// 敵の位置を取得する
+				posBalloon = pBalloon->GetPos();
+
+				// 弾道のベクトルを算出する
+				vecBullet = pos - m_posPlayer;
+
+				// 敵へのベクトルを算出する
+				vecBalloon = posBalloon - m_posPlayer;
+
+				// ベクトルを正規化する
+				D3DXVec3Normalize(&vecBullet, &vecBullet);
+				D3DXVec3Normalize(&vecBalloon, &vecBalloon);
+
+				// 長さを設定する
+				fLength = sqrtf((posBalloon.x - m_posPlayer.x) * (posBalloon.x - m_posPlayer.x) + (posBalloon.z - m_posPlayer.z) * (posBalloon.z - m_posPlayer.z));
+
+				if (vecBullet.x + HIT_VECTOR_PERMISSION >= vecBalloon.x &&
+					vecBullet.x - HIT_VECTOR_PERMISSION <= vecBalloon.x &&
+					vecBullet.y + HIT_VECTOR_PERMISSION >= vecBalloon.y &&
+					vecBullet.y - HIT_VECTOR_PERMISSION <= vecBalloon.y &&
+					vecBullet.z + HIT_VECTOR_PERMISSION >= vecBalloon.z &&
+					vecBullet.z - HIT_VECTOR_PERMISSION <= vecBalloon.z &&
+					fLength <= NONE_LENGTH)
+				{ // 敵が射線上にいる場合
+
+					// 長さを算出する
+					m_fLength = fLength;
+
+					// true を返す
+					return true;
+				}
+			}
+
+			if (pSpawner == pSpawnerEnd)
+			{ // 末尾に達した場合
+
+				// while文を抜け出す
+				break;
+			}
+
+			// 次のオブジェクトを代入する
+			pSpawner = list.GetData(nIdx + 1);
+
+			// インデックスを加算する
+			nIdx++;
+		}
 	}
-	else
-	{ // 上記以外
 
-		// 長さを初期化する
-		m_fLength = NONE_LENGTH;
-
-		// 色を通常に戻す
-		SetVtxColor(NONE_D3DXCOLOR);
-	}
+	// false を返す
+	return false;
 }

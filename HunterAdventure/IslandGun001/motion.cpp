@@ -27,7 +27,7 @@ namespace
 		"data\\TXT\\IwakariMotion.txt",
 		"data\\TXT\\BossMotion.txt",
 	};
-	const int MOTION_SET_FRAME = 7;						// モーション設定時のフレーム数
+	const int MOTION_SET_FRAME = 9;						// モーション設定時のフレーム数
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -292,15 +292,6 @@ void CMotion::Update(void)
 				}
 			}
 		}
-
-		// デバッグ
-		CManager::Get()->GetDebugProc()->Print("モーション中\n");
-	}
-	else
-	{ // 上記以外
-
-		// デバッグ
-		CManager::Get()->GetDebugProc()->Print("モーション終了\n");
 	}
 }
 

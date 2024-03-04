@@ -13,11 +13,6 @@
 #include "main.h"
 
 //-----------------------------------
-// マクロ定義
-//-----------------------------------
-#define NUM_LIGHT			(3)			// ライトの数
-
-//-----------------------------------
 // クラス定義
 //-----------------------------------
 class CLight
@@ -32,6 +27,9 @@ public:			// 誰でもアクセスできる
 	void Uninit(void);		// 終了処理
 	void Update(void);		// 更新処理
 
+	void ResetCol(void);	// 色のリセット処理
+
+	void SetLightInfo(const int nIdx, const D3DLIGHT9& light);		// ライトの設定処理
 	D3DLIGHT9 GetLightInfo(const int nIdx) const;		// ライトの取得処理
 
 	void SetLightCamera(const D3DLIGHT9& light);		// カメラ追従ライトの設定処理
@@ -39,6 +37,9 @@ public:			// 誰でもアクセスできる
 
 	// 静的メンバ関数
 	static CLight* Create(void);		// 生成処理
+
+	// 定数定義
+	static const int NUM_LIGHT = 3;		// ライトの数
 
 private:		// 誰でもアクセスできる
 

@@ -23,7 +23,7 @@ namespace
 	const float OCEAN_WIDTH = 80000.0f;		// ŠC‚Ì•
 	const float OCEAN_DEPTH = 80000.0f;		// ŠC‚Ì‰œs
 	const float OCEAN_WAVE_HEIGHT = 30.0f;	// ŠC‚Ì‚‚³
-	const float OCEAN_CYCLE = 0.5f;			// ŠC‚Ì‰ñ“]—¦
+	const float OCEAN_CYCLE = 1.0f;			// ŠC‚Ì‰ñ“]—¦
 	const float OCEAN_SPEED = 0.01f;		// ŠC‚Ì—¬‚ê‚Ì‘¬“x
 }
 

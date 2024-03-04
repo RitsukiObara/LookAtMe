@@ -20,7 +20,6 @@
 //----------------------------------------------------------------------------------------------------------------------
 // マクロ定義
 //----------------------------------------------------------------------------------------------------------------------
-#define ELEVATION_TXT			"data/TXT/Elevation.txt"			// 起伏地面のテキスト
 #define TEXTURE_DIVI_X			(0.2f)								// テクスチャの分割数(X軸)
 #define TEXTURE_DIVI_Z			(1.0f / 6.0f)						// テクスチャの分割数(Z軸)
 
@@ -1029,7 +1028,7 @@ CElevation* CElevation::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, c
 //================================
 // テキスト読み込み処理
 //================================
-void CElevation::TxtSet(void)
+void CElevation::TxtSet(const char* pTxt)
 {
 	// 変数を宣言
 	CElevation* pElevation = nullptr;	// 起伏のポインタ
@@ -1052,7 +1051,7 @@ void CElevation::TxtSet(void)
 	VERTEX_3D * pVtx;				// 頂点情報へのポインタ
 
 	// ファイルを読み込み形式で開く
-	pFile = fopen(ELEVATION_TXT, "r");
+	pFile = fopen(pTxt, "r");
 
 	if (pFile != nullptr)
 	{ // ファイルが開けた場合

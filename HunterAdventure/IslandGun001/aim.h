@@ -39,11 +39,14 @@ public:
 private:
 
 	// メンバ関数
-	void EnemyCollision(void);		// 敵との当たり判定
+	void Collision(void);			// 当たり判定処理
+	bool EnemyCollision(void);		// 敵との当たり判定
+	bool BalloonCollision(void);	// 風船との当たり判定
 
 	// メンバ変数
 	D3DXVECTOR3 m_posPlayer;		// プレイヤーの位置
 	float m_fLength;				// 長さ
+	bool m_bColl;					// 当たり判定状況
 };
 
 #endif

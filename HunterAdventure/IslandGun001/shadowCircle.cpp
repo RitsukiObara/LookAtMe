@@ -10,6 +10,11 @@
 #include "renderer.h"
 #include "texture.h"
 #include "collision.h"
+#include "useful.h"
+
+#include "objectElevation.h"
+#include "rock.h"
+#include "block.h"
 
 //-------------------------------------------
 // 無名名前空間
@@ -26,9 +31,9 @@ namespace
 CShadowCircle::CShadowCircle() : CObject3D(TYPE_SHADOW, PRIORITY_SHADOW)
 {
 	// 全ての値をクリアする
-	m_posParent = nullptr;			// 親の位置
 	m_col = INIT_SHADOW_COL;		// 色
 	m_fRadiusInit = 0.0f;			// 初期の半径
+	m_nAreaIdx = 0;					// 区分の番号
 }
 
 //====================
@@ -53,9 +58,9 @@ HRESULT CShadowCircle::Init(void)
 	}
 
 	// 全ての値を初期化する
-	m_posParent = nullptr;			// 親の位置
 	m_col = INIT_SHADOW_COL;		// 色
 	m_fRadiusInit = 0.0f;			// 初期の半径
+	m_nAreaIdx = 0;					// 区分の番号
 
 	// 成功を返す
 	return S_OK;
@@ -75,6 +80,9 @@ void CShadowCircle::Uninit(void)
 //====================
 void CShadowCircle::Update(void)
 {
+	// 前回の位置を設定する
+	SetPosOld(GetPos());
+
 	// 距離による設定処理
 	Distance();
 
@@ -118,10 +126,9 @@ void CShadowCircle::Draw(void)
 //====================
 // 情報の設定処理
 //====================
-void CShadowCircle::SetData(const D3DXVECTOR3& pos, const float fRadius, D3DXVECTOR3* posParent)
+void CShadowCircle::SetData(const D3DXVECTOR3& pos, const float fRadius, const int nAreaIdx)
 {
 	// 情報の初期化
-	m_posParent = posParent;		// 親の位置
 	m_col = INIT_SHADOW_COL;		// 色
 	m_fRadiusInit = fRadius;		// 初期の半径
 
@@ -130,6 +137,9 @@ void CShadowCircle::SetData(const D3DXVECTOR3& pos, const float fRadius, D3DXVEC
 	SetPosOld(pos);				// 前回の位置
 	SetRot(NONE_D3DXVECTOR3);	// 向き
 	SetSize(D3DXVECTOR3(fRadius, 0.0f, fRadius));		// サイズ
+
+	// 区分の番号を設定する
+	m_nAreaIdx = nAreaIdx;
 
 	// 設定処理
 	Distance();
@@ -147,7 +157,7 @@ void CShadowCircle::SetData(const D3DXVECTOR3& pos, const float fRadius, D3DXVEC
 //====================
 // 生成処理
 //====================
-CShadowCircle* CShadowCircle::Create(const D3DXVECTOR3& pos, const float fRadius, D3DXVECTOR3* posParent)
+CShadowCircle* CShadowCircle::Create(const D3DXVECTOR3& pos, const float fRadius, const int nAreaIdx)
 {
 	// ローカルオブジェクトを生成
 	CShadowCircle* pShadow = nullptr;	// 影のインスタンスを生成
@@ -183,7 +193,7 @@ CShadowCircle* CShadowCircle::Create(const D3DXVECTOR3& pos, const float fRadius
 		}
 
 		// 情報の設定処理
-		pShadow->SetData(pos, fRadius, posParent);
+		pShadow->SetData(pos, fRadius, nAreaIdx);
 	}
 	else
 	{ // オブジェクトが NULL の場合
@@ -200,17 +210,190 @@ CShadowCircle* CShadowCircle::Create(const D3DXVECTOR3& pos, const float fRadius
 }
 
 //====================
+// 区分の番号の設定処理
+//====================
+void CShadowCircle::SetAreaIdx(const int nIdx)
+{
+	// 区分の番号を設定する
+	m_nAreaIdx = nIdx;
+}
+
+//====================
+// 当たり判定
+//====================
+void CShadowCircle::Collision(void)
+{
+	// 位置を取得
+	D3DXVECTOR3 pos = GetPos();
+	float fHeight = 0.0f;
+
+	// 起伏地面との当たり判定
+	ElevationCollision(pos, &fHeight);
+
+	// 岩の当たり判定
+	RockCollision(pos, &fHeight);
+
+	// ブロックの当たり判定
+	BlockCollision(pos, &fHeight);
+
+	// 高さを設定する
+	pos.y = fHeight;
+
+	// 位置を適用
+	SetPos(pos);
+}
+
+//=======================================
+// 起伏地面の当たり判定処理
+//=======================================
+void CShadowCircle::ElevationCollision(const D3DXVECTOR3& pos, float* pHeight)
+{
+	// ローカル変数宣言
+	float fComp = 0.0f;					// 比較用変数
+	CListManager<CElevation*> list = CElevation::GetList();
+	CElevation* pElev = nullptr;		// 先頭の小判
+	CElevation* pElevEnd = nullptr;		// 末尾の値
+	int nIdx = 0;
+
+	// while文処理
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		// 先頭の値を取得する
+		pElev = list.GetTop();
+
+		// 末尾の値を取得する
+		pElevEnd = list.GetEnd();
+
+		while (true)
+		{ // 無限ループ
+
+			// 当たり判定を取る
+			fComp = pElev->ElevationCollision(pos);
+
+			if (nIdx == 0)
+			{ // 最初の場合
+
+				// 高さを設定する
+				*pHeight = fComp;
+			}
+			else
+			{ // 上記以外
+
+				if (pos.y - *pHeight >= pos.y - fComp &&
+					pos.y >= fComp)
+				{ // より現在に近い場合
+
+					// 高さを設定する
+					*pHeight = fComp;
+				}
+			}
+
+			if (pElev == pElevEnd)
+			{ // 末尾に達した場合
+
+				// while文を抜け出す
+				break;
+			}
+
+			// 次のオブジェクトを代入する
+			pElev = list.GetData(nIdx + 1);
+
+			// インデックスを加算する
+			nIdx++;
+		}
+	}
+}
+
+//====================
+// 岩の当たり判定
+//====================
+void CShadowCircle::RockCollision(const D3DXVECTOR3& pos, float* pHeight)
+{
+	// ローカル変数宣言
+	D3DXVECTOR3 posRock = NONE_D3DXVECTOR3;		// 岩の位置
+	float fRadiusRock = 0.0f;					// 岩の半径
+	float fTopRock = 0.0f;						// 岩の上の高さ
+
+	CListManager<CRock*> list = CRock::GetList(m_nAreaIdx);
+	int nNum = list.GetNumData();	// 情報の総数
+	CRock* pRock = nullptr;			// 先頭の値
+
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		for (int nCnt = 0; nCnt < nNum; nCnt++)
+		{
+			// 情報を取得
+			pRock = list.GetData(nCnt);
+
+			// 岩の位置を取得する
+			posRock = pRock->GetPos();
+
+			// 岩の半径を取得する
+			fRadiusRock = pRock->GetRadius();
+
+			if (useful::CircleCollisionXZ(pos, posRock, 0.0f, fRadiusRock) == true)
+			{ // 円周に入った場合
+
+				// 岩の上の高さを取得する
+				fTopRock = pRock->GetTopHeight();
+
+				if (pos.y - *pHeight >= pos.y - (posRock.y + fTopRock) &&
+					pos.y >= (posRock.y + fTopRock))
+				{ // より現在に近い場合
+
+					// 位置を設定する
+					*pHeight = posRock.y + fTopRock;
+				}
+			}
+		}
+	}
+}
+
+//====================
+// ブロックの当たり判定
+//====================
+void CShadowCircle::BlockCollision(const D3DXVECTOR3& pos, float* pHeight)
+{
+	// ローカル変数宣言
+	D3DXVECTOR3 posBlock = NONE_D3DXVECTOR3;		// ブロックの位置
+	D3DXVECTOR3 vtxMaxBlock = NONE_D3DXVECTOR3;		// 頂点の最大値
+	D3DXVECTOR3 vtxMinBlock = NONE_D3DXVECTOR3;		// 頂点の最小値
+
+	CListManager<CBlock*> list = CBlock::GetList(m_nAreaIdx);
+	int nNum = list.GetNumData();		// 情報の総数
+	CBlock* pBlock = nullptr;			// 先頭の値
+
+	if (list.IsEmpty() == false)
+	{ // 空白じゃない場合
+
+		for (int nCnt = 0; nCnt < nNum; nCnt++)
+		{
+			// 情報を取得
+			pBlock = list.GetData(nCnt);
+
+			// ブロックの位置を取得する
+			posBlock = pBlock->GetPos();
+			vtxMaxBlock = pBlock->GetVtxMax();
+			vtxMinBlock = pBlock->GetVtxMin();
+
+			if (useful::RectangleCollisionXZ(pos, posBlock, NONE_D3DXVECTOR3, vtxMaxBlock, NONE_D3DXVECTOR3, vtxMinBlock) == true &&
+				pos.y - *pHeight >= pos.y - (posBlock.y + vtxMaxBlock.y) &&
+				pos.y >= (posBlock.y + vtxMaxBlock.y))
+			{ // 範囲内の場合
+
+				// 位置を設定する
+				*pHeight = posBlock.y + vtxMaxBlock.y;
+			}
+		}
+	}
+}
+
+//====================
 // 透明度の設定処理
 //====================
 void CShadowCircle::Distance(void)
 {
-	if (m_posParent != nullptr)
-	{ // 親の位置のポインタが NULL じゃない場合
 
-		D3DXVECTOR3 pos = GetPos();		// 位置を取得する
-		float fDis = 0.0f;				// 距離
-
-		// 距離を測る
-		fDis = m_posParent->y - pos.y;
-	}
 }

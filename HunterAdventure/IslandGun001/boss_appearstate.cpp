@@ -7,14 +7,17 @@
 //****************************************************************************************************************
 //	インクルードファイル
 //****************************************************************************************************************
-#include "useful.h"
+#include "manager.h"
 #include "boss.h"
 #include "boss_appearstate.h"
 #include "motion.h"
+#include "useful.h"
 
 #include "ripple.h"
 
 #include "boss_turnstate.h"
+#include "light.h"
+#include "renderer.h"
 
 //----------------------------------------------------------------------------------------------------------------
 // 無名名前空間
@@ -30,6 +33,7 @@ namespace
 	const int RIPPLE_FREQ = 6;			// 波紋の出る頻度
 	const float RIPPLE_HEIGHT = 600.0f;	// 波紋の高度
 	const D3DXVECTOR3 RIPPLE_SCALE = D3DXVECTOR3(100.0f, 100.0f, 100.0f);	// 波紋の拡大率
+	const D3DXCOLOR LIGHT_DEST_COL = D3DXCOLOR(1.0f, 0.6f, 0.6f, 1.0f);		// 目的のライトの色
 }
 
 //==========================
@@ -81,6 +85,9 @@ void CBossAppearState::Process(CBoss* pBoss)
 		// この先の処理を行わない
 		return;
 	}
+
+	// 光の色の設定処理
+	LightCol();
 
 	// 位置向き設定処理
 	PosRot(pBoss);
@@ -177,4 +184,51 @@ void CBossAppearState::Ripple(CBoss* pBoss)
 			RIPPLE_SCALE
 		);
 	}
+}
+
+//==========================
+// 光の色の設定処理
+//==========================
+void CBossAppearState::LightCol(void)
+{
+	D3DLIGHT9 light;
+
+	for (int nCnt = 0; nCnt < CLight::NUM_LIGHT; nCnt++)
+	{
+		// ライトを取得
+		light = CManager::Get()->GetLight()->GetLightInfo(nCnt);
+
+		// 色をどんどん変化させる
+		useful::FrameCorrect(LIGHT_DEST_COL.r, &light.Diffuse.r, 0.01f);
+		useful::FrameCorrect(LIGHT_DEST_COL.g, &light.Diffuse.g, 0.01f);
+		useful::FrameCorrect(LIGHT_DEST_COL.b, &light.Diffuse.b, 0.01f);
+		useful::FrameCorrect(LIGHT_DEST_COL.a, &light.Diffuse.a, 0.01f);
+
+		// ライトの情報を適用
+		CManager::Get()->GetLight()->SetLightInfo(nCnt, light);
+	}
+
+	// ライトを取得
+	light = CManager::Get()->GetLight()->GetLightCamera();
+
+	// 色をどんどん変化させる
+	useful::FrameCorrect(LIGHT_DEST_COL.r, &light.Diffuse.r, 0.01f);
+	useful::FrameCorrect(LIGHT_DEST_COL.g, &light.Diffuse.g, 0.01f);
+	useful::FrameCorrect(LIGHT_DEST_COL.b, &light.Diffuse.b, 0.01f);
+	useful::FrameCorrect(LIGHT_DEST_COL.a, &light.Diffuse.a, 0.01f);
+
+	// ライトの情報を適用
+	CManager::Get()->GetLight()->SetLightCamera(light);
+
+	// 霧の色を取得
+	D3DXCOLOR col = CManager::Get()->GetRenderer()->GetFogCol();
+
+	// 色をどんどん変化させる
+	useful::FrameCorrect(LIGHT_DEST_COL.r, &col.r, 0.01f);
+	useful::FrameCorrect(LIGHT_DEST_COL.g, &col.g, 0.01f);
+	useful::FrameCorrect(LIGHT_DEST_COL.b, &col.b, 0.01f);
+	useful::FrameCorrect(LIGHT_DEST_COL.a, &col.a, 0.01f);
+
+	// 霧の色を適用
+	CManager::Get()->Get()->GetRenderer()->SetFogCol(col);
 }

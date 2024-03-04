@@ -77,6 +77,7 @@ private:		// 自分だけアクセスできる
 	D3DXCOLOR m_col;			// 色
 	D3DXVECTOR3 m_move;			// 移動量
 	STATE m_state;				// 状態
+	int m_nAreaIdx;				// 区分の番号
 	int m_nBoundCount;			// バウンドカウント
 	int m_nExplosionCount;		// 爆発カウント
 	bool m_bAdd;				// 加算状況

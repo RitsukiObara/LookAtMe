@@ -10,9 +10,12 @@
 #include "useful.h"
 #include "boss.h"
 #include "boss_destroystate.h"
+#include "manager.h"
 #include "motion.h"
 
+#include "camera.h"
 #include "game.h"
+#include "anim_reaction.h"
 
 //----------------------------------------------------------------------------------------------------------------
 // 無名名前空間
@@ -66,7 +69,12 @@ void CBossDestroyState::Process(CBoss* pBoss)
 //==========================
 void CBossDestroyState::SetData(CBoss* pBoss)
 {
+	if (CManager::Get()->GetCamera()->GetType() != CCamera::TYPE_BOSSDESTROY)
+	{ // ボスの死亡状態以外の場合
 
+		// ボスの死亡カメラ状態にする
+		CManager::Get()->GetCamera()->SetType(CCamera::TYPE_BOSSDESTROY);
+	}
 }
 
 //==========================

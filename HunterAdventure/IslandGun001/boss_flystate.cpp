@@ -11,6 +11,7 @@
 #include "boss.h"
 #include "boss_flystate.h"
 #include "motion.h"
+#include "collision.h"
 
 #include "ripple.h"
 #include "game.h"
@@ -27,12 +28,13 @@ namespace
 	const int MOVE_COUNT = 115;			// 動くまでのカウント数
 	const int NONESTATE_COUNT = 150;	// 通常状態に戻るカウント数
 	const float ROT_CORRECT = 0.08f;	// 向きの補正係数
-	const float STANDBY_MOVE_Y = 1.0f;	// スタンバイ時のY軸の移動量
+	const float STANDBY_MOVE_Y = 0.2f;	// スタンバイ時のY軸の移動量
 	const float MOVE_CORRECT = 0.1f;	// 移動の補正係数
 	const float MOVE_SPEED = 300.0f;	// 移動速度
 	const int RIPPLE_COUNT = 4;			// 波紋のカウント
 	const float RIPPLE_HEIGHT = 600.0f;	// 波紋の高度
 	const D3DXVECTOR3 RIPPLE_SCALE = D3DXVECTOR3(100.0f, 100.0f, 100.0f);	// 波紋の拡大率
+	const float STAGE_COLLISION_WIDTH = 300.0f;		// ステージの当たり判定の幅
 }
 
 //==========================
@@ -65,6 +67,9 @@ void CBossFlyState::Process(CBoss* pBoss)
 	if (m_nCount >= NONESTATE_COUNT)
 	{ // 通常状態に戻るようになった場合
 
+		// ヒット状況を false にする
+		pBoss->SetEnableHit(false);
+
 		// 状態の切り替え処理
 		pBoss->ChangeState(new CBossNoneState);
 
@@ -79,6 +84,9 @@ void CBossFlyState::Process(CBoss* pBoss)
 
 		// 波紋の生成処理
 		Ripple(pBoss);
+
+		// ヒット状況を true にする
+		pBoss->SetEnableHit(true);
 	}
 	else if (m_nCount >= FLYMOTION_COUNT)
 	{ // 一定時間経過した場合
@@ -92,6 +100,9 @@ void CBossFlyState::Process(CBoss* pBoss)
 		// 向きの移動処理
 		RotMove(pBoss);
 	}
+
+	// ステージの当たり判定
+	StageCollision(pBoss);
 }
 
 //==========================
@@ -203,4 +214,19 @@ void CBossFlyState::Ripple(CBoss* pBoss)
 			RIPPLE_SCALE
 		);
 	}
+}
+
+//==========================
+// ステージの当たり判定
+//==========================
+void CBossFlyState::StageCollision(CBoss* pBoss)
+{
+	// 位置を取得
+	D3DXVECTOR3 pos = pBoss->GetPos();
+
+	// ステージの当たり判定
+	collision::StageCollision(&pos, STAGE_COLLISION_WIDTH);
+
+	// 位置を適用
+	pBoss->SetPos(pos);
 }

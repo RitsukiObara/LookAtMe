@@ -27,6 +27,7 @@ namespace
 		"data\\MODEL\\Platform\\FracRing.x",
 		"data\\MODEL\\Platform\\FracWood.x",
 		"data\\MODEL\\Platform\\FracRock.x",
+		"data\\MODEL\\Platform\\DirtPart.x",
 		"data\\MODEL\\MorigistPart.x",
 	};
 	const float GRAVITY = 0.4f;			// 重力
@@ -176,13 +177,13 @@ void CFraction::Draw(void)
 //=====================================
 // 情報の設定処理
 //=====================================
-void CFraction::SetData(const D3DXVECTOR3& pos, const TYPE type, const int nLife, const int nMoveWidth, const int nMoveHeight)
+void CFraction::SetData(const D3DXVECTOR3& pos, const TYPE type, const int nLife, const int nMoveWidth, const int nMoveHeight, const D3DXVECTOR3 scale)
 {
 	// 情報の設定処理
 	SetPos(pos);					// 位置
 	SetPosOld(pos);					// 前回の位置
 	SetRot(NONE_D3DXVECTOR3);		// 向き
-	SetScale(NONE_SCALE);			// 拡大率
+	SetScale(scale);				// 拡大率
 	SetFileData(CManager::Get()->GetXFile()->Regist(MODEL[type]));		// モデル情報を設定する
 
 	// 移動量の設定処理
@@ -197,7 +198,7 @@ void CFraction::SetData(const D3DXVECTOR3& pos, const TYPE type, const int nLife
 //=======================================
 // 生成処理
 //=======================================
-CFraction* CFraction::Create(const D3DXVECTOR3& pos, const TYPE type, const int nLife, const int nMoveWidth, const int nMoveHeight)
+CFraction* CFraction::Create(const D3DXVECTOR3& pos, const TYPE type, const int nLife, const int nMoveWidth, const int nMoveHeight, const D3DXVECTOR3 scale)
 {
 	// ローカルオブジェクトを生成
 	CFraction* pFrac = nullptr;	// インスタンスを生成
@@ -233,7 +234,7 @@ CFraction* CFraction::Create(const D3DXVECTOR3& pos, const TYPE type, const int 
 		}
 
 		// 情報の設定処理
-		pFrac->SetData(pos, type, nLife, nMoveWidth, nMoveHeight);
+		pFrac->SetData(pos, type, nLife, nMoveWidth, nMoveHeight, scale);
 	}
 	else
 	{ // オブジェクトが NULL の場合

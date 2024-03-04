@@ -154,9 +154,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="addscoreUI.cpp" />
     <ClCompile Include="aim.cpp" />
     <ClCompile Include="airplane.cpp" />
+    <ClCompile Include="altar.cpp" />
+    <ClCompile Include="alter_flash.cpp" />
+    <ClCompile Include="alter_pole.cpp" />
     <ClCompile Include="anim_reaction.cpp" />
+    <ClCompile Include="area.cpp" />
+    <ClCompile Include="balloon.cpp" />
+    <ClCompile Include="balloon_rope.cpp" />
+    <ClCompile Include="balloon_spawner.cpp" />
     <ClCompile Include="bang_flower.cpp" />
     <ClCompile Include="block.cpp" />
     <ClCompile Include="blur.cpp" />
@@ -167,6 +175,7 @@
     <ClCompile Include="bomb_fuse.cpp" />
     <ClCompile Include="boss.cpp" />
     <ClCompile Include="boss_appearstate.cpp" />
+    <ClCompile Include="boss_barrier.cpp" />
     <ClCompile Include="boss_chargestate.cpp" />
     <ClCompile Include="boss_collision.cpp" />
     <ClCompile Include="boss_destroystate.cpp" />
@@ -174,6 +183,7 @@
     <ClCompile Include="boss_flystate.cpp" />
     <ClCompile Include="boss_howlingstate.cpp" />
     <ClCompile Include="boss_lifeUI.cpp" />
+    <ClCompile Include="boss_name.cpp" />
     <ClCompile Include="boss_nonestate.cpp" />
     <ClCompile Include="boss_state.cpp" />
     <ClCompile Include="boss_stunstate.cpp" />
@@ -188,10 +198,12 @@
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="collpolygon.cpp" />
     <ClCompile Include="confetti.cpp" />
+    <ClCompile Include="continueUI.cpp" />
     <ClCompile Include="dagger.cpp" />
     <ClCompile Include="danger_mark.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="destruction.cpp" />
+    <ClCompile Include="door.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="effect2D.cpp" />
     <ClCompile Include="effect_model.cpp" />
@@ -204,6 +216,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_score.cpp" />
     <ClCompile Include="gold_bone.cpp" />
+    <ClCompile Include="gold_bone_light.cpp" />
     <ClCompile Include="gold_bone_UI.cpp" />
     <ClCompile Include="grass.cpp" />
     <ClCompile Include="handgun.cpp" />
@@ -255,6 +268,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="player_action.cpp" />
     <ClCompile Include="player_controller.cpp" />
+    <ClCompile Include="player_tutorial.cpp" />
     <ClCompile Include="precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -263,6 +277,8 @@
     <ClCompile Include="push_timing.cpp" />
     <ClCompile Include="ranking.cpp" />
     <ClCompile Include="ranking_rank.cpp" />
+    <ClCompile Include="ranking_table.cpp" />
+    <ClCompile Include="rank_score.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="result_score.cpp" />
@@ -273,6 +289,8 @@
     <ClCompile Include="screen_effect.cpp" />
     <ClCompile Include="shadowCircle.cpp" />
     <ClCompile Include="shadowModel.cpp" />
+    <ClCompile Include="signboard.cpp" />
+    <ClCompile Include="signboard_explain.cpp" />
     <ClCompile Include="skybox.cpp" />
     <ClCompile Include="slash_ripple.cpp" />
     <ClCompile Include="sound.cpp" />
@@ -285,14 +303,24 @@
     <ClCompile Include="tordle.cpp" />
     <ClCompile Include="tree.cpp" />
     <ClCompile Include="tutorial.cpp" />
+    <ClCompile Include="tutorial_airplane.cpp" />
+    <ClCompile Include="tutorial_map.cpp" />
     <ClCompile Include="useful.cpp" />
     <ClCompile Include="wall.cpp" />
     <ClCompile Include="wind_shot.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="addscoreUI.h" />
     <ClInclude Include="aim.h" />
     <ClInclude Include="airplane.h" />
+    <ClInclude Include="alter.h" />
+    <ClInclude Include="alter_flash.h" />
+    <ClInclude Include="alter_pole.h" />
     <ClInclude Include="anim_reaction.h" />
+    <ClInclude Include="area.h" />
+    <ClInclude Include="balloon.h" />
+    <ClInclude Include="balloon_rope.h" />
+    <ClInclude Include="balloon_spawner.h" />
     <ClInclude Include="bang_flower.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="blur.h" />
@@ -303,12 +331,14 @@
     <ClInclude Include="bomb_fuse.h" />
     <ClInclude Include="boss.h" />
     <ClInclude Include="boss_appearstate.h" />
+    <ClInclude Include="boss_barrier.h" />
     <ClInclude Include="boss_chargestate.h" />
     <ClInclude Include="boss_collision.h" />
     <ClInclude Include="boss_destroystate.h" />
     <ClInclude Include="boss_flystate.h" />
     <ClInclude Include="boss_howlingstate.h" />
     <ClInclude Include="boss_lifeUI.h" />
+    <ClInclude Include="boss_name.h" />
     <ClInclude Include="boss_nonestate.h" />
     <ClInclude Include="boss_state.h" />
     <ClInclude Include="boss_stunstate.h" />
@@ -323,10 +353,12 @@
     <ClInclude Include="collision.h" />
     <ClInclude Include="collpolygon.h" />
     <ClInclude Include="confetti.h" />
+    <ClInclude Include="continueUI.h" />
     <ClInclude Include="dagger.h" />
     <ClInclude Include="danger_mark.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="destruction.h" />
+    <ClInclude Include="door.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="effect2D.h" />
     <ClInclude Include="effect_model.h" />
@@ -339,6 +371,7 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="game_score.h" />
     <ClInclude Include="gold_bone.h" />
+    <ClInclude Include="gold_bone_light.h" />
     <ClInclude Include="gold_bone_UI.h" />
     <ClInclude Include="grass.h" />
     <ClInclude Include="handgun.h" />
@@ -391,11 +424,14 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="player_action.h" />
     <ClInclude Include="player_controller.h" />
+    <ClInclude Include="player_tutorial.h" />
     <ClInclude Include="precompile.h" />
     <ClInclude Include="propeller.h" />
     <ClInclude Include="push_timing.h" />
     <ClInclude Include="ranking.h" />
     <ClInclude Include="ranking_rank.h" />
+    <ClInclude Include="ranking_table.h" />
+    <ClInclude Include="rank_score.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="result_score.h" />
@@ -406,6 +442,8 @@
     <ClInclude Include="screen_effect.h" />
     <ClInclude Include="shadowCircle.h" />
     <ClInclude Include="shadowModel.h" />
+    <ClInclude Include="signboard.h" />
+    <ClInclude Include="signboard_explain.h" />
     <ClInclude Include="skybox.h" />
     <ClInclude Include="slash_ripple.h" />
     <ClInclude Include="sound.h" />
@@ -418,6 +456,8 @@
     <ClInclude Include="tordle.h" />
     <ClInclude Include="tree.h" />
     <ClInclude Include="tutorial.h" />
+    <ClInclude Include="tutorial_airplane.h" />
+    <ClInclude Include="tutorial_map.h" />
     <ClInclude Include="useful.h" />
     <ClInclude Include="wall.h" />
     <ClInclude Include="boss_firestate.h" />

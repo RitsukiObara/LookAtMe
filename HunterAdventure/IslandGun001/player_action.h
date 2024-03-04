@@ -68,7 +68,7 @@ public:			// 誰でもアクセスできる
 private:		// 誰でもアクセスできる
 
 	// メンバ関数
-	void NoneProcess(void);					// 通常状態処理
+	void NoneProcess(CPlayer* pPlayer);		// 通常状態処理
 	void ShotProcess(CPlayer* pPlayer);		// 射撃状態処理
 	void DaggerPrecess(CPlayer* pPlayer);	// ダガー状態処理
 	void DodgeProcess(CPlayer* pPlayer);	// 回避状態処理
@@ -85,6 +85,7 @@ private:		// 誰でもアクセスできる
 	bool m_bDodgeUse;			// 回避使用可能状況
 	bool m_bRipple;				// 波紋状況
 	bool m_bRecoil;				// 反動状況
+	bool m_bBossAttack;			// ボスへの攻撃判定状況
 };
 
 #endif

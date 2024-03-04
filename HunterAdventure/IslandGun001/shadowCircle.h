@@ -29,17 +29,26 @@ public:			// 誰でもアクセスできる
 	void Update(void) override;			// 更新処理
 	void Draw(void) override;			// 描画処理
 
-	void SetData(const D3DXVECTOR3& pos, const float fRadius, D3DXVECTOR3* posParent);		// 情報の設定処理
+	void SetData(const D3DXVECTOR3& pos, const float fRadius, const int nAreaIdx);					// 情報の設定処理
 	void Distance(void);		// 透明度の設定処理
+	void Collision(void);		// 当たり判定
+
+	// セット・ゲット関係
+	void SetAreaIdx(const int nIdx);		// 区分の番号の設定処理
 
 	// 静的メンバ関数
-	static CShadowCircle* Create(const D3DXVECTOR3& pos, const float fRadius, D3DXVECTOR3* posParent);	// 生成処理
+	static CShadowCircle* Create(const D3DXVECTOR3& pos, const float fRadius, const int nAreaIdx);	// 生成処理
 
 private:		// 自分だけアクセスできる
 
+	// メンバ関数
+	void ElevationCollision(const D3DXVECTOR3& pos, float* pHeight);	// 起伏の当たり判定
+	void RockCollision(const D3DXVECTOR3& pos, float* pHeight);			// 岩の当たり判定
+	void BlockCollision(const D3DXVECTOR3& pos, float* pHeight);		// ブロックの当たり判定
+
 	// メンバ変数
-	D3DXVECTOR3* m_posParent;	// 親の位置
 	D3DXCOLOR m_col;			// 色
+	int m_nAreaIdx;				// 区分の番号
 	float m_fRadiusInit;		// 初期の半径
 };
 

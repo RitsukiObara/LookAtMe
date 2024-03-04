@@ -25,13 +25,12 @@
 //----------------------------------------------------------------------------------------------------------------
 namespace
 {
-	const int STATECHANGE_COUNT = 90;			// 状態が変化するカウント数
-	const float GRAVITY = 0.1f;					// 重力
+	const int STATECHANGE_COUNT = 90;				// 状態が変化するカウント数
+	const float GRAVITY = 0.1f;						// 重力
 
-	const float WIND_STATE_LENGTH = 2000.0f;	// 風攻撃状態になる距離
-	const int WIND_STATE_CHARGE = 180;			// 風状態のチャージカウント
-
-	const float FIRE_STATE_LENGTH = 5000.0f;	// 炎攻撃状態になる距離
+	const int WIND_STATE_CHARGE = 100;				// 風状態のチャージカウント
+	const float FLYSTATE_DISTANCE = 4800.0f;		// 飛行状態にする距離
+	const int NUM_RAND_STATE = 2;					// ランダムでなる状態の総数
 }
 
 //==========================
@@ -95,8 +94,12 @@ void CBossNoneState::SetData(CBoss* pBoss)
 	m_fGravity = 0.0f;		// 重力
 	m_nCount = 0;			// 経過カウント
 
-	// 待機モーションを設定する
-	pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_NEUTRAL);
+	if (pBoss->GetMotion()->GetType() != CBoss::MOTIONTYPE_NEUTRAL)
+	{ // 通常モーション以外の場合
+
+		// 待機モーションを設定する
+		pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_NEUTRAL);
+	}
 }
 
 //==========================
@@ -115,24 +118,41 @@ void CBossNoneState::StateSelect(CBoss* pBoss)
 		D3DXVECTOR3 posBoss = pBoss->GetPos();
 		float fLength = sqrtf((posPlayer.x - posBoss.x) * (posPlayer.x - posBoss.x) + (posPlayer.z - posBoss.z) * (posPlayer.z - posBoss.z));
 
-		// 近い順にif文を置く
-		if (fLength <= WIND_STATE_LENGTH)
-		{ // 風状態の距離の場合
+		if (fLength >= FLYSTATE_DISTANCE)
+		{ // プレイヤーが遠かった場合
 
-			// チャージ状態にする
-			pBoss->ChangeState(new CBossChargeState(new CBossWindState, WIND_STATE_CHARGE));
-		}
-		else if (fLength <= FIRE_STATE_LENGTH)
-		{ // 炎状態の距離の場合
-
-			// 炎攻撃状態にする
-			pBoss->ChangeState(new CBossFireState);
+			// 飛行状態にする
+			pBoss->ChangeState(new CBossFlyState);
 		}
 		else
 		{ // 上記以外
 
-			// 飛行状態にする
-			pBoss->ChangeState(new CBossFlyState);
+			// 次の状態をランダムで算出する
+			int nState = rand() % NUM_RAND_STATE;
+
+			switch (nState)
+			{
+			case 0:
+
+				// チャージ状態(風攻撃状態)にする
+				pBoss->ChangeState(new CBossChargeState(new CBossWindState, WIND_STATE_CHARGE));
+
+				break;
+
+			case 1:
+
+				// 炎攻撃状態にする
+				pBoss->ChangeState(new CBossFireState);
+
+				break;
+
+			default:
+
+				// 停止
+				assert(false);
+
+				break;
+			}
 		}
 	}
 }

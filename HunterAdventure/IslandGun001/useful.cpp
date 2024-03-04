@@ -548,7 +548,7 @@ void useful::DecimalCalculation(const int nDigit, const int nValue, int* aAnswer
 	for (int nCnt = 0; nCnt < nDigit; nCnt++)
 	{
 		// 値を計算
-		aAnswer[nCnt] = (nValue % (int)(pow(10, (nDigit - (nCnt)))) / (int)(pow(10, (nDigit - (nCnt + 1)))));
+		aAnswer[nCnt] = (nValue % (int)(pow(10, (nDigit - nCnt))) / (int)(pow(10, (nDigit - (nCnt + 1)))));
 	}
 }
 
@@ -589,6 +589,53 @@ bool useful::FrameCorrect(const float fDest, float *fTarget, const float fCorrec
 
 			// サイズを補正する
 			*fTarget = fDest;
+
+			// true を返す
+			return true;
+		}
+	}
+
+	// false を返す
+	return false;
+}
+
+/*
+* @brief 均等な数値の補正
+* @param nDest [in] 目的値
+* @param pTarget [in/out] 対象の値
+* @param nCorrect [in] 補正の加算/減算量
+* @return bool 補正し終わったかどうか
+*/
+bool useful::FrameCorrect(const int nDest, int* pTarget, const int nCorrect)
+{
+	if (*pTarget > nDest)
+	{ // サイズが目標超過だった場合
+
+		// サイズを減算する
+		*pTarget -= nCorrect;
+
+		if (*pTarget <= nDest)
+		{ // 目標のサイズ以下になった場合
+
+			// サイズを補正する
+			*pTarget = nDest;
+
+			// true を返す
+			return true;
+		}
+	}
+
+	if (*pTarget < nDest)
+	{ // サイズが目標未満だった場合
+
+		// サイズを加算する
+		*pTarget += nCorrect;
+
+		if (*pTarget >= nDest)
+		{ // 目標のサイズ以上になった場合
+
+			// サイズを補正する
+			*pTarget = nDest;
 
 			// true を返す
 			return true;

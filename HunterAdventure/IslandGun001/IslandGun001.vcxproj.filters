@@ -79,6 +79,9 @@
     <Filter Include="Player\Airplane">
       <UniqueIdentifier>{1a72ad39-88d2-4a23-8150-851ac102edb8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gimmick\Map\Alter">
+      <UniqueIdentifier>{2204f85b-8dcb-4de2-aa37-7b2c49db2d63}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -473,6 +476,66 @@
     </ClCompile>
     <ClCompile Include="propeller.cpp">
       <Filter>Player\Airplane</Filter>
+    </ClCompile>
+    <ClCompile Include="boss_barrier.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking_table.cpp">
+      <Filter>scene\ranking</Filter>
+    </ClCompile>
+    <ClCompile Include="rank_score.cpp">
+      <Filter>scene\ranking</Filter>
+    </ClCompile>
+    <ClCompile Include="signboard_explain.cpp">
+      <Filter>scene\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="player_tutorial.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="balloon.cpp">
+      <Filter>scene\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="signboard.cpp">
+      <Filter>scene\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="balloon_rope.cpp">
+      <Filter>scene\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="balloon_spawner.cpp">
+      <Filter>scene\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="altar.cpp">
+      <Filter>gimmick\Map\Alter</Filter>
+    </ClCompile>
+    <ClCompile Include="alter_pole.cpp">
+      <Filter>gimmick\Map\Alter</Filter>
+    </ClCompile>
+    <ClCompile Include="addscoreUI.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="door.cpp">
+      <Filter>scene\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial_map.cpp">
+      <Filter>scene\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="alter_flash.cpp">
+      <Filter>gimmick\Map\Alter</Filter>
+    </ClCompile>
+    <ClCompile Include="area.cpp">
+      <Filter>gimmick\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="boss_name.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="gold_bone_light.cpp">
+      <Filter>gimmick\Map\Alter</Filter>
+    </ClCompile>
+    <ClCompile Include="continueUI.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial_airplane.cpp">
+      <Filter>scene\tutorial</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -871,6 +934,66 @@
     </ClInclude>
     <ClInclude Include="propeller.h">
       <Filter>Player\Airplane</Filter>
+    </ClInclude>
+    <ClInclude Include="boss_barrier.h">
+      <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking_table.h">
+      <Filter>scene\ranking</Filter>
+    </ClInclude>
+    <ClInclude Include="rank_score.h">
+      <Filter>scene\ranking</Filter>
+    </ClInclude>
+    <ClInclude Include="signboard_explain.h">
+      <Filter>scene\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="player_tutorial.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="balloon.h">
+      <Filter>scene\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="signboard.h">
+      <Filter>scene\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="balloon_rope.h">
+      <Filter>scene\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="balloon_spawner.h">
+      <Filter>scene\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="alter.h">
+      <Filter>gimmick\Map\Alter</Filter>
+    </ClInclude>
+    <ClInclude Include="alter_pole.h">
+      <Filter>gimmick\Map\Alter</Filter>
+    </ClInclude>
+    <ClInclude Include="addscoreUI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="door.h">
+      <Filter>scene\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial_map.h">
+      <Filter>scene\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="alter_flash.h">
+      <Filter>gimmick\Map\Alter</Filter>
+    </ClInclude>
+    <ClInclude Include="area.h">
+      <Filter>gimmick\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="boss_name.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="gold_bone_light.h">
+      <Filter>gimmick\Map\Alter</Filter>
+    </ClInclude>
+    <ClInclude Include="continueUI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial_airplane.h">
+      <Filter>scene\tutorial</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

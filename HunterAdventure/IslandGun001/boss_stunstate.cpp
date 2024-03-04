@@ -69,6 +69,10 @@ void CBossStunState::SetData(CBoss* pBoss)
 	// 全ての値を設定する
 	m_nCount = 0;			// 経過カウント
 
-	// ダウンモーションを設定する
-	pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_DOWN);
+	if (pBoss->GetMotion()->GetType() != CBoss::MOTIONTYPE_DOWN)
+	{ // ダウンモーション以外の場合
+
+		// ダウンモーションを設定する
+		pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_DOWN);
+	}
 }

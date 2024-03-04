@@ -130,3 +130,12 @@ void CPalmTree::Hit(void)
 		m_pPalmFruit = nullptr;
 	}
 }
+
+//=====================================
+// ƒ„ƒV‚ÌÀ‚Ìæ“¾ˆ—
+//=====================================
+CPalmFruit* CPalmTree::GetFruit(void)
+{
+	// ƒ„ƒV‚ÌÀ‚ğ•Ô‚·
+	return m_pPalmFruit;
+}

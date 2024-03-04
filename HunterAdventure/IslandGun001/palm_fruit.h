@@ -60,6 +60,7 @@ private:		// 自分だけアクセスできる
 	void Move(void);				// 移動処理
 	void Gravity(void);				// 重力処理
 	bool ElevationCollision(void);	// 起伏地面の当たり判定処理
+	void StageCollision(void);		// ステージの当たり判定
 
 	// メンバ変数
 	D3DXVECTOR3 m_move;			// 移動量

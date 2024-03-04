@@ -12,6 +12,7 @@
 //***********************************
 #include "model.h"
 #include "list_manager.h"
+#include "area.h"
 
 //-----------------------------------
 // クラス定義(ブロック)
@@ -38,16 +39,17 @@ public:			// 誰でもアクセスできる
 	D3DXVECTOR3 GetVtxMax(void) const;		// 頂点の最大値の取得処理
 	D3DXVECTOR3 GetVtxMin(void) const;		// 頂点の最小値の取得処理
 
-	static CListManager<CBlock*> GetList(void);			// リストの取得処理
+	static CListManager<CBlock*> GetList(const int nIdx);			// リストの取得処理
 
 private:		// 自分だけアクセスできる
 	
 	// メンバ変数
 	D3DXVECTOR3 m_vtxMax;		// 頂点の最大値
 	D3DXVECTOR3 m_vtxMin;		// 頂点の最小値
+	int m_nFieldIdx;			// 区分の番号
 
 	// 静的メンバ変数
-	static CListManager<CBlock*> m_list;		// リスト
+	static CListManager<CBlock*> m_aList[area::NUM_AREA];		// リスト
 };
 
 #endif

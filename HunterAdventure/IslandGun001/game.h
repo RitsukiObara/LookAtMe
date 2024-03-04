@@ -18,6 +18,7 @@
 class CPause;			// ポーズ
 class CPlayer;			// プレイヤー
 class CGameScore;		// ゲームスコア
+class CAlter;			// 祭壇
 
 //--------------------------------------------
 // クラス(ゲームクラス)
@@ -32,6 +33,8 @@ public:						// 誰でもアクセスできる
 		STATE_START = 0,	// 開始状態
 		STATE_PLAY,			// プレイ状態
 		STATE_BOSSMOVIE,	// ボス出現状態
+		STATE_GAMEOVER,		// ゲームオーバー状態
+		STATE_CONTINUE,		// コンテニュー状態
 		STATE_FINISH,		// 終了状態
 		STATE_MAX			// この列挙型の総数
 	};
@@ -58,12 +61,15 @@ public:						// 誰でもアクセスできる
 
 	static CGameScore* GetGameScore(void);		// ゲームスコアの取得処理
 
+	static CAlter* GetAlter(void);				// 祭壇の取得処理
+
 	static int GetScore(void);					// 総合スコアの取得処理
 
 	// NULL化処理
 	static void DeletePause(void);		// ポーズのNULL化処理
 	static void DeletePlayer(void);		// プレイヤーのNULL化処理
 	static void DeleteGameScore(void);	// スコアのNULL化処理
+	static void DeleteAlter(void);		// 祭壇のNULL化処理
 
 private:					// 自分だけアクセスできる
 
@@ -72,13 +78,14 @@ private:					// 自分だけアクセスできる
 	void Transition(void);		// 遷移処理
 
 	// メンバ変数
-	int m_nFinishCount;			// 終了カウント
+	int m_nStateCount;			// 終了カウント
 
 	// 静的メンバ変数
 	static CPause* m_pPause;			// ポーズの情報
 	static CPlayer* m_pPlayer;			// プレイヤーの情報
 	static CGameScore* m_pGameScore;	// ゲームスコアの情報
-	static STATE m_GameState;			// ゲームの進行状態
+	static CAlter* m_pAlter;			// 祭壇の情報
+	static STATE m_state;				// ゲームの進行状態
 	static int m_nScore;				// スコア
 	static bool m_bPause;				// ポーズ状況
 };

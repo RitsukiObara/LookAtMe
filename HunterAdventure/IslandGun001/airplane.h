@@ -49,6 +49,7 @@ public:			// 誰でもアクセスできる
 	// セット・ゲット関係
 	void SetState(const STATE state);		// 状態の設定処理
 	STATE GetState(void) const;				// 状態の取得処理
+	D3DXVECTOR3 GetPosDest(void) const;		// 目的の位置の取得処理
 
 	// 静的メンバ関数
 	static CAirplane* Create(const D3DXVECTOR3& posDest);	// 生成処理
@@ -64,6 +65,7 @@ private:		// 自分だけアクセスできる
 	D3DXVECTOR3 m_posDest;			// 目的の位置
 	D3DXVECTOR3 m_move;				// 移動量
 	STATE m_state;					// 状態
+	int m_nFallCount;				// 墜落カウント
 };
 
 #endif

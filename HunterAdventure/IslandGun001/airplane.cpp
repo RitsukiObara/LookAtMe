@@ -24,7 +24,9 @@ namespace
 {
 	const char* MODEL = "data\\MODEL\\Airplane.x";		// モデルのパス名
 	const D3DXVECTOR3 POS = D3DXVECTOR3(0.0f, 2000.0f, 30000.0f);		// 位置
-	const float MOVE_MAGNI = 0.005f;					// 移動量の倍率
+	const float MOVE_MAGNI = 0.005f;	// 移動量の倍率
+	const float FALL_GRAVITY = 5.0f;	// 墜落時の重力
+	const int FALL_COUNT = 500;			// 墜落カウント
 }
 
 //==============================
@@ -37,6 +39,7 @@ CAirplane::CAirplane() : CModel(CObject::TYPE_NONE, CObject::PRIORITY_ENTITY)
 	m_posDest = NONE_D3DXVECTOR3;	// 目的の位置
 	m_move = NONE_D3DXVECTOR3;		// 移動量
 	m_state = STATE_MOVE;			// 状態
+	m_nFallCount = 0;				// 墜落カウント
 }
 
 //==============================
@@ -87,6 +90,16 @@ void CAirplane::Update(void)
 {
 	// 墜落処理
 	Fall();
+
+	if (m_nFallCount >= FALL_COUNT)
+	{ // 一定時間経過した場合
+
+		// 終了処理
+		Uninit();
+
+		// この先の処理を行わない
+		return;
+	}
 
 	if (m_pPropeller != nullptr)
 	{ // プロペラが NULL じゃない場合
@@ -141,8 +154,9 @@ void CAirplane::SetData(const D3DXVECTOR3& posDest)
 
 	// 全ての値を設定する
 	m_pPropeller = CPropeller::Create(GetMatrixPoint());		// プロペラの情報
-	m_posDest = posDest;				// 目的の位置
+	m_posDest = posDest;			// 目的の位置
 	m_state = STATE_MOVE;			// 状態
+	m_nFallCount = 0;				// 墜落カウント
 
 	// 移動量を設定
 	m_move.x = fabsf((posDest.x - POS.x) * MOVE_MAGNI);
@@ -224,6 +238,15 @@ CAirplane::STATE CAirplane::GetState(void) const
 }
 
 //=======================================
+// 目的の位置の取得処理
+//=======================================
+D3DXVECTOR3 CAirplane::GetPosDest(void) const
+{
+	// 目的の位置を返す
+	return m_posDest;
+}
+
+//=======================================
 // 移動処理
 //=======================================
 void CAirplane::Move(CPlayer* pPlayer)
@@ -235,27 +258,11 @@ void CAirplane::Move(CPlayer* pPlayer)
 		useful::FrameCorrect(m_posDest.z, &pos.z, m_move.z) == true)
 	{ // 目的の位置に着いた場合
 
-		// 目的の位置に補正する
-		pos.x = m_posDest.x;
-		pos.z = m_posDest.z;
+		// 飛行機到着処理
+		pPlayer->ArrivalAirplane();
 
-		// プレイヤー登場状態にする
-		CManager::Get()->GetCamera()->SetType(CCamera::TYPE_PLAYERAPPEAR);
-
-		// カメラの視点を設定する
-		CManager::Get()->GetCamera()->SetPosV(D3DXVECTOR3(pos.x - 1000.0f, pos.y + 1500.0f, pos.z));
-
-		// 移動量の設定処理
-		pPlayer->SetMove(D3DXVECTOR3(0.0f, 30.0f, 10.0f));
-
-		// 飛行機の管轄外し処理
-		pPlayer->RemoveAirplane();
-
-		// 墜落状態にする
-		m_state = STATE_FALL;
-
-		// 種類を飛行機に変える
-		SetType(TYPE_AIRPLANE);
+		// この先の処理を行わない
+		return;
 	}
 
 	// 位置を適用
@@ -272,9 +279,12 @@ void CAirplane::Fall(void)
 
 	// 移動する
 	pos.x -= m_move.x;
-	pos.y -= 5.0f;
+	pos.y -= FALL_GRAVITY;
 	pos.z -= m_move.z;
 
 	// 位置を適用
 	SetPos(pos);
+
+	// 墜落カウントを加算する
+	m_nFallCount++;
 }

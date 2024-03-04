@@ -28,7 +28,7 @@ namespace
 //-------------------------------------------
 // 静的メンバ変数宣言
 //-------------------------------------------
-CListManager<CWall*> CWall::m_list = {};			// リスト
+CListManager<CWall*> CWall::m_aList[area::NUM_AREA] = {};			// リスト
 
 //==============================
 // コンストラクタ
@@ -40,9 +40,7 @@ CWall::CWall() : CModel(TYPE_WALL, PRIORITY_BLOCK)
 	m_vtxMin = NONE_D3DXVECTOR3;		// 頂点の最小値
 	m_type = TYPE_NORMAL;				// 種類
 	m_rottype = ROTTYPE_FRONT;			// 向きの種類
-
-	// リストに追加する
-	m_list.Regist(this);
+	m_nFieldIdx = 0;					// 区分の番号
 }
 
 //==============================
@@ -74,11 +72,11 @@ HRESULT CWall::Init(void)
 //========================================
 void CWall::Uninit(void)
 {
+	// 引き抜き処理
+	m_aList[m_nFieldIdx].Pull(this);
+
 	// 終了処理
 	CModel::Uninit();
-
-	// 引き抜き処理
-	m_list.Pull(this);
 }
 
 //========================================
@@ -115,6 +113,12 @@ void CWall::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& scale, const TYPE
 
 	// 頂点の設定処理
 	SetVertex();
+
+	// 区分の番号の設定処理
+	m_nFieldIdx = area::SetFieldIdx(GetPos());
+
+	// リストに追加する
+	m_aList[m_nFieldIdx].Regist(this);
 }
 
 //=======================================
@@ -211,10 +215,10 @@ CWall::ROTTYPE CWall::GetRotType(void) const
 //=======================================
 // リストの取得処理
 //=======================================
-CListManager<CWall*> CWall::GetList(void)
+CListManager<CWall*> CWall::GetList(const int nIdx)
 {
 	// リストマネージャーを返す
-	return m_list;
+	return m_aList[nIdx];
 }
 
 //=======================================

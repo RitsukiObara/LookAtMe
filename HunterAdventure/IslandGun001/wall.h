@@ -12,6 +12,7 @@
 //***********************************
 #include "model.h"
 #include "list_manager.h"
+#include "area.h"
 
 //-----------------------------------
 // クラス定義(壁)
@@ -57,7 +58,7 @@ public:			// 誰でもアクセスできる
 
 	// 静的メンバ関数
 	static CWall* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& scale, const TYPE type, const ROTTYPE rottype);		// 生成処理
-	static CListManager<CWall*> GetList(void);			// リストの取得処理
+	static CListManager<CWall*> GetList(const int nIdx);		// リストの取得処理
 
 private:		// 自分だけアクセスできる
 
@@ -69,9 +70,10 @@ private:		// 自分だけアクセスできる
 	D3DXVECTOR3 m_vtxMin;		// 頂点の最小値
 	TYPE m_type;				// 種類
 	ROTTYPE m_rottype;			// 向きの種類
+	int m_nFieldIdx;			// 区分の番号
 
 	// 静的メンバ変数
-	static CListManager<CWall*> m_list;		// リスト
+	static CListManager<CWall*> m_aList[area::NUM_AREA];		// リスト
 };
 
 #endif

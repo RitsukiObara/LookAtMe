@@ -56,6 +56,7 @@ private:
 	// メンバ変数
 	D3DXVECTOR3 m_move;		// 移動量
 	TYPE m_type;			// 種類
+	int m_nAreaIdx;			// 区分の番号
 	int m_nLife;			// 寿命
 	int m_nDamage;			// ダメージ
 	float m_fKnockBack;		// ノックバック値

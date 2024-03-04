@@ -17,12 +17,18 @@
 
 #include "file.h"
 #include "camera.h"
+#include "objectElevation.h"
 #include "skybox.h"
+#include "ocean.h"
 #include "result_score.h"
 
 //--------------------------------------------
-// マクロ定義
+// 定数定義
 //--------------------------------------------
+namespace
+{
+	const char* ELEVATION_TXT = "data/TXT/Elevation.txt";		// 起伏地面のテキスト
+}
 
 //=========================================
 // コンストラクタ
@@ -48,11 +54,29 @@ HRESULT CResult::Init(void)
 	// シーンの初期化
 	CScene::Init();
 
+	// カメラのリセット処理
+	CManager::Get()->GetCamera()->Reset();
+
+	// テキスト読み込み処理
+	CElevation::TxtSet(ELEVATION_TXT);
+
+	// マップの生成
+	CManager::Get()->GetFile()->SetCoin();
+	CManager::Get()->GetFile()->SetGoldBone();
+	CManager::Get()->GetFile()->SetTree();
+	CManager::Get()->GetFile()->SetRock();
+	CManager::Get()->GetFile()->SetBlock();
+	CManager::Get()->GetFile()->SetBangFlower();
+	CManager::Get()->GetFile()->SetWall();
+
 	// スカイボックスの生成処理
 	CSkyBox::Create();
 
 	// テキスト読み込み処理
 	CMesh::TxtSet();
+
+	// 海の生成
+	COcean::Create();
 
 	{
 		// リザルトスコアを生成
@@ -90,7 +114,7 @@ void CResult::Update(void)
 	{ // ENTERキーを押した場合
 
 		// ランキングに遷移する
-		CManager::Get()->GetFade()->SetFade(CScene::MODE_TITLE);
+		CManager::Get()->GetFade()->SetFade(CScene::MODE_RANKING);
 
 		// この先の処理を行わない
 		return;

@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "bomb_explosion.h"
 #include "texture.h"
+#include "area.h"
 #include "useful.h"
 
 #include "collision.h"
@@ -49,6 +50,7 @@ CBombExplosion::CBombExplosion() : CMeshSphere(PRIORITY_ENTITY)
 	m_state = STATE_EXTEND;	// 状態
 	m_nStateCount = 0;		// 状態カウント
 	m_fAlpha = 0.0f;		// 透明度
+	m_nAreaIdx = 0;			// 区分の番号
 
 	// リストに追加する
 	m_list.Regist(this);
@@ -134,8 +136,19 @@ void CBombExplosion::Update(void)
 		if (m_nStateCount >= DEATH_COUNT)
 		{ // 状態カウントが一定以上になった場合
 
-			// 岩の当たり判定
-			collision::ExplosionHitToRock(GetPos(), GetCircum(), GetHeight());
+			int nIdx = 0;
+
+			for (int nCnt = 0; nCnt < area::NUM_COLL; nCnt++)
+			{
+				nIdx = m_nAreaIdx + area::COLL_ADD_IDX[nCnt];
+
+				if (area::IndexCheck(nIdx) == true)
+				{ // 区分内の場合
+
+					// 岩の当たり判定
+					collision::ExplosionHitToRock(GetPos(), GetCircum(), GetHeight(), nIdx);
+				}
+			}
 
 			// 終了処理
 			Uninit();
@@ -196,8 +209,21 @@ void CBombExplosion::SetData(const D3DXVECTOR3& pos)
 	m_nStateCount = 0;						// 状態カウント
 	m_fAlpha = 1.0f;						// 透明度
 
-	// 岩の当たり判定
-	collision::ExplosionHitToRock(GetPos(), GetCircum(), GetHeight());
+	// 区分の番号を設定する
+	m_nAreaIdx = area::SetFieldIdx(GetPos());
+	int nIdx = 0;
+
+	for (int nCnt = 0; nCnt < area::NUM_COLL; nCnt++)
+	{
+		nIdx = m_nAreaIdx + area::COLL_ADD_IDX[nCnt];
+
+		if (area::IndexCheck(nIdx) == true)
+		{ // 区分内の場合
+
+			// 岩の当たり判定
+			collision::ExplosionHitToRock(GetPos(), GetCircum(), GetHeight(), nIdx);
+		}
+	}
 }
 
 //=======================================

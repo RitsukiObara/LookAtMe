@@ -32,9 +32,6 @@ public:
 
 private:
 
-	// メンバ関数
-	void Chase(CBoss* pBoss);			// 追跡処理
-
 	// メンバ変数
 	CWindShot* m_pWindShot;		// 風攻撃の情報
 	int m_nCount;				// 経過カウント
