@@ -7,13 +7,23 @@
 //****************************************************************************************************************
 //	インクルードファイル
 //****************************************************************************************************************
-#include "useful.h"
+#include "manager.h"
 #include "boss.h"
 #include "boss_chargestate.h"
 #include "motion.h"
+#include "sound.h"
+#include "useful.h"
 
 #include "game.h"
 #include "player.h"
+
+//----------------------------------------------------------------------------------------------------------------
+// 定数定義
+//----------------------------------------------------------------------------------------------------------------
+namespace
+{
+	const int CHARGE_SOUND_COUNT = 110;		// サウンドのカウント
+}
 
 //==========================
 // オーバーロードコンストラクタ
@@ -63,6 +73,13 @@ void CBossChargeState::Process(CBoss* pBoss)
 	// 経過カウントを加算する
 	m_nCount--;
 
+	if (m_nCount % CHARGE_SOUND_COUNT == 0)
+	{ // 一定カウント経過した場合
+
+		// チャージ音を鳴らす
+		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_BOSSCHARGE);
+	}
+
 	if (m_nCount <= 0)
 	{ // 一定カウント経過した場合
 
@@ -85,4 +102,7 @@ void CBossChargeState::SetData(CBoss* pBoss)
 		// チャージモーションにする
 		pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_CHARGE);
 	}
+
+	// チャージ音を鳴らす
+	CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_BOSSCHARGE);
 }

@@ -15,7 +15,7 @@
 
 #include "camera.h"
 #include "game.h"
-#include "anim_reaction.h"
+#include "boss_explosionstate.h"
 
 //----------------------------------------------------------------------------------------------------------------
 // –³–¼–¼‘O‹óŠÔ
@@ -59,8 +59,8 @@ void CBossDestroyState::Process(CBoss* pBoss)
 	if (m_nCount >= FINISH_COUNT)
 	{ // ˆê’èŽžŠÔŒo‰ß‚Ìê‡
 
-		// I—¹ó‘Ô‚É‚·‚é
-		CGame::SetState(CGame::STATE_FINISH);
+		// ó‘Ô‚ÌØ‚è‘Ö‚¦ˆ—
+		pBoss->ChangeState(new CBossExplosionState);
 	}
 }
 

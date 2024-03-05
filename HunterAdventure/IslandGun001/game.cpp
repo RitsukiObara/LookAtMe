@@ -47,7 +47,7 @@ CPause* CGame::m_pPause = nullptr;							// ポーズの情報
 CPlayer* CGame::m_pPlayer = nullptr;						// プレイヤーの情報
 CGameScore* CGame::m_pGameScore = nullptr;					// ゲームスコアの情報
 CAlter* CGame::m_pAlter = nullptr;							// 祭壇の情報
-CGame::STATE CGame::m_state = CGame::STATE_START;		// ゲームの進行状態
+CGame::STATE CGame::m_state = CGame::STATE_START;			// ゲームの進行状態
 int CGame::m_nScore = 0;									// スコア
 bool CGame::m_bPause = false;								// ポーズ状況
 

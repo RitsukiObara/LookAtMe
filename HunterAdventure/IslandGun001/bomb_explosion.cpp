@@ -23,8 +23,7 @@
 namespace
 {
 	const char* BOMB_TEXTURE = "data\\TEXTURE\\BombExplosion.png";		// ”š”­‚ÌƒeƒNƒXƒ`ƒƒ
-	const int DIVI_CIRCUM = 16;				// ”š”­‚Ì‰~Žü‚Ì•ªŠ„”
-	const int DIVI_HEIGHT = 16;				// ”š”­‚Ìc‚Ì•ªŠ„”
+	const CMesh::SGrid DIVI = { 16,16 };	// •ªŠ„”
 	const float CIRCUM = 100.0f;			// ‰~Žü‚Ì‘å‚«‚³
 	const float HEIGHT = 100.0f;			// c‚Ì‘å‚«‚³
 
@@ -188,15 +187,8 @@ void CBombExplosion::Draw(void)
 //=====================================
 void CBombExplosion::SetData(const D3DXVECTOR3& pos)
 {
-	SGrid gridBomb;
-	//SGrid gridSmoke;
-
-	// •ûŠáî•ñ‚ðÝ’è‚·‚é
-	gridBomb.nWidth = DIVI_CIRCUM;
-	gridBomb.nHeight = DIVI_HEIGHT;
-
 	// î•ñ‚ÌÝ’èˆ—
-	CMeshSphere::SetData(pos, NONE_D3DXVECTOR3, CIRCUM, HEIGHT, gridBomb);
+	CMeshSphere::SetData(pos, NONE_D3DXVECTOR3, CIRCUM, HEIGHT, DIVI);
 
 	// ƒeƒNƒXƒ`ƒƒ‚ÌŠ„‚è“–‚Äˆ—
 	BindTexture(CManager::Get()->GetTexture()->Regist(BOMB_TEXTURE));

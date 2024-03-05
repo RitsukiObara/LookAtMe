@@ -43,8 +43,8 @@ HRESULT CMeshDonut::Init(void)
 		return E_FAIL;
 	}
 
-	// 頂点情報の設定処理
-	SetVertex();
+	// 全頂点情報の設定処理
+	SetVertexAll();
 
 	// インデックスの設定処理
 	SetIndex(GetVtx().nWidth, GetVtx().nHeight);
@@ -107,12 +107,12 @@ void CMeshDonut::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const f
 }
 
 //================================
-// 頂点の設定処理
+// 全頂点の設定処理
 //================================
-void CMeshDonut::SetVertex(void)
+void CMeshDonut::SetVertexAll(void)
 {
 	// ローカル変数宣言
-	VERTEX_3D *pVtx;		// 頂点情報へのポインタ
+	VERTEX_3D* pVtx;		// 頂点情報へのポインタ
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();	// 頂点バッファ
 	SGrid Divi = GetDivi();	// 分割数
 	SGrid vtx = GetVtx();	// 頂点数
@@ -154,6 +154,55 @@ void CMeshDonut::SetVertex(void)
 
 				//テクスチャ座標の設定
 				pVtx[0].tex = D3DXVECTOR2(((float)(1.0f / Divi.nHeight) * nCntCircum), (nCntWidth * 1.0f));
+
+				pVtx++;			// 頂点データを進める
+			}
+		}
+
+		// 頂点バッファをアンロックする
+		pVtxBuff->Unlock();
+	}
+}
+
+//================================
+// 頂点の設定処理
+//================================
+void CMeshDonut::SetVertex(void)
+{
+	// ローカル変数宣言
+	VERTEX_3D *pVtx;		// 頂点情報へのポインタ
+	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();	// 頂点バッファ
+	SGrid Divi = GetDivi();	// 分割数
+	SGrid vtx = GetVtx();	// 頂点数
+	float fAngle;			// 方向
+	float fLength;			// 高さの方向
+
+	if (pVtxBuff != nullptr)
+	{ // 頂点バッファが NULL じゃない場合
+
+		// 頂点バッファをロック
+		pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+		for (int nCntWidth = 0; nCntWidth < vtx.nWidth; nCntWidth++)
+		{
+			for (int nCntCircum = 0; nCntCircum < vtx.nHeight; nCntCircum++)
+			{
+				// 角度を算出する
+				fAngle = D3DX_PI * (nCntCircum * (float)(1.0f / (Divi.nHeight / 2)));
+
+				// 幅を算出する
+				fLength = m_fCircumSize + (m_fWidthDiviSize * (Divi.nWidth - nCntWidth));
+
+				// 角度の正規化
+				useful::RotNormalize(&fAngle);
+
+				//頂点座標の設定
+				pVtx[0].pos = D3DXVECTOR3
+				(
+					(sinf(fAngle) * fLength),
+					(cosf(fAngle) * fLength),
+					0.0f
+				);
 
 				pVtx++;			// 頂点データを進める
 			}
@@ -217,4 +266,41 @@ CMeshDonut* CMeshDonut::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, c
 
 	// メッシュのポインタを返す
 	return pMesh;
+}
+
+//================================
+// 円周の設定処理
+//================================
+void CMeshDonut::SetCircum(const float fCircum)
+{
+	// 円周を設定する
+	m_fCircumSize = fCircum;
+}
+
+//================================
+// 円周の取得処理
+//================================
+float CMeshDonut::GetCircum(void) const
+{
+	// 円周を返す
+	return m_fCircumSize;
+}
+
+//================================
+// 幅の設定処理
+//================================
+void CMeshDonut::SetWidth(const float fWidth)
+{
+	// 幅を設定する
+	m_fWidthSize = fWidth;
+	m_fWidthDiviSize = fWidth / (float)GetDivi().nWidth;
+}
+
+//================================
+// 幅の取得処理
+//================================
+float CMeshDonut::GetWidth(void) const
+{
+	// 幅を返す
+	return m_fWidthSize;
 }

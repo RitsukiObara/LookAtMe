@@ -638,6 +638,9 @@ void CPlayer::Hit(const int nDamage, const float fRotSmash)
 	else
 	{ // 上記以外
 
+		// ダメージ音を鳴らす
+		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_PLAYERDAMAGE);
+
 		// ダメージ状態にする
 		m_stateInfo.state = STATE_DAMAGE;
 
@@ -1113,6 +1116,13 @@ void CPlayer::ElevationCollision(void)
 
 				// 重力を設定する
 				m_move.y = LAND_GRAVITY;
+
+				if (m_bJump == true)
+				{ // ジャンプ中の場合
+
+					// 着地音を鳴らす
+					CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_LANDING);
+				}
 
 				// ジャンプ状況を false にする
 				bJump = false;

@@ -39,6 +39,13 @@ public:			// 誰でもアクセス出来る
 		SOUND_LABEL_SE_ROCKBREAK,		// 岩の破壊
 		SOUND_LABEL_SE_SIGNBOARD,		// 看板
 		SOUND_LABEL_SE_DAMAGE,			// ダメージ音
+		SOUND_LABEL_SE_BOSS_EXPLOSION,	// ボスの爆発音
+		SOUND_LABEL_SE_LANDING,			// 着地音
+		SOUND_LABEL_SE_JUMP,			// ジャンプ音
+		SOUND_LABEL_SE_BOSSCHARGE,		// ボスのチャージ音
+		SOUND_LABEL_SE_PLAYERDAMAGE,	// プレイヤーのダメージ音
+		SOUND_LABEL_SE_WEAKDAMAGE,		// 弱点のダメージ音
+		SOUND_LABEL_SE_WEAKBREAK,		// 弱点の破壊音
 		SOUND_LABEL_MAX					// この列挙型の総数
 	};
 

@@ -31,6 +31,13 @@ CSound::SOUNDINFO CSound::m_aSoundInfo[CSound::SOUND_LABEL_MAX] =
 	{ "data\\SE\\RockBreak.wav",0 },		// 岩の破壊
 	{ "data\\SE\\Signboard.wav",0 },		// 看板
 	{ "data\\SE\\EnemyDeath.wav",0 },		// ダメージ音
+	{ "data\\SE\\BossExplosion.wav",0 },	// ボスの爆発音
+	{ "data\\SE\\Landing.wav",0 },			// 着地音
+	{ "data\\SE\\Jump.wav",0 },				// ジャンプ音
+	{ "data\\SE\\BossCharge.wav",0 },		// ボスのチャージ音
+	{ "data\\SE\\PlayerDamage.wav",0 },		// プレイヤーのダメージ音
+	{ "data\\SE\\WeakDamage.wav",0 },		// 弱点のダメージ音
+	{ "data\\SE\\WeakBreak.wav",0 },		// 弱点の破壊音
 }; 
 
 //=============================================================================

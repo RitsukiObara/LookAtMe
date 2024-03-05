@@ -1,0 +1,22 @@
+#===========================================================
+#
+# モデルの情報 [Model.txt]
+# Author : 小原立暉
+#
+#===========================================================
+
+# モデルの情報
+MODEL_FILENAME = data\MODEL\Platform\FracScrew.x	# ネジ(破片)
+MODEL_FILENAME = data\MODEL\Platform\FracGear.x		# 歯車(破片)
+MODEL_FILENAME = data\MODEL\Platform\FracRing.x		# 輪(破片)
+MODEL_FILENAME = data\MODEL\Platform\FracWood.x		# 木片(破片)
+MODEL_FILENAME = data\MODEL\Platform\Ripple.x		# 破片
+
+# ゲームモデル
+MODEL_FILENAME = data\MODEL\Coin.x					# 小判
+MODEL_FILENAME = data\MODEL\Pistol.x				# 拳銃
+MODEL_FILENAME = data\MODEL\Dagger.x				# ダガー
+MODEL_FILENAME = data\MODEL\GoldBone.x				# 金の骨
+MODEL_FILENAME = data\MODEL\PalmTree.x				# ヤシの木
+MODEL_FILENAME = data\MODEL\PalmFruit.x				# ヤシの実
+MODEL_FILENAME = data\MODEL\PalmItem.x				# ヤシの実(アイテム体)

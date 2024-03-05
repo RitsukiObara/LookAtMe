@@ -537,6 +537,15 @@
     <ClCompile Include="tutorial_airplane.cpp">
       <Filter>scene\tutorial</Filter>
     </ClCompile>
+    <ClCompile Include="boss_explosionstate.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="boss_ripple.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
+    <ClCompile Include="boss_explosion.cpp">
+      <Filter>enemy\boss</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -994,6 +1003,15 @@
     </ClInclude>
     <ClInclude Include="tutorial_airplane.h">
       <Filter>scene\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="boss_explosionstate.h">
+      <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="boss_ripple.h">
+      <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="boss_explosion.h">
+      <Filter>enemy\boss</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

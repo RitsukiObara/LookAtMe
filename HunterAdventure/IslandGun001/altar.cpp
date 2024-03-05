@@ -133,7 +133,7 @@ void CAlter::Update(void)
 				// チャージ処理
 				m_apPole[nCnt]->Charge();
 
-				// 金の骨の位置設定処理wwwwwwwwwwwwwwwwwwwwwwwwww
+				// 金の骨の位置設定処理
 				m_apPole[nCnt]->GoldBonePosSet(GetPos());
 			}
 		}

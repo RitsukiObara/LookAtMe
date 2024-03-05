@@ -12,6 +12,7 @@
 #include "boss.h"
 #include "manager.h"
 #include "file.h"
+#include "sound.h"
 #include "useful.h"
 
 #include "motion.h"
@@ -379,6 +380,15 @@ void CBoss::BarrierHit(const D3DXVECTOR3& pos, const int nPart, const int nCntPa
 		m_apMatCopy[nPart][WEAK_MATERIAL_NUM].MatD3D.Diffuse = D3DXCOLOR(0.1f, 0.0f, 0.1f, 1.0f);
 		m_apMatCopy[nPart][WEAK_MATERIAL_NUM].MatD3D.Ambient = D3DXCOLOR(0.1f, 0.0f, 0.1f, 1.0f);
 		m_apMatCopy[nPart][WEAK_MATERIAL_NUM].MatD3D.Emissive = D3DXCOLOR(0.1f, 0.0f, 0.1f, 1.0f);
+
+		// 弱点の破壊音を鳴らす
+		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_WEAKBREAK);
+	}
+	else
+	{ // 上記以外
+
+		// 弱点のダメージ音を鳴らす
+		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_WEAKDAMAGE);
 	}
 }
 

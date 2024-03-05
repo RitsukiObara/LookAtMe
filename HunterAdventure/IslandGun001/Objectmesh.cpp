@@ -54,7 +54,7 @@ CMesh::CMesh(CObject::TYPE type, CObject::PRIORITY priority) : CObject(type, DIM
 	m_nNumIdx = 0;				// 総インデックス数
 	m_nTexIdx = NONE_TEXIDX;	// テクスチャのインデックス
 	m_bLightOff = false;		// ライティング状況
-	m_bCullOff = false;			// カリング状況
+	m_bCulling = false;			// カリング状況
 	ZeroMemory(&m_mtxWorld, sizeof(D3DXMATRIX));	// ワールドマトリックス
 
 	// リストに追加する
@@ -170,7 +170,7 @@ void CMesh::Draw(void)
 		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 	}
 
-	if (m_bCullOff == true)
+	if (m_bCulling == true)
 	{ // カリングOFFの場合
 
 		// カリングの設定をOFFにする
@@ -180,7 +180,7 @@ void CMesh::Draw(void)
 	// 描画処理の中身
 	DrawProcess();
 
-	if (m_bCullOff == true)
+	if (m_bCulling == true)
 	{ // カリングOFFの場合
 
 		// カリングの設定をONにする
@@ -411,7 +411,7 @@ void CMesh::SetLighting(const bool bLighting)
 void CMesh::SetCulling(const bool bCulling)
 {
 	// カリング状況を設定する
-	m_bCullOff = bCulling;
+	m_bCulling = bCulling;
 }
 
 /*

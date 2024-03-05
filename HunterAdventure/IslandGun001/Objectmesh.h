@@ -113,7 +113,7 @@ private:		// 自分だけアクセスできる
 	int		m_nNumIdx;			// 総インデックス数
 	int		m_nTexIdx;			// テクスチャのインデックス
 	bool	m_bLightOff;		// ライティング状況
-	bool	m_bCullOff;			// カリング状況
+	bool	m_bCulling;			// カリング状況
 
 	// 静的メンバ変数
 	static CListManager<CMesh*> m_list;		// リスト

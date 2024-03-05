@@ -51,7 +51,7 @@ namespace
 	const int SHOT_INTERVAL = 10;					// 撃つインターバル
 	const float SPEED = 14.0f;						// 速度
 	const float STOP_CORRECT = 0.5f;				// 停止の補正倍率
-	const int WALK_COUNT = 32;						// 歩行音が鳴るカウント数
+	const int WALK_COUNT = 28;						// 歩行音が鳴るカウント数
 }
 
 //=========================
@@ -337,7 +337,8 @@ void CPlayerController::RotMove(CPlayer* pPlayer)
 		// 歩行カウントを加算する
 		m_nWalkCount++;
 
-		if (m_nWalkCount % WALK_COUNT == 0)
+		if (m_nWalkCount % WALK_COUNT == 0 &&
+			pPlayer->IsJump() == false)
 		{ // 一定カウントごとに場合
 
 			// 歩いた音を返す
@@ -494,6 +495,9 @@ void CPlayerController::Jump(CPlayer* pPlayer)
 
 		// ジャンプしている
 		pPlayer->SetEnableJump(true);
+
+		// ジャンプ音を鳴らす
+		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_JUMP);
 	}
 
 	// 移動量を適用する

@@ -125,7 +125,7 @@ protected:		// 自分と派生クラスだけアクセスできる
 	void ElevationCollision(void);	// 起伏地面の当たり判定処理
 	void Collision(void);			// 当たり判定処理
 	void BlockCollision(D3DXVECTOR3* pos, const D3DXVECTOR3& posOld, const D3DXVECTOR3& vtxMax, const D3DXVECTOR3& vtxMin, const int nAreaIdx);		// ブロックとの当たり判定
-	void AlterCollision(void);		// 際算との当たり判定
+	void AlterCollision(void);		// 祭壇との当たり判定
 	void StageCollision(void);		// ステージとの当たり判定
 
 private:		// 自分だけアクセスできる
