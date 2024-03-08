@@ -546,6 +546,9 @@
     <ClCompile Include="boss_explosion.cpp">
       <Filter>enemy\boss</Filter>
     </ClCompile>
+    <ClCompile Include="alter_message.cpp">
+      <Filter>gimmick\Map\Alter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -1012,6 +1015,9 @@
     </ClInclude>
     <ClInclude Include="boss_explosion.h">
       <Filter>enemy\boss</Filter>
+    </ClInclude>
+    <ClInclude Include="alter_message.h">
+      <Filter>gimmick\Map\Alter</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

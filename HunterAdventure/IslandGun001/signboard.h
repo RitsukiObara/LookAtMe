@@ -55,8 +55,7 @@ public:			// 誰でもアクセスできる
 
 	// セット・ゲット関係
 	void SetExplain(CSignboardExpl* pExpl);		// 説明の設定処理
-	void SetEnableDisp(const bool bDisp);		// 描画状況の設定処理
-	bool IsDisp(void) const;					// 描画状況の取得処理
+	CPushTiming* GetButton(void) const;			// ボタン表示の取得処理
 
 	// 静的メンバ関数
 	static CSignboard* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const TYPE type);		// 生成処理
@@ -69,7 +68,6 @@ private:		// 自分だけアクセスできる
 	CPushTiming* m_pButton;		// ボタンの情報
 	CSignboardExpl* m_pExplain;	// 説明の情報
 	TYPE m_type;				// 種類
-	bool m_bDisp;				// 描画状況
 
 	// 静的メンバ変数
 	static CListManager<CSignboard*> m_list;		// リスト

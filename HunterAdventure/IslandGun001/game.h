@@ -74,6 +74,7 @@ public:						// 誰でもアクセスできる
 private:					// 自分だけアクセスできる
 
 	// メンバ関数
+	void GameOver(void);		// ゲームオーバー処理
 	void Pause(void);			// ポーズ処理
 	void Transition(void);		// 遷移処理
 

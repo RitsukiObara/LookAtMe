@@ -745,18 +745,25 @@ void CCamera::MousePosV(void)
 		CManager::Get()->GetInputMouse()->GetPress(CInputMouse::MOUSE_R) == false)
 	{ // 左クリックしていた場合
 
-		// 視点のY軸を加算する
-		m_posV.y += move.y * 5.0f;
-
 		// 向きを加算する
+		m_rot.x += move.y * 0.01f;
 		m_rot.y += move.x * 0.01f;
 
 		// 向きの正規化
+		if (m_rot.x <= 0.2f)
+		{
+			m_rot.x = 0.2f;
+		}
+		if (m_rot.x >= D3DX_PI - 0.2f)
+		{
+			m_rot.x = D3DX_PI - 0.2f;
+		}
 		useful::RotNormalize(&m_rot.y);
 
 		// カメラの視点を更新する
-		m_posV.x = m_posR.x + sinf(m_rot.y) * -m_Dis;
-		m_posV.z = m_posR.z + cosf(m_rot.y) * -m_Dis;
+		m_posV.x = m_posR.x + sinf(m_rot.y) * sinf(m_rot.x) * -m_Dis;
+		m_posV.y = m_posR.y + cosf(m_rot.x) * -m_Dis;
+		m_posV.z = m_posR.z + cosf(m_rot.y) * sinf(m_rot.x) * -m_Dis;
 	}
 }
 
@@ -772,18 +779,25 @@ void CCamera::MousePosR(void)
 		CManager::Get()->GetInputMouse()->GetPress(CInputMouse::MOUSE_L) == false)
 	{ // 右クリックしていた場合
 
-		// 注視点のY軸を設定する
-		m_posR.y += move.y * -5.0f;
-
 		// 向きを加算する
+		m_rot.x += move.y * 0.01f;
 		m_rot.y += move.x * 0.01f;
 
 		// 向きの正規化
+		if (m_rot.x <= 0.2f)
+		{
+			m_rot.x = 0.2f;
+		}
+		if (m_rot.x >= D3DX_PI - 0.2f)
+		{
+			m_rot.x = D3DX_PI - 0.2f;
+		}
 		useful::RotNormalize(&m_rot.y);
 
 		// カメラの注視点を更新する
-		m_posR.x = m_posV.x + sinf(m_rot.y) * m_Dis;
-		m_posR.z = m_posV.z + cosf(m_rot.y) * m_Dis;
+		m_posR.x = m_posV.x + sinf(m_rot.y) * sinf(m_rot.x) * m_Dis;
+		m_posR.y = m_posV.y + cosf(m_rot.x) * m_Dis;
+		m_posR.z = m_posV.z + cosf(m_rot.y) * sinf(m_rot.x) * m_Dis;
 	}
 }
 
@@ -799,13 +813,14 @@ void CCamera::MousePosMove(void)
 		CManager::Get()->GetInputMouse()->GetPress(CInputMouse::MOUSE_R) == true)
 	{ // 左クリックしていた場合
 
-		// カメラの視点を更新する
-		m_posV.x += sinf(m_rot.y - (D3DX_PI * 0.5f)) * (move.x * 5.0f);
-		m_posV.z += cosf(m_rot.y) * (move.y * 5.0f);
+		// 移動する
+		m_posR.x += cosf(m_rot.y) * (move.x * -5.0f) + sinf(m_rot.y) * (move.y * 5.0f);
+		m_posR.z += sinf(m_rot.y) * (move.x * 5.0f) + cosf(m_rot.y) * (move.y * 5.0f);
 
-		// カメラの注視点を更新する
-		m_posR.x += sinf(m_rot.y - (D3DX_PI * 0.5f)) * (move.x * 5.0f);
-		m_posR.z += cosf(m_rot.y) * (move.y * 5.0f);
+		// カメラの視点を更新する
+		m_posV.x = m_posR.x + sinf(m_rot.y) * sinf(m_rot.x) * -m_Dis;
+		m_posV.y = m_posR.y + cosf(m_rot.x) * -m_Dis;
+		m_posV.z = m_posR.z + cosf(m_rot.y) * sinf(m_rot.x) * -m_Dis;
 	}
 }
 

@@ -41,7 +41,6 @@ CDoor::CDoor() : CModel(CObject::TYPE_DOOR, CObject::PRIORITY_BLOCK)
 	m_pDoor = nullptr;			// ドアのモデル
 	m_pButton = nullptr;		// ボタンの情報
 	m_state = STATE_NONE;		// 状態
-	m_bDisp = false;			// ボタンの表示状況
 }
 
 //==============================
@@ -85,7 +84,6 @@ void CDoor::Uninit(void)
 	{ // ボタンが NULL じゃない場合
 
 		// ボタンの終了処理
-		m_pButton->Uninit();
 		m_pButton = nullptr;
 	}
 
@@ -117,7 +115,7 @@ void CDoor::Update(void)
 		Open();
 
 		// 描画状況を false にする
-		m_bDisp = false;
+		m_pButton->SetEnableDisp(false);
 
 		break;
 
@@ -135,7 +133,7 @@ void CDoor::Update(void)
 		}
 
 		// 描画状況を false にする
-		m_bDisp = false;
+		m_pButton->SetEnableDisp(false);
 
 		break;
 
@@ -145,13 +143,6 @@ void CDoor::Update(void)
 		assert(false);
 
 		break;
-	}
-
-	if (m_pButton != nullptr)
-	{ // ボタンが NULL じゃない場合
-
-		// ボタンの更新処理
-		m_pButton->Update();
 	}
 }
 
@@ -168,14 +159,6 @@ void CDoor::Draw(void)
 
 		// ドアの描画処理
 		m_pDoor->DrawMatrix(GetMatrix());
-	}
-
-	if (m_bDisp == true &&
-		m_pButton != nullptr)
-	{ // ボタンが表示可能な場合
-
-		// ボタンの描画処理
-		m_pButton->Draw();
 	}
 }
 
@@ -211,10 +194,9 @@ void CDoor::SetData(const D3DXVECTOR3& pos)
 
 		// ボタンの生成
 		m_pButton = CPushTiming::Create(D3DXVECTOR3(pos.x, pos.y + BUTTON_SHIFT, pos.z), BUTTON_SIZE, CPushTiming::TYPE_PAD_A, BUTTON_INTERVAL);
-		m_pButton->CObject::SetType(TYPE_NONE);
+		m_pButton->SetEnableDisp(false);
 	}
 	m_state = STATE_NONE;		// 状態
-	m_bDisp = false;			// 描画状況
 }
 
 //=======================================
@@ -291,21 +273,12 @@ CDoor::STATE CDoor::GetState(void) const
 }
 
 //=======================================
-// 描画状況の設定処理
+// ボタン表示の取得処理
 //=======================================
-void CDoor::SetEnableDisp(const bool bDisp)
+CPushTiming* CDoor::GetButton(void) const
 {
-	// 描画状況を設定する
-	m_bDisp = bDisp;
-}
-
-//=======================================
-// 描画状況の取得処理
-//=======================================
-bool CDoor::IsDisp(void) const
-{
-	// 描画状況を返す
-	return m_bDisp;
+	// ボタン状況を返す
+	return m_pButton;
 }
 
 //=======================================

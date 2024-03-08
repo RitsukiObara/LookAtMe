@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "texture.h"
 #include "input.h"
+#include "sound.h"
 #include "useful.h"
 
 #include "object2D.h"
@@ -392,6 +393,12 @@ bool CContinueUI::Decide(void)
 
 			// コンティニュー処理
 			Continue();
+
+			// ゲームBGMを復活させる
+			CManager::Get()->GetSound()->Replay(CSound::SOUND_LABEL_BGM_GAME);
+
+			// ゲームBGMを等速にする
+			CManager::Get()->GetSound()->SetFrequency(CSound::SOUND_LABEL_BGM_GAME, 1.0f);
 
 			break;
 

@@ -159,6 +159,7 @@
     <ClCompile Include="airplane.cpp" />
     <ClCompile Include="altar.cpp" />
     <ClCompile Include="alter_flash.cpp" />
+    <ClCompile Include="alter_message.cpp" />
     <ClCompile Include="alter_pole.cpp" />
     <ClCompile Include="anim_reaction.cpp" />
     <ClCompile Include="area.cpp" />
@@ -318,6 +319,7 @@
     <ClInclude Include="airplane.h" />
     <ClInclude Include="alter.h" />
     <ClInclude Include="alter_flash.h" />
+    <ClInclude Include="alter_message.h" />
     <ClInclude Include="alter_pole.h" />
     <ClInclude Include="anim_reaction.h" />
     <ClInclude Include="area.h" />

@@ -276,6 +276,47 @@ HRESULT CSound::Play(SOUND_LABEL label)
 }
 
 //=============================================================================
+// ポーズ処理
+//=============================================================================
+void CSound::Pause(const SOUND_LABEL label)
+{
+	XAUDIO2_VOICE_STATE xa2state;
+
+	// 状態取得
+	m_apSourceVoice[label]->GetState(&xa2state);
+	if (xa2state.BuffersQueued != 0)
+	{// 再生中
+
+		// 一時停止
+		m_apSourceVoice[label]->Stop(0);
+	}
+}
+
+//=============================================================================
+// リプレイ処理
+//=============================================================================
+void CSound::Replay(const SOUND_LABEL label)
+{
+	XAUDIO2_VOICE_STATE xa2state;
+
+	// 状態取得
+	m_apSourceVoice[label]->GetState(&xa2state);
+
+	if (xa2state.BuffersQueued != 0)
+	{// 再生中
+
+		// 再生
+		m_apSourceVoice[label]->Start(0);
+	}
+	else
+	{ // 上記以外
+
+		// 停止
+		assert(false);
+	}
+}
+
+//=============================================================================
 // セグメント停止(ラベル指定)
 //=============================================================================
 void CSound::Stop(SOUND_LABEL label)

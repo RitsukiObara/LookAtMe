@@ -17,6 +17,7 @@
 // 前方宣言
 //-----------------------------------
 class CAlterPole;		// 石柱
+class CAlterMessage;	// 祭壇メッセージ
 
 //-----------------------------------
 // クラス定義(祭壇)
@@ -30,7 +31,6 @@ public:			// 誰でもアクセスできる
 	{
 		STATE_NONE = 0,		// 通常状態
 		STATE_CHARGE,		// チャージ状態
-		STATE_BOSSAPPEAR,	// ボスの出現状態
 		STATE_WAIT,			// 待機状態
 		STATE_BREAK,		// 破壊状態
 		STATE_MAX			// この列挙型の総数
@@ -49,11 +49,12 @@ public:			// 誰でもアクセスできる
 	void Break(void);				// 破壊処理
 
 	// セット・ゲット関係
-	CAlterPole* GetPole(const int nIdx) const;	// 石柱の取得処理
-	void SetState(const STATE state);			// 状態の設定処理
-	STATE GetState(void) const;					// 状態の取得処理
-	void SetEnableLightUp(const bool bLight);	// ライト点灯状況の設定処理
-	bool IsLightUp(void) const;					// ライト点灯状況の取得処理
+	CAlterPole* GetPole(const int nIdx) const;		// 石柱の取得処理
+	void SetAlterMessage(CAlterMessage* pMessage);	// 祭壇のメッセージの設定処理
+	void SetState(const STATE state);				// 状態の設定処理
+	STATE GetState(void) const;						// 状態の取得処理
+	void SetEnableLightUp(const bool bLight);		// ライト点灯状況の設定処理
+	bool IsLightUp(void) const;						// ライト点灯状況の取得処理
 
 	// 静的メンバ関数
 	static CAlter* Create(void);	// 生成処理
@@ -69,6 +70,7 @@ private:		// 自分だけアクセスできる
 
 	// メンバ変数
 	CAlterPole* m_apPole[NUM_POLE];		// 石柱の情報
+	CAlterMessage* m_pMessage;			// メッセージの情報
 	STATE m_state;						// 状態
 	bool m_bLightUp;					// ライト点灯状況
 };

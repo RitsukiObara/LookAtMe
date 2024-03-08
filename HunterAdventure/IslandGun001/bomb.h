@@ -32,6 +32,7 @@ public:			// 誰でもアクセスできる
 		STATE_RIPEN,			// 実り状態
 		STATE_BOUND,			// バウンド状態
 		STATE_DETONATION,		// 起爆状態
+		STATE_SMASH,			// 吹き飛び状態
 		STATE_EXPLOSION,		// 爆発状態
 		STATE_MAX				// この列挙型の総数
 	};
@@ -78,7 +79,7 @@ private:		// 自分だけアクセスできる
 	D3DXVECTOR3 m_move;			// 移動量
 	STATE m_state;				// 状態
 	int m_nAreaIdx;				// 区分の番号
-	int m_nBoundCount;			// バウンドカウント
+	int m_nStateCount;			// 状態カウント
 	int m_nExplosionCount;		// 爆発カウント
 	bool m_bAdd;				// 加算状況
 

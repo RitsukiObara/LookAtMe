@@ -40,6 +40,7 @@ public:					// 誰でもアクセスできる
 		MOTIONTYPE_CHARGE,			// チャージモーション
 		MOTIONTYPE_DOWN,			// ダウンモーション
 		MOTIONTYPE_STOMP,			// 足踏みモーション
+		MOTIONTYPE_DEATH,			// 死亡モーション
 		MOTIONTYPE_MAX				// この列挙型の総数
 	};
 
@@ -95,7 +96,8 @@ public:					// 誰でもアクセスできる
 private:				// 自分だけアクセスできる
 
 	// メンバ関数
-	void Damage(void);		// ダメージ処理
+	void EnemyAllClear(void);	// 敵の全消去処理
+	void Damage(void);			// ダメージ処理
 
 	// メンバ変数
 	CMotion* m_pMotion;		// モーションの情報

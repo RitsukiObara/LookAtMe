@@ -15,6 +15,7 @@
 #include "light.h"
 #include "renderer.h"
 #include "texture.h"
+#include "useful.h"
 
 #include "debugproc.h"
 #include "sound.h"
@@ -35,8 +36,10 @@
 //--------------------------------------------
 namespace
 {
-	const int TRANS_COUNT = 80;			// 遷移カウント
-	const int GAMEOVER_COUNT = 150;		// ゲームオーバーカウント
+	const D3DXVECTOR3 PLAYER_POS = D3DXVECTOR3(0.0f, 0.0f, -500.0f);		// プレイヤーの位置
+	const int TRANS_COUNT = 80;					// 遷移カウント
+	const float FREQUENCY_CORRECT = 0.02f;		// 周波数の補正倍率
+	const int GAMEOVER_COUNT = 150;				// ゲームオーバーカウント
 	const char* ELEVATION_TXT = "data/TXT/Elevation.txt";		// 起伏地面のテキスト
 }
 
@@ -117,7 +120,7 @@ HRESULT CGame::Init(void)
 	COcean::Create();
 
 	// プレイヤーの生成処理
-	m_pPlayer = CPlayer::Create(D3DXVECTOR3(-400.0f, 0.0f, 300.0f));
+	m_pPlayer = CPlayer::Create(PLAYER_POS);
 
 	// ゲームスコアの生成
 	m_pGameScore = CGameScore::Create();
@@ -186,7 +189,6 @@ void CGame::Update(void)
 	case CGame::STATE_START:
 
 		if (CManager::Get()->GetInputKeyboard()->GetTrigger(DIK_RETURN) == true ||
-			CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_START, 0) == true ||
 			CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_A, 0) == true)
 		{ // ENTERキーを押した場合
 
@@ -213,6 +215,9 @@ void CGame::Update(void)
 
 	case CGame::STATE_GAMEOVER:
 
+		// ゲームオーバー処理
+		GameOver();
+
 		if (m_pGameScore->GetScore() >= CContinueUI::GetSubScore())
 		{ // 復活出来るほどスコアがある場合
 
@@ -230,6 +235,9 @@ void CGame::Update(void)
 
 				// コンティニュー状態にする
 				m_state = STATE_CONTINUE;
+
+				// ゲームBGMを消去する
+				CManager::Get()->GetSound()->Pause(CSound::SOUND_LABEL_BGM_GAME);
 
 				// コンティニューUIを生成
 				CContinueUI::Create();
@@ -317,12 +325,28 @@ void CGame::SetData(const MODE mode)
 }
 
 //======================================
+// ゲームオーバー処理
+//======================================
+void CGame::GameOver(void)
+{
+	// 周波数を取得
+	float fFreq = CManager::Get()->GetSound()->GetFrequency(CSound::SOUND_LABEL_BGM_GAME);
+
+	// 周波数を0に近づける
+	useful::Correct(0.0f, &fFreq, FREQUENCY_CORRECT);
+
+	// 周波数を適用
+	CManager::Get()->GetSound()->SetFrequency(CSound::SOUND_LABEL_BGM_GAME, fFreq);
+}
+
+//======================================
 // ポーズ処理
 //======================================
 void CGame::Pause(void)
 {
 	if (CManager::Get()->GetInputKeyboard()->GetTrigger(DIK_P) == true ||
-		CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_BACK, 0) == true)
+		CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_BACK, 0) == true ||
+		CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_START, 0) == true)
 	{ // Pキーを押した場合
 
 		if (CManager::Get()->GetFade()->GetFade() == CFade::FADE_NONE)
@@ -339,7 +363,7 @@ void CGame::Pause(void)
 				}
 				else
 				{ // 上記以外
-					
+
 					// 停止
 					assert(false);
 				}

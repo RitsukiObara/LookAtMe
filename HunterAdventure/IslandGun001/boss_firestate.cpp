@@ -26,11 +26,21 @@ namespace
 {
 	const float CHASE_CORRECT = 0.01f;		// 追跡の補正数
 	const int FIRE_CREATE_COUNT = 30;		// 炎を出すカウント数
-	const int FIRST_FRACTION_COUNT = 20;	// 1回目の破片を出すカウント数
-	const int SECOND_FRACTION_COUNT = 112;	// 2回目の破片を出すカウント数
-	const int THIRD_FRACTION_COUNT = 187;	// 3回目の破片を出すカウント数
 	const int FIRE_CREATE_RANGE = 180;		// 炎を出している間のカウント数
 	const int FINISH_COUNT = 240;			// 終了カウント
+
+	const int FRACTION_COUNT = 3;			// 破片を出す回数
+	const int FRACTION_TIMING[FRACTION_COUNT] =		// 破片を出すタイミング
+	{
+		17,
+		104,
+		190
+	};
+	const int NUM_FRACTION = 15;			// 出す破片の総数
+	const int RAND_FRACTION_LIFE = 30;		// 破片の寿命のランダム値
+	const int MIN_FRACTION_LIFE = 15;		// 破片の寿命の最小値
+	const int FRACTION_WIDTH = 4;			// 破片の幅
+	const int FRACTION_HEIGHT = 45;			// 破片の高さ
 }
 
 //==========================
@@ -58,42 +68,16 @@ void CBossFireState::Process(CBoss* pBoss)
 	// カウントを加算する
 	m_nCount++;
 
-	CPlayer* pPlayer = CGame::GetPlayer();
-
-	if (m_nCount % FIRE_CREATE_COUNT == 0 &&
-		m_nCount <= FIRE_CREATE_RANGE &&
-		pPlayer != nullptr)
-	{ // 経過カウントが一定数経過した場合
-
-		// 炎注意の生成
-		CFireWarning::Create(pPlayer->GetPos());
-	}
+	// 炎生成処理
+	FireCreate(pBoss);
 	
-	if (m_nCount == FIRST_FRACTION_COUNT ||
-		m_nCount == SECOND_FRACTION_COUNT ||
-		m_nCount == THIRD_FRACTION_COUNT)
-	{ // 破片を出すカウント数だった場合
+	if (m_nCount == FRACTION_TIMING[0] ||
+		m_nCount == FRACTION_TIMING[1] ||
+		m_nCount == FRACTION_TIMING[2])
+	{ // 規定のカウント数になった場合
 
-		D3DXMATRIX mtx;
-		D3DXVECTOR3 pos = NONE_D3DXVECTOR3;
-
-		pBoss->GetHierarchy(7)->MatrixCalc(&mtx, pBoss->GetMatrix());
-
-		pos = D3DXVECTOR3(mtx._41, mtx._42, mtx._43);
-
-		for (int nCnt = 0; nCnt < 15; nCnt++)
-		{
-			CFraction::Create(pos, CFraction::TYPE::TYPE_DIRT, 30, 4, 45);
-		}
-
-		pBoss->GetHierarchy(8)->MatrixCalc(&mtx, pBoss->GetMatrix());
-
-		pos = D3DXVECTOR3(mtx._41, mtx._42, mtx._43);
-
-		for (int nCnt = 0; nCnt < 15; nCnt++)
-		{
-			CFraction::Create(pos, CFraction::TYPE::TYPE_DIRT, 30, 4, 45);
-		}
+		// 破片を出す処理
+		Fraction(pBoss);
 	}
 
 	if (m_nCount == FIRE_CREATE_RANGE)
@@ -125,5 +109,46 @@ void CBossFireState::SetData(CBoss* pBoss)
 
 		// 足踏みモーションにする
 		pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_STOMP);
+	}
+}
+
+//==========================
+// 炎を出す処理
+//==========================
+void CBossFireState::FireCreate(CBoss* pBoss)
+{
+	CPlayer* pPlayer = CGame::GetPlayer();
+
+	if (m_nCount % FIRE_CREATE_COUNT == 0 &&
+		m_nCount <= FIRE_CREATE_RANGE &&
+		pPlayer != nullptr)
+	{ // 経過カウントが一定数経過した場合
+
+		// 炎注意の生成
+		CFireWarning::Create(pPlayer->GetPos());
+	}
+}
+
+//==========================
+// 破片出す処理
+//==========================
+void CBossFireState::Fraction(CBoss* pBoss)
+{
+	D3DXMATRIX mtx;
+	D3DXVECTOR3 pos[2] = {};
+	int nLife = 0;
+
+	for (int nCntFrac = 0; nCntFrac < 2; nCntFrac++)
+	{
+		// 位置を設定
+		pBoss->GetHierarchy(nCntFrac + 7)->MatrixCalc(&mtx, pBoss->GetMatrix());
+		pos[nCntFrac] = D3DXVECTOR3(mtx._41, mtx._42, mtx._43);
+
+		for (int nCnt = 0; nCnt < NUM_FRACTION; nCnt++)
+		{
+			// 破片を生成
+			nLife = rand() % RAND_FRACTION_LIFE + MIN_FRACTION_LIFE;
+			CFraction::Create(pos[nCntFrac], CFraction::TYPE::TYPE_DIRT, nLife, FRACTION_WIDTH, FRACTION_HEIGHT);
+		}
 	}
 }

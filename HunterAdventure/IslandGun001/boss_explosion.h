@@ -48,7 +48,8 @@ private:		// 自分だけアクセスできる
 	CMeshSphere* m_pExplosion;			// 爆発
 	CMeshDonut* m_apShock[NUM_SHOCK];	// 衝撃
 
-	float m_fAdd;			// サイズの追加量
+	float m_fAddExpl;		// 爆発の追加量
+	float m_fAddShock;		// 衝撃の追加量
 	float m_fAlpha;			// 透明度
 };
 

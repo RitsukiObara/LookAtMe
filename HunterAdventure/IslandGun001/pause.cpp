@@ -287,7 +287,6 @@ void CPause::PauseSelect(void)
 bool CPause::PauseDecide(void)
 {
 	if (CManager::Get()->GetInputKeyboard()->GetTrigger(DIK_RETURN) == true ||
-		CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_START, 0) == true ||
 		CManager::Get()->GetInputGamePad()->GetTrigger(CInputGamePad::JOYKEY_A, 0) == true)
 	{ // ENTERƒL[‚ğ‰Ÿ‚µ‚½ê‡
 

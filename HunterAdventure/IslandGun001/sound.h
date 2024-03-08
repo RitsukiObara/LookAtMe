@@ -62,11 +62,13 @@ public:			// 誰でもアクセス出来る
 	~CSound();			// デストラクタ
 
 	// メンバ関数
-	HRESULT Init(HWND hWnd);											// 初期化処理
-	void Uninit(void);													// 終了処理
-	HRESULT Play(const SOUND_LABEL label);								// 再生処理
-	void Stop(const SOUND_LABEL label);									// 停止(ラベル指定)
-	void Stop(void);													// 停止(全停止)
+	HRESULT Init(HWND hWnd);					// 初期化処理
+	void Uninit(void);							// 終了処理
+	HRESULT Play(const SOUND_LABEL label);		// 再生処理
+	void Pause(const SOUND_LABEL label);		// ポーズ処理
+	void Replay(const SOUND_LABEL label);		// リプレイ処理
+	void Stop(const SOUND_LABEL label);			// 停止(ラベル指定)
+	void Stop(void);							// 停止(全停止)
 
 	// セット・ゲット関係
 	void SetVolume(const SOUND_LABEL label, const float fVolume);		// ボリュームの設定処理

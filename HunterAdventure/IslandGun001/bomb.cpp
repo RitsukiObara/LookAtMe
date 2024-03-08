@@ -66,7 +66,7 @@ CBomb::CBomb() : CModel(TYPE_NONE, PRIORITY_ENTITY)
 	m_move = NONE_D3DXVECTOR3;	// 移動量
 	m_state = STATE_GROWTH;		// 状態
 	m_nAreaIdx = 0;				// 区分の番号
-	m_nBoundCount = 0;			// バウンドカウント
+	m_nStateCount = 0;			// 状態カウント
 	m_nExplosionCount = 0;		// 爆発カウント
 	m_bAdd = false;				// 加算状況
 
@@ -171,6 +171,28 @@ void CBomb::Update(void)
 
 			break;
 
+		case CBomb::STATE_SMASH:		// 吹き飛び状態
+
+			// 起爆状態処理
+			Detonation();
+
+			// 移動処理
+			Move();
+
+			// 重力処理
+			Gravity();
+
+			// 区分の番号設定処理
+			m_nAreaIdx = area::SetFieldIdx(GetPos());
+
+			// 当たり判定
+			Collision();
+
+			// 起伏地面との当たり判定
+			ElevationCollision();
+
+			break;
+
 		case CBomb::STATE_EXPLOSION:	// 爆発状態
 
 			// 爆発状態処理
@@ -249,6 +271,9 @@ void CBomb::Hit(const float fRot, const float fSpeed)
 
 	// 位置を適用する
 	m_pFuse->SetPos(pos);
+
+	// 吹き飛び状態にする
+	m_state = STATE_SMASH;
 }
 
 //=====================================
@@ -268,7 +293,7 @@ void CBomb::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 	m_col = NONE_D3DXCOLOR;			// 色
 	m_move = NONE_D3DXVECTOR3;		// 移動量
 	m_state = STATE_GROWTH;			// 状態
-	m_nBoundCount = 0;				// バウンドカウント
+	m_nStateCount = 0;				// 状態カウント
 	m_nExplosionCount = 0;			// 爆発カウント
 	m_bAdd = false;					// 加算状況
 
@@ -449,6 +474,16 @@ bool CBomb::ElevationCollision(void)
 				// 移動量を0にする
 				m_move = NONE_D3DXVECTOR3;
 
+				if (m_state == STATE_SMASH)
+				{ // 吹き飛び状態だった場合
+
+					// 起爆状態にする
+					m_state = STATE_DETONATION;
+
+					// 状態カウントを初期化する
+					m_nStateCount = 0;
+				}
+
 				// true を返す
 				return true;
 			}
@@ -548,17 +583,17 @@ void CBomb::Bound(void)
 	{ // 起伏地面に当たった場合
 
 		// バウンド回数を加算する
-		m_nBoundCount++;
+		m_nStateCount++;
 
 		// バウンドさせる
 		m_move.y *= BOUND_GRAVITY_MAGNI;
 	}
 
-	if (m_nBoundCount >= BOUND_COUNT)
+	if (m_nStateCount >= BOUND_COUNT)
 	{ // バウンドカウントが一定数以上になった場合
 
 		// バウンドカウントを 0 にする
-		m_nBoundCount = 0;
+		m_nStateCount = 0;
 
 		// 重力を 0 にする
 		m_move.y = 0.0f;

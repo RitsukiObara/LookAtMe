@@ -35,7 +35,9 @@ namespace
 //===========================================
 CPushTiming::CPushTiming() : CBillboardAnim(CObject::TYPE_PUSHTIMING,CObject::PRIORITY_UI)
 {
-
+	// 全ての値をクリアする
+	m_fSize = 0.0f;		// サイズの倍率
+	m_bDisp = true;		// 描画状況
 }
 
 //===========================================
@@ -85,8 +87,12 @@ void CPushTiming::Update(void)
 //===========================================
 void CPushTiming::Draw(void)
 {
-	// 描画処理
-	CBillboardAnim::DrawLightOff(false);
+	if (m_bDisp == true)
+	{ // 描画状況が true の場合
+
+		// 描画処理
+		CBillboardAnim::DrawLightOff(false);
+	}
 }
 
 //===========================================
@@ -111,6 +117,10 @@ void CPushTiming::SetData(const D3DXVECTOR3& pos, const float fSize, const TYPE 
 
 	// テクスチャの読み込み処理
 	BindTexture(CManager::Get()->GetTexture()->Regist(TEXTURE[type]));
+
+	// 全ての値をクリアする
+	m_fSize = fSize;	// サイズの倍率
+	m_bDisp = true;		// 描画状況
 }
 
 //===========================================
@@ -171,8 +181,44 @@ void CPushTiming::SetType(const TYPE type)
 	BindTexture(CManager::Get()->GetTexture()->Regist(TEXTURE[type]));
 
 	// サイズの設定処理
-	SetSize(TYPE_SIZE[type]);
+	SetSize(m_fSize * TYPE_SIZE[type]);
 
 	// 頂点座標の設定処理
 	SetVertex();
+}
+
+//===========================================
+// サイズの倍率の設定処理
+//===========================================
+void CPushTiming::SetMagni(const float fSize)
+{
+	// サイズの倍率を設定する
+	m_fSize = fSize;
+}
+
+//===========================================
+// サイズの倍率の取得処理
+//===========================================
+float CPushTiming::GetMagni(void) const
+{
+	// サイズの倍率を返す
+	return m_fSize;
+}
+
+//===========================================
+// 描画状況の設定処理
+//===========================================
+void CPushTiming::SetEnableDisp(const bool bDisp)
+{
+	// 描画状況を設定する
+	m_bDisp = bDisp;
+}
+
+//===========================================
+// 描画状況の取得処理
+//===========================================
+bool CPushTiming::IsDisp(void) const
+{
+	// 描画状況を返す
+	return m_bDisp;
 }

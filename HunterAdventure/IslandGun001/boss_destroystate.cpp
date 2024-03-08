@@ -75,6 +75,13 @@ void CBossDestroyState::SetData(CBoss* pBoss)
 		// ボスの死亡カメラ状態にする
 		CManager::Get()->GetCamera()->SetType(CCamera::TYPE_BOSSDESTROY);
 	}
+
+	if (pBoss->GetMotion()->GetType() != CBoss::MOTIONTYPE_DEATH)
+	{ // 死亡モーションじゃない場合
+
+		// 死亡モーションにする
+		pBoss->GetMotion()->Set(CBoss::MOTIONTYPE_DEATH);
+	}
 }
 
 //==========================

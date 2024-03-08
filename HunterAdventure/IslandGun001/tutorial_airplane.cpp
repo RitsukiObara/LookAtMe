@@ -25,7 +25,7 @@ namespace
 	const D3DXVECTOR3 INIT_ROT = D3DXVECTOR3(0.0f, D3DX_PI * -0.5f, 0.0f);	// ”òs‹@‚Ì‰ŠúŒü‚«
 	const float MOVE_WIDTH = 50.0f;			// ˆÚ“®—Ê‚Ì•
 	const float MOVE_HEIGHT = 8.0f;			// ˆÚ“®—Ê‚Ì‚‚³
-	const float MOVE_ROT_MOVE = 0.004f;		// ˆÚ“®’†‚ÌŒü‚«‚ÌˆÚ“®—Ê
+	const float MOVE_ROT_MOVE = 0.003f;		// ˆÚ“®’†‚ÌŒü‚«‚ÌˆÚ“®—Ê
 }
 
 //==============================

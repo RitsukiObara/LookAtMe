@@ -25,17 +25,21 @@ namespace
 	const float EXPLOSION_HEIGHT = 300.0f;			// 爆発の高さ
 	const CMesh::SGrid EXPLOSION_DIVI = { 16,16 };	// 爆発の分割数
 	const char* EXPLOSION_TEXTURE = "data\\TEXTURE\\BombExplosion.png";		// 爆発のテクスチャ
+
 	const D3DXVECTOR3 SHOCK_ROT[CBossExplosion::NUM_SHOCK] =	// 衝撃の向き
 	{
 		D3DXVECTOR3(D3DX_PI * 0.25f, D3DX_PI * 0.5f, 0.0f),
 		D3DXVECTOR3(D3DX_PI * -0.25f, D3DX_PI * 0.5f, 0.0f),
 	};
-	const float SHOCK_CIRCUM = 350.0f;				// 衝撃の円周
+	const float SHOCK_CIRCUM = 400.0f;				// 衝撃の円周
 	const float SHOCK_WIDTH = 100.0f;				// 衝撃の幅
 	const CMesh::SGrid SHOCK_DIVI = { 1,16 };		// 衝撃の分割数
 	const char* SHOCK_TEXTURE = "data\\TEXTURE\\BossRipple.png";			// 衝撃のテクスチャ
-	const float INIT_ADD_EXPLOSION = 30.0f;			// 爆発の拡大率
+
+	const float INIT_ADD_EXPLOSION = 30.0f;			// 爆発の初期拡大率
+	const float INIT_ADD_SHOCK = 30.0f;				// 衝撃の初期拡大率
 	const float EXPLOSION_CORRECT = 0.2f;			// 爆発の補正率
+	const float SHOCK_CORRECT = 0.1f;				// 衝撃の補正率
 	const float INIT_ALPHA = 1.0f;					// 透明度の初期値
 	const float SUB_ALPHA = 0.01f;					// 透明度の減算量
 }
@@ -48,8 +52,9 @@ CBossExplosion::CBossExplosion() : CObject(CObject::TYPE_EXPLOSION, DIM_3D, CObj
 	// 全ての値をクリアする
 	m_pExplosion = nullptr;						// 爆発の情報
 	memset(m_apShock, 0, sizeof(m_apShock));	// 衝撃の情報
-	m_fAdd = INIT_ADD_EXPLOSION;				// サイズの追加量
-	m_fAlpha = INIT_ALPHA;		// 透明度
+	m_fAddExpl = INIT_ADD_EXPLOSION;			// 爆発の追加量
+	m_fAddShock = INIT_ADD_SHOCK;				// 衝撃の追加量
+	m_fAlpha = INIT_ALPHA;						// 透明度
 }
 
 //==============================
@@ -110,8 +115,8 @@ void CBossExplosion::Update(void)
 		float fHeight = m_pExplosion->GetHeight();
 
 		// 円を広げる
-		fCircum += m_fAdd;
-		fHeight += m_fAdd;
+		fCircum += m_fAddExpl;
+		fHeight += m_fAddExpl;
 
 		// 円周と高さを適用
 		m_pExplosion->SetCircum(fCircum);
@@ -131,7 +136,7 @@ void CBossExplosion::Update(void)
 			float fCircum = m_apShock[nCnt]->GetCircum();
 
 			// 円を広げる
-			fCircum += m_fAdd;
+			fCircum += m_fAddShock;
 
 			// 円周と高さを適用
 			m_apShock[nCnt]->SetCircum(fCircum);
@@ -142,7 +147,8 @@ void CBossExplosion::Update(void)
 	}
 
 	// 均等な補正処理
-	useful::FrameCorrect(0.0f, &m_fAdd, EXPLOSION_CORRECT);
+	useful::FrameCorrect(0.0f, &m_fAddExpl, EXPLOSION_CORRECT);
+	useful::FrameCorrect(0.0f, &m_fAddShock, SHOCK_CORRECT);
 
 	if (m_fAlpha > 0.0f)
 	{ // 透明度が0超過の場合
@@ -219,8 +225,9 @@ void CBossExplosion::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 		}
 	}
 
-	m_fAdd = INIT_ADD_EXPLOSION;		// サイズの追加量
-	m_fAlpha = INIT_ALPHA;				// 透明度
+	m_fAddExpl = INIT_ADD_EXPLOSION;		// 爆発の追加量
+	m_fAddShock = INIT_ADD_SHOCK;			// 衝撃の追加量
+	m_fAlpha = INIT_ALPHA;					// 透明度
 }
 
 //=======================================

@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "rock.h"
 #include "texture.h"
+#include "sound.h"
 #include "useful.h"
 
 #include "fraction.h"
@@ -164,6 +165,9 @@ void CRock::Break(void)
 		// ”j•Ð‚ð¶¬
 		CFraction::Create(posFrac, CFraction::TYPE_ROCK, FRACTION_LIFE, FRACTION_MOVE_WIDTH, FRACTION_MOVE_HEIGHT);
 	}
+
+	// Šâ‚Ì”j‰ó‰¹‚ð–Â‚ç‚·
+	CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_ROCKBREAK);
 }
 
 //=======================================

@@ -13,6 +13,7 @@
 #include "manager.h"
 #include "file.h"
 #include "sound.h"
+#include "texture.h"
 #include "useful.h"
 
 #include "motion.h"
@@ -32,6 +33,7 @@
 //------------------------------------------------------------
 namespace
 {
+	const char* WEAK_CRACKS_TEXTURE = "data\\TEXTURE\\WeakCracks.png";		// 弱点にひびが入ったときのテクスチャ
 	const D3DXVECTOR3 DEATH_EXPLOSION_SIZE = D3DXVECTOR3(200.0f, 200.0f, 0.0f);		// 敵の死亡時の爆発のサイズ
 	const float LAND_GRAVITY = -50.0f;			// 着地時の重力
 	const int MAX_LIFE = 3000;					// 体力の最大数
@@ -59,7 +61,9 @@ namespace
 	const int WEAK_MATERIAL_NUM = 0;			// 弱点のマテリアル番号
 	const int BODY_IDX = 2;						// 胸のパーツ
 	const D3DXCOLOR WEAK_DAMAGE_COL = D3DXCOLOR(0.5f, 0.0f, 0.0f, 1.0f);	// 弱点を攻撃された時の色
+	const D3DXCOLOR WEAK_BREAK_COL = D3DXCOLOR(0.1f, 0.0f, 0.1f, 1.0f);		// 弱点が破壊された時の色
 	const int DAMAGE_COUNT = 20;				// ダメージカウント数
+	const int CRACKS_LIFE = 5;					// 弱点にヒビが入る体力
 }
 
 // 静的メンバ変数
@@ -149,25 +153,8 @@ HRESULT CBoss::Init(void)
 		assert(false);
 	}
 
-	CListManager<CEnemy*> list = CEnemy::GetList();
-	CEnemy* pEnemy = nullptr;
-
-	for (int nCnt = 0; nCnt < list.GetNumData(); nCnt++)
-	{
-		// 敵の情報を取得する
-		pEnemy = list.GetData(nCnt);
-
-		// 位置を取得する
-		D3DXVECTOR3 pos = pEnemy->GetPos();
-
-		// 位置を真ん中にする
-		pos.y += (pEnemy->GetCollSize().y * 0.5f);
-
-		// アニメーションリアクションを生成
-		CAnimReaction::Create(pos, DEATH_EXPLOSION_SIZE, NONE_D3DXCOLOR, CAnimReaction::TYPE::TYPE_GUNEXPLOSION, 4, 1);
-
-		pEnemy->Uninit();
-	}
+	// 敵の全消去処理
+	EnemyAllClear();
 
 	// 値を返す
 	return S_OK;
@@ -373,16 +360,30 @@ void CBoss::BarrierHit(const D3DXVECTOR3& pos, const int nPart, const int nCntPa
 	// 寿命を減算する
 	m_aWeakPointLife[nCntPart]--;
 
+	if (m_aWeakPointLife[nCntPart] <= CRACKS_LIFE)
+	{ // 寿命がある程度減った場合
+
+		// 弱点にひびを入れる
+		CXFile::SXFile file = GetHierarchy(nPart)->GetFileData();
+		file.m_nTexIdx[WEAK_MATERIAL_NUM] = CManager::Get()->GetTexture()->Regist(WEAK_CRACKS_TEXTURE);
+		GetHierarchy(nPart)->SetFileData(file);
+	}
+
 	if (m_aWeakPointLife[nCntPart] <= 0)
 	{ // ライフが無くなった場合
 
 		// 色を設定する
-		m_apMatCopy[nPart][WEAK_MATERIAL_NUM].MatD3D.Diffuse = D3DXCOLOR(0.1f, 0.0f, 0.1f, 1.0f);
-		m_apMatCopy[nPart][WEAK_MATERIAL_NUM].MatD3D.Ambient = D3DXCOLOR(0.1f, 0.0f, 0.1f, 1.0f);
-		m_apMatCopy[nPart][WEAK_MATERIAL_NUM].MatD3D.Emissive = D3DXCOLOR(0.1f, 0.0f, 0.1f, 1.0f);
+		m_apMatCopy[nPart][WEAK_MATERIAL_NUM].MatD3D.Diffuse = WEAK_BREAK_COL;
+		m_apMatCopy[nPart][WEAK_MATERIAL_NUM].MatD3D.Ambient = WEAK_BREAK_COL;
+		m_apMatCopy[nPart][WEAK_MATERIAL_NUM].MatD3D.Emissive = WEAK_BREAK_COL;
 
 		// 弱点の破壊音を鳴らす
 		CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_WEAKBREAK);
+
+		// 弱点のヒビを消す
+		CXFile::SXFile file = GetHierarchy(nPart)->GetFileData();
+		file.m_nTexIdx[WEAK_MATERIAL_NUM] = NONE_TEXIDX;
+		GetHierarchy(nPart)->SetFileData(file);
 	}
 	else
 	{ // 上記以外
@@ -654,6 +655,32 @@ bool CBoss::IsHit(void) const
 {
 	// ヒット状況を返す
 	return m_bHit;
+}
+
+//===========================================
+// 敵の全消去処理
+//===========================================
+void CBoss::EnemyAllClear(void)
+{
+	CListManager<CEnemy*> list = CEnemy::GetList();
+	CEnemy* pEnemy = nullptr;
+
+	for (int nCnt = 0; nCnt < list.GetNumData(); nCnt++)
+	{
+		// 敵の情報を取得する
+		pEnemy = list.GetData(nCnt);
+
+		// 位置を取得する
+		D3DXVECTOR3 pos = pEnemy->GetPos();
+
+		// 位置を真ん中にする
+		pos.y += (pEnemy->GetCollSize().y * 0.5f);
+
+		// アニメーションリアクションを生成
+		CAnimReaction::Create(pos, DEATH_EXPLOSION_SIZE, NONE_D3DXCOLOR, CAnimReaction::TYPE::TYPE_GUNEXPLOSION, 4, 1);
+
+		pEnemy->Uninit();
+	}
 }
 
 //===========================================

@@ -27,6 +27,9 @@ public:
 
 private:
 
+	void FireCreate(CBoss* pBoss);		// 炎を出す処理
+	void Fraction(CBoss* pBoss);		// 破片出す処理
+
 	// メンバ変数
 	int m_nCount;				// 経過カウント
 };

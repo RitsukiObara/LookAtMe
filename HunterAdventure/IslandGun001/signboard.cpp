@@ -10,6 +10,7 @@
 #include "main.h"
 #include "manager.h"
 #include "signboard.h"
+#include "sound.h"
 #include "texture.h"
 #include "useful.h"
 
@@ -42,7 +43,6 @@ CSignboard::CSignboard() : CModel(TYPE_SIGNBOARD, PRIORITY_ENTITY)
 	m_pButton = nullptr;	// ボタンの情報
 	m_pExplain = nullptr;	// 説明の情報
 	m_type = TYPE_JUMP;		// 種類
-	m_bDisp = false;		// 描画状況
 
 	// リストに追加する
 	m_list.Regist(this);
@@ -81,7 +81,6 @@ void CSignboard::Uninit(void)
 	{ // ボタンが NULL じゃない場合
 
 		// ボタンの終了処理
-		m_pButton->Uninit();
 		m_pButton = nullptr;
 	}
 
@@ -97,12 +96,7 @@ void CSignboard::Uninit(void)
 //========================================
 void CSignboard::Update(void)
 {
-	if (m_pButton != nullptr)
-	{ // ボタンが NULL じゃない場合
 
-		// ボタンの更新処理
-		m_pButton->Update();
-	}
 }
 
 //=====================================
@@ -112,14 +106,6 @@ void CSignboard::Draw(void)
 {
 	// 描画処理
 	CModel::Draw();
-
-	if (m_bDisp == true &&
-		m_pButton != nullptr)
-	{ // ボタンを表示する状態だった場合
-
-		// ボタンの描画処理
-		m_pButton->Draw();
-	}
 }
 
 //=====================================
@@ -136,9 +122,8 @@ void CSignboard::SetData(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const T
 
 	// 全ての値を設定する
 	m_pButton = CPushTiming::Create(D3DXVECTOR3(pos.x, pos.y + BUTTON_SHIFT, pos.z), BUTTON_SIZE, CPushTiming::TYPE_PAD_A, BUTTON_INTERVAL);	// ボタンの情報
-	m_pButton->CObject::SetType(TYPE_NONE);
+	m_pButton->SetEnableDisp(false);
 	m_type = type;		// 種類
-	m_bDisp = false;	// 描画状況
 }
 
 //=======================================
@@ -158,6 +143,9 @@ void CSignboard::Explain(void)
 
 	// 看板の情報を設定する
 	CTutorial::SetLookSign(this);
+
+	// 看板音を鳴らす
+	CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_SIGNBOARD);
 }
 
 //=======================================
@@ -225,21 +213,12 @@ void CSignboard::SetExplain(CSignboardExpl* pExpl)
 }
 
 //=======================================
-// 描画状況の設定処理
+// ボタン表示の取得処理
 //=======================================
-void CSignboard::SetEnableDisp(const bool bDisp)
+CPushTiming* CSignboard::GetButton(void) const
 {
-	// 描画状況を設定する
-	m_bDisp = bDisp;
-}
-
-//=======================================
-// 描画状況の取得処理
-//=======================================
-bool CSignboard::IsDisp(void) const
-{
-	// 描画状況を返す
-	return m_bDisp;
+	// ボタン表示の情報を返す
+	return m_pButton;
 }
 
 //=======================================

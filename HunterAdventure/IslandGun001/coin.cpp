@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "coin.h"
+#include "sound.h"
 #include "useful.h"
 
 //-------------------------------------------
@@ -237,6 +238,9 @@ void CCoin::Hit(void)
 
 	// 回転速度を早くする
 	m_fCycleSpeed = GET_CYCLESPEED;
+
+	// コインゲット音を鳴らす
+	CManager::Get()->GetSound()->Play(CSound::SOUND_LABEL_SE_COINGET);
 }
 
 //=======================================

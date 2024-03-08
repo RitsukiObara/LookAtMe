@@ -19,6 +19,7 @@
 #include "alter_pole.h"
 #include "alter_flash.h"
 #include "boss.h"
+#include "alter_message.h"
 
 //-------------------------------------------
 // 無名名前空間
@@ -31,7 +32,7 @@ namespace
 	const D3DXVECTOR3 POS = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 位置
 	const D3DXVECTOR3 POLE_POS[CAlter::NUM_POLE] =		// 石柱の位置
 	{
-		D3DXVECTOR3(0.0f,0.0f,-450.0f),
+		D3DXVECTOR3(0.0f,0.0f,450.0f),
 		D3DXVECTOR3(450.0f,0.0f,0.0f),
 		D3DXVECTOR3(-450.0f,0.0f,0.0f),
 	};
@@ -49,6 +50,7 @@ CAlter::CAlter() : CModel(TYPE_ALTER, PRIORITY_ENTITY)
 	{
 		m_apPole[nCnt] = nullptr;		// 石柱の情報
 	}
+	m_pMessage = nullptr;				// メッセージの情報
 	m_state = STATE_NONE;				// 状態
 	m_bLightUp = false;					// ライト点灯状況
 }
@@ -91,6 +93,13 @@ void CAlter::Uninit(void)
 			m_apPole[nCnt]->Uninit();
 			m_apPole[nCnt] = nullptr;
 		}
+	}
+
+	if (m_pMessage != nullptr)
+	{ // メッセージが NULL じゃない場合
+
+		// メッセージを NULL にする
+		m_pMessage = nullptr;
 	}
 
 	// 終了処理
@@ -150,8 +159,8 @@ void CAlter::Update(void)
 				m_apPole[nCnt]->SetGoldBone(nullptr);
 			}
 
-			// ボス出現状態にする
-			m_state = STATE_BOSSAPPEAR;
+			// 待機状態にする
+			m_state = STATE_WAIT;
 
 			// 祭壇の閃光を生成
 			CAlterFlash::Create();
@@ -162,13 +171,28 @@ void CAlter::Update(void)
 
 		break;
 
-	case CAlter::STATE_BOSSAPPEAR:
-		break;
-
 	case CAlter::STATE_WAIT:
+
+		if (m_pMessage != nullptr)
+		{ // メッセージが NULL じゃない場合
+
+			// 終了処理
+			m_pMessage->Uninit();
+			m_pMessage = nullptr;
+		}
+
 		break;
 
 	case CAlter::STATE_BREAK:
+
+		if (m_pMessage != nullptr)
+		{ // メッセージが NULL じゃない場合
+
+			// 終了処理
+			m_pMessage->Uninit();
+			m_pMessage = nullptr;
+		}
+
 		break;
 
 	default:
@@ -230,6 +254,7 @@ void CAlter::SetData(void)
 			m_apPole[nCnt] = CAlterPole::Create(POLE_POS[nCnt]);
 		}
 	}
+	m_pMessage = nullptr;				// メッセージの情報
 	m_state = STATE_NONE;				// 状態
 	m_bLightUp = false;					// ライト点灯状況
 }
@@ -303,6 +328,22 @@ CAlterPole* CAlter::GetPole(const int nIdx) const
 
 	// 石柱の情報を返す
 	return m_apPole[nIdx];
+}
+
+//=======================================
+// 祭壇のメッセージの設定処理
+//=======================================
+void CAlter::SetAlterMessage(CAlterMessage* pMessage)
+{
+	if (m_pMessage != nullptr)
+	{ // メッセージが NULL じゃない場合
+
+		// メッセージの終了処理
+		m_pMessage->Uninit();
+	}
+
+	// メッセージを設定する
+	m_pMessage = pMessage;
 }
 
 //=======================================
